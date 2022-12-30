@@ -124,9 +124,45 @@ class AP2T:
                             # klik itemnya
                             items.click()
                             break
-                    time.sleep(10)
-                    print("berhasil input idpel")
-                    return "yes"
+                    time.sleep(1)
+                    # Input Petugas dan Keterangan
+                    field_keterngan = WebDriverWait(self.driver, 3).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div/div/div/div[1]/div/div/div[2]/div/div/fieldset/div/div/div[4]/div[1]/textarea")
+                        )
+                    )
+                    field_keterngan.send_keys(petugas_dan_keterangan)
+                    time.sleep(1)
+                    # pilih dropdown penyebab periksa
+                    btnAlasan = WebDriverWait(self.driver, 15).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div/div/div/div[1]/div/div/div[2]/div/div/fieldset/div/div/div[9]/div[1]/div/img"))
+                    )
+                    btnAlasan.click()
+                    time.sleep(3)
+                    try:
+                        # get parent elements
+                        parentPenyebab = WebDriverWait(self.driver, 3).until(
+                            EC.presence_of_all_elements_located(
+                                (By.CLASS_NAME, "x-combo-list-item")
+                            )
+                        )
+                        print(str(len(parentPenyebab)))
+                        for items in parentPenyebab:
+                            print(items.text)
+                            print("Tipe data : ", type(items.text))
+                            if (items.text.strip() == 'Muncul Informasi Call, Overload atau Lock'):
+                                items.click()
+                                print("berhasil pilih penyebab Periksa")
+                                break
+                            else:
+                                print("Tidak ada Text yang sesuai")
+                        time.sleep(100)
+                        return "yes"
+                    except:
+                        message = "Gagal pilih dropdown penyebab"
+                        print(message)
+                        return "no"
                 except:
                     message = "Gagal pilih menu pengaduan"
                     print(message)

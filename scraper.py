@@ -88,13 +88,54 @@ class AP2T:
         try:
             # Buka Tab baru
             self.driver.execute_script(
-                "window.open('https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=8609810Z&page=tranI14&password=mblendez');")
-            time.sleep(5000)
+                "window.open('"+link_pengaduan_ct+"');")
+            time.sleep(5)  # Bisa di ubah sesuai kebutuhan
             print("Berhasil buka tab ")
-            # Pindah tab
-            return "yes"
-
-            # Buka Link Pengaduan Pelanggan CT
+            try:
+                # pindah tab ke tab pengaduan
+                self.driver.switch_to.window(self.driver.window_handles[1])
+                # In
+                tfidpel = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div/div/div/div[2]/div/div/div[2]/div/div/fieldset/div/div/div[1]/div[1]/input"))
+                )
+                tfidpel.send_keys(idpelanggan)
+                # tekan enter
+                tfidpel.send_keys(Keys.RETURN)
+                time.sleep(3)
+                # Pilihan Dropdown
+                dropdown = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div/div/div/div[1]/div/div/div[1]/div/div/fieldset/div/div/div[3]/div[1]/div/img"))
+                )
+                dropdown.click()
+                time.sleep(1)
+                # Get parent categories
+                parentCategories = WebDriverWait(self.driver, 15).until(
+                    EC.presence_of_all_elements_located(
+                        (By.CLASS_NAME, "x-combo-list-inner"))
+                )
+                try:
+                    # print(str(len(child_elements)))
+                    print("Berhasil get child elements")
+                    for items in parentCategories:
+                        print(items.text)
+                        if (items.text == "PERMINTAAN CLEAR TAMPER"):
+                            # klik itemnya
+                            items.click()
+                            break
+                    time.sleep(10)
+                    print("berhasil input idpel")
+                    return "yes"
+                except:
+                    message = "Gagal pilih menu pengaduan"
+                    print(message)
+                    return "no"
+            except:
+                message = "Gagal input pengaduan"
+                print(message)
+                return "no"
+                # Buka Link Pengaduan Pelanggan CT
         except:
             message = "Gagal buka link pengaduan CT"
             print(message)

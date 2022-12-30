@@ -14,7 +14,7 @@ class Asmente():
         # Cek buka web ap2t
         if (status == "yes"):
             status = ap2t.login_ap2t(
-                username_ap2t="92174036ZY", password_ap2t="Minasa-30")
+                username_ap2t="8208006F", password_ap2t="Des@2022")
             # cek login
             if (status == "yes"):
                 print("Login Berhasil")

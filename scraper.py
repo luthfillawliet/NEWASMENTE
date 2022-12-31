@@ -42,9 +42,10 @@ class AP2T:
             time.sleep(2)
             print("AP2T Berhasil di buka")
             return "yes"
-        except:
+        except Exception as e:
             message = "Gagal membuka AP2T"
             print(message)
+            print("Error message : ", e)
             return "no"
 
     def login_ap2t(self, username_ap2t, password_ap2t):
@@ -85,13 +86,15 @@ class AP2T:
                 )
                 btnLogin.click()
                 return "yes"
-            except:
+            except Exception as e:
                 message = "Gagal klk login"
                 print(message)
+                print("Error message : ", e)
                 return "no"
-        except:
+        except Exception as e:
             message = "Gagal login ap2t"
             print(message)
+            print("Error Message : ", e)
             return "no"
 
     def input_pengaduan_ct(self, id_pelanggan, petugas_dan_keterangan, link_pengaduan_ct):
@@ -328,7 +331,7 @@ class AP2T:
             time.sleep(5)  # Bisa di ubah sesuai kebutuhan
             # pindah tab ke tab pengaduan
             # Ubah untuk testing dan run
-            self.driver.switch_to.window(self.driver.window_handles[1])
+            self.driver.switch_to.window(self.driver.window_handles[4])
             # klik dropdown kategori search
             btnKategori = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
@@ -420,6 +423,11 @@ class AP2T:
             while status_token.text.strip() != "SUKSES TOKEN":
                 time.sleep(3)
                 btnfilter.click()
+                time.sleep(2)
+                # Cek status lagi
+                status_token = WebDriverWait(self.driver, 2).until(
+                    EC.presence_of_element_located((By.XPATH, xpath_status))
+                )
                 if (status_token.text.strip() == "SUKSES TOKEN"):
                     print("Berhasil ubah status token")
                     break
@@ -434,6 +442,7 @@ class AP2T:
         except Exception as e:
             message = "Gagal ambil status token dan nomor agenda"
             print(message)
+            print("Error Message : ", e)
             return "0"
 
     def cetak_token(self, nomoragenda, link_ct):

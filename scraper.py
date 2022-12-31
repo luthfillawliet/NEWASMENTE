@@ -1,4 +1,4 @@
-from parameter import Parameter
+from FILEMANAGER import filemanager
 
 import time
 import os
@@ -459,3 +459,13 @@ class AP2T:
             return ["yes", message]
         except Exception as e:
             return ["no"]
+
+    def take_screenshoot(self, direktori: str, file_name: str):
+        print("Memulai screenshoot")
+        time.sleep(3)
+        # ganti jika tes dan running
+        self.driver.switch_to.window(self.driver.window_handles[5])
+        try:
+            self.driver.save_screenshot(direktori+"fotoct.png")
+        except Exception as e:
+            print("Error Message : ",  e)

@@ -19,5 +19,10 @@ class Parameter:
 
         # Link By Pass AP2T
         # Pengaduan CT
-        self.linkpengaduanct = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=8609810Z&page=tranI14&password=mblendez'
-        self.linktindakanpengaduan = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=8208006F&page=tranI14Jwb&password=mblendez'
+        self.linkpengaduanct = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=8208006F&page=tranI14&password=mblendez'
+        self.linktindakanpengaduan = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=9009026F&page=tranI14Jwb&password=mblendez'
+        self.user_options = {
+            "user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1"}
+        self.linkaktivasimeter = "https://ap2t.pln.co.id/ap2t/frm_EntriMeter.aspx"
+        self.link_montok = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=9009026F&password=mblendez&page=formMonitoringPermohonanToken"
+        self.baselink_kct = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getcetaktokenbynoagenda&report=report/CR_PK_TOKEN_LPB.pdf&noagenda="

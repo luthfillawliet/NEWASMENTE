@@ -467,5 +467,9 @@ class AP2T:
         self.driver.switch_to.window(self.driver.window_handles[5])
         try:
             self.driver.save_screenshot(direktori+"fotoct.png")
+            message = "Berhasil kirim screenshot"
+            return "yes", message
         except Exception as e:
+            message = "Gagal screenshot"
             print("Error Message : ",  e)
+            return "yes", message

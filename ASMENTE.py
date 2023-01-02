@@ -33,13 +33,31 @@ class Asmente():
                         print(message)
                         if (status == "yes" and int(nomor_id) > 0):
                             print("Eksekusi monitoring permohonan token")
-                            ap2t.monitoring_token(
+                            status, message = ap2t.monitoring_token(
                                 tipe_pencarian=0, nomor_id=id_pelanggan, url_monitoring_token=pm.link_montok, url_cetak_token=pm.baselink_kct)
-
+                            if (status == "yes"):
+                                print("Lanjut cetak Screenshoot")
+                                status, message = ap2t.take_screenshoot(
+                                    direktori=pm.filepathct, file_name="fotoct.png")
+                                return "yes", message
+                            else:
+                                message = "Gagal Eksekusi monitoring permohonan token"
+                                print(message)
+                                return "no", message
+                        else:
+                            message = "Gagal Aktivasi Token"
+                            print(message)
+                            return "no", message
                 else:
-                    print("Gagal input pengaduan")
+                    message = "Gagal input pengaduan"
+                    print(message)
+                    return "no", message
 
             else:
-                print("Gagal Login")
+                message = "Gagal Login"
+                print(message)
+                return "no", message
         else:
-            print("Gagal buka Web AP2T")
+            message = "Gagal buka Web AP2T"
+            print(message)
+            return "no", message

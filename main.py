@@ -1,12 +1,15 @@
 from ASMENTE import Asmente
 from parameter import Parameter
+from FILEMANAGER import filemanager
 import time
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.update import Update
 from telegram.ext.callbackcontext import CallbackContext
+import requests
 
 pm = Parameter()
+fm = filemanager()
 
 
 def start(update, context):
@@ -22,7 +25,15 @@ def read_command(update, context):
             chat_id=pm.chat_id, text="Memulai pembuatan CT")
         status, message = Asmente.buatCT(
             id_pelanggan=update.message.text[3:15])
-        print("STATUS MAIN : ", message)
+        if (status == "yes"):
+            print("STATUS MAIN : ", message)
+            context.bot.send_message(chat_id=pm.chat_id, text=message)
+            time.sleep(2)
+            resp = requests.post(
+                "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(pm.chat_id), files=fm.send_photos(pm.files_foto_ct))
+        else:
+            print("STATUS MAIN : ", message)
+            context.bot.send_message(chat_id=pm.chat_id, text=message)
     else:
         print("command tidak dikenal")
         context.bot.send_message(

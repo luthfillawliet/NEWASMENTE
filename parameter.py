@@ -4,6 +4,10 @@ import pandas as pd
 class Parameter:
 
     def __init__(self):
+        # bot token id
+        self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"
+        # group chat id
+        self.chat_id = -828901164
         # filepath executable file chromedriver, sesuaikan dengan versi chrome komputer masing2 server, jangan lupa di ekstrak
         self.filepathchromedriver = r'C:\xampp\htdocs\python\NEWASMENTE\chromedriver\chromedriver.exe'
         # lokasi file executable AP2T Enkripsi, ada di folder PT PLN. AP2T Enkripsi
@@ -11,11 +15,12 @@ class Parameter:
         # Lokasi foto CT
         self.filepathct = 'fotoct\\'
         # lokasi download default
+        self.files_foto_ct = 'fotoct\\fotoct.png'
         self.download_dir = 'download\\'
         # link ap2t
         self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'
 
-        self.filepathlistuser = r'\data\listuser\listuser.xlsx'
+        self.filepathlistuser = r'data\listuser\listuser.xlsx'
 
         # Link By Pass AP2T
         # Pengaduan CT

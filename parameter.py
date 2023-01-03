@@ -9,7 +9,7 @@ class Parameter:
         # group chat id
         self.chat_id = -828901164
         # filepath executable file chromedriver, sesuaikan dengan versi chrome komputer masing2 server, jangan lupa di ekstrak
-        self.filepathchromedriver = r'C:\xampp\htdocs\python\NEWASMENTE\chromedriver\chromedriver.exe'
+        self.filepathchromedriver = r'chromedriver\chromedriver.exe'
         # lokasi file executable AP2T Enkripsi, ada di folder PT PLN. AP2T Enkripsi
         self.filepathenkripsi = r'C:\Program Files (x86)\PT PLN (PERSERO)\AP2T ENKRIPSI\Token.exe'
         # Lokasi foto CT
@@ -22,10 +22,12 @@ class Parameter:
 
         self.filepathlistuser = r'data\listuser\listuser.xlsx'
 
-        # Link By Pass AP2T
+        # Link By Pass AP2T (Tidak usah di ubah jika tidak ada perubahan domain ap2t dari pusat)
         # Pengaduan CT
-        self.linkpengaduanct = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=8208006F&page=tranI14&password=mblendez'
-        self.linktindakanpengaduan = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=9009026F&page=tranI14Jwb&password=mblendez'
+        self.linkpengaduanct = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user='
+        self.linkpengaduanct_2 = '&page=tranI14&password=mblendez'
+        self.linktindakanpengaduan = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user='
+        self.linktindakanpengaduan_2 = '&page=tranI14Jwb&password=mblendez'
         self.user_options = {
             "user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1"}
         self.linkaktivasimeter = "https://ap2t.pln.co.id/ap2t/frm_EntriMeter.aspx"

@@ -49,6 +49,7 @@ class AP2T:
             return "no"
 
     def login_ap2t(self, username_ap2t, password_ap2t):
+        print("uSERNAME : ", username_ap2t, "\PASSWORD : ", password_ap2t)
         try:
             # Masukkan UserID
             userid = WebDriverWait(driver=self.driver, timeout=2).until(

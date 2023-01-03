@@ -22,9 +22,9 @@ def read_command(update, context):
     if (update.message.text[:2] == "ct"):
         # Eksekusi buat CT
         context.bot.send_message(
-            chat_id=pm.chat_id, text="Memulai pembuatan CT")
+            chat_id=pm.chat_id, text="Memulai pembuatan CT Idpel : \n"+update.message.text[3:15]+"\nKode Unit : "+update.message.text[16:21]+"\nKeterangan : "+update.message.text[22:])
         status, message = Asmente.buatCT(
-            id_pelanggan=update.message.text[3:15])
+            id_pelanggan=update.message.text[3:15], kodeunit=update.message.text[16:21], keteranganCT=update.message.text[22:])
         if (status == "yes"):
             print("STATUS MAIN : ", message)
             context.bot.send_message(chat_id=pm.chat_id, text=message)

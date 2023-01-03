@@ -29,8 +29,11 @@ class Asmente():
                         id_pelanggan=id_pelanggan, petugas_dan_keterangan=keteranganCT, link_pengaduan_ct=link_pengaduan)
                     if (status == "yes" and int(nomoragenda) > 0):
                         print(message, "dengan nomor Agenda : ", nomoragenda)
+                        # Get user untuk tindakan pengaduan, pake user spv TE
+                        [link_tindakan_pengaduan_ct, username_ap2t, password_ap2t] = df.get_userlink_bykodeunit(
+                            kdunit=kodeunit, jenis_user="TL TE", part_link_awal=pm.linktindakanpengaduan, part_link_akhir=pm.linktindakanpengaduan_2)
                         [status, message, nomoragenda] = ap2t.tindakan_pengaduan_ct(
-                            nomor_agenda=nomoragenda, link_tindakan_pengaduan_ct=pm.linktindakanpengaduan)
+                            nomor_agenda=nomoragenda, link_tindakan_pengaduan_ct=link_tindakan_pengaduan_ct)
                         if (status == "yes" and int(nomoragenda) > 0):
                             print(
                                 "Berhasil Entry tindakan pengaduan dengan nomor agenda : ", nomoragenda)

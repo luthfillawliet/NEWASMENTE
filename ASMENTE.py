@@ -1,26 +1,31 @@
 from scraper import AP2T
 from parameter import Parameter
+from DataFrame import dataframe
 import time
 
 
 class Asmente():
-    def buatCT(id_pelanggan):
+    def buatCT(id_pelanggan: str, kodeunit: str, keteranganCT: str):
         # excute main
         print("Memulai New Asmen TE : ")
         pm = Parameter()
+        df = dataframe()
         ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
                     filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
         status = ap2t.open_ap2t()
         # Cek buka web ap2t
         if (status == "yes"):
+            [link_pengaduan, username_ap2t,
+                password_ap2t] = df.get_userlink_bykodeunit(kdunit=kodeunit)
+            print("Login username : ")
             status = ap2t.login_ap2t(
-                username_ap2t="8208006F", password_ap2t="Des@2022")
+                username_ap2t=username_ap2t, password_ap2t=password_ap2t)
             # cek login
             if (status == "yes"):
                 print("Login Berhasil")
                 # Jika sukses, buat pengaduan
                 [status, message, nomoragenda] = ap2t.input_pengaduan_ct(
-                    id_pelanggan=id_pelanggan, petugas_dan_keterangan="Luthfil Coba Bot CT", link_pengaduan_ct=pm.linkpengaduanct)
+                    id_pelanggan=id_pelanggan, petugas_dan_keterangan=keteranganCT, link_pengaduan_ct=link_pengaduan)
                 if (status == "yes" and int(nomoragenda) > 0):
                     print(message, "dengan nomor Agenda : ", nomoragenda)
                     [status, message, nomoragenda] = ap2t.tindakan_pengaduan_ct(

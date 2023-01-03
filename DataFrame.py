@@ -1,61 +1,104 @@
-from ASMENTE import Asmente
+import pandas as pd
 from parameter import Parameter
-from FILEMANAGER import filemanager
-import time
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.update import Update
-from telegram.ext.callbackcontext import CallbackContext
-import requests
 
 pm = Parameter()
-fm = filemanager()
 
 
-def start(update, context):
-    query = update.callback_query
-    context.bot.send_message(
-        chat_id=pm.chat_id, text="Bot Standby...")
+class dataframe():
 
-
-def read_command(update, context):
-    if (update.message.text[:2] == "ct"):
-        # Eksekusi buat CT
-        context.bot.send_message(
-            chat_id=pm.chat_id, text="Memulai pembuatan CT")
-        status, message = Asmente.buatCT(
-            id_pelanggan=update.message.text[3:15])
-        if (status == "yes"):
-            print("STATUS MAIN : ", message)
-            context.bot.send_message(chat_id=pm.chat_id, text=message)
-            time.sleep(2)
-            resp = requests.post(
-                "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(pm.chat_id), files=fm.send_photos(pm.files_foto_ct))
-        else:
-            print("STATUS MAIN : ", message)
-            context.bot.send_message(chat_id=pm.chat_id, text=message)
-    else:
-        print("command tidak dikenal")
-        context.bot.send_message(
-            chat_id=pm.chat_id, text="command tidak dikenal")
-
-
-def main():
-    # bot Telegram
-    # Create updater and pass in Bot's auth key.
-    updater = Updater(token=pm.tokenbot, use_context=True)
-    # Get dispatcher to register handlers
-    dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler(
-        'start', start, run_async=True))
-
-    # Message Handler harus d pasang paling terakhir
-    dispatcher.add_handler(MessageHandler(Filters.text, read_command))
-    # Start polling
-    updater.start_polling()
-    # Stop
-    updater.idle()
-
-
-if __name__ == '__main__':
-    main()
+    def get_userlink_bykodeunit(self, kdunit: str):
+        df = pd.read_excel(pm.filepathlistuser)
+        print(df)
+        if (kdunit == "32111"):
+            # print("Kode Unit terbaca : Panakkukang")
+            # get nip uSER
+            list_username = df[df["KODE_UNIT"] == int(kdunit)]
+            username = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["NIP"]
+            password = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["Password_AP2T"]
+            link = pm.linkpengaduanct + \
+                username.item()+pm.linkpengaduanct_2
+            # print("Username : ", username, "\nPassword : ", pasword)
+            print(link)
+            print("Length user : ", len(username.item()),
+                  "\nLength password : ", len(password.item()), "(", password.item(), ")")
+            return link, username.item(), password.item()
+        elif (kdunit == "32121"):
+            print("Kode Unit terbaca : Mattoanging")
+            list_username = df[df["KODE_UNIT"] == int(kdunit)]
+            username = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["NIP"]
+            password = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["Password_AP2T"]
+            link = pm.linkpengaduanct + \
+                username.item()+pm.linkpengaduanct_2
+            # print("Username : ", username, "\nPassword : ", pasword)
+            print(link)
+            print("Length user : ", len(username.item()),
+                  "\nLength password : ", len(password.item()), "(", password.item(), ")")
+            return link, username.item(), password.item()
+        elif (kdunit == "32131"):
+            print("Kode Unit terbaca : Sungguminasa")
+            # print("Kode Unit terbaca : Panakkukang")
+            # get nip uSER
+            list_username = df[df["KODE_UNIT"] == int(kdunit)]
+            username = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["NIP"]
+            password = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["Password_AP2T"]
+            link = pm.linkpengaduanct + \
+                username.item()+pm.linkpengaduanct_2
+            # print("Username : ", username, "\nPassword : ", pasword)
+            print(link)
+            print("Length user : ", len(username.item()),
+                  "\nLength password : ", len(password.item()), "(", password.item(), ")")
+            return link, username.item(), password.item()
+        elif (kdunit == "32141"):
+            print("Kode Unit terbaca : Kalebajeng")
+            # print("Kode Unit terbaca : Panakkukang")
+            # get nip uSER
+            list_username = df[df["KODE_UNIT"] == int(kdunit)]
+            username = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["NIP"]
+            password = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["Password_AP2T"]
+            link = pm.linkpengaduanct + \
+                username.item()+pm.linkpengaduanct_2
+            # print("Username : ", username, "\nPassword : ", pasword)
+            print(link)
+            print("Length user : ", len(username.item()),
+                  "\nLength password : ", len(password.item()), "(", password.item(), ")")
+            return link, username.item(), password.item()
+        elif (kdunit == "32151"):
+            print("Kode Unit terbaca : Takalar")
+            # print("Kode Unit terbaca : Panakkukang")
+            # get nip uSER
+            list_username = df[df["KODE_UNIT"] == int(kdunit)]
+            username = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["NIP"]
+            password = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["Password_AP2T"]
+            link = pm.linkpengaduanct + \
+                username.item()+pm.linkpengaduanct_2
+            # print("Username : ", username, "\nPassword : ", pasword)
+            print(link)
+            print("Length user : ", len(username.item()),
+                  "\nLength password : ", len(password.item()), "(", password.item(), ")")
+            return link, username.item(), password.item()
+        elif (kdunit == "32161"):
+            print("Kode Unit terbaca : Malino")
+            # print("Kode Unit terbaca : Panakkukang")
+            # get nip uSER
+            list_username = df[df["KODE_UNIT"] == int(kdunit)]
+            username = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["NIP"]
+            password = list_username[list_username["Jabatan"]
+                                     == "TL TEKNIK"]["Password_AP2T"]
+            link = pm.linkpengaduanct + \
+                username.item()+pm.linkpengaduanct_2
+            # print("Username : ", username, "\nPassword : ", pasword)
+            print(link)
+            print("Length user : ", len(username.item()),
+                  "\nLength password : ", len(password.item()), "(", password.item(), ")")
+            return link, username.item(), password.item()

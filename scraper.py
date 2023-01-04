@@ -1,9 +1,8 @@
-from FILEMANAGER import filemanager
-
 import time
 import os
 import datetime
 
+from parameter import Parameter
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -26,7 +25,7 @@ class AP2T:
         # chrome_options.add_experimental_option('prefs',
         #                                        {"user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"})
         chrome_options.add_argument(
-            "user-data-dir=C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data")
+            user_options)
         self.driver = webdriver.Chrome(
             executable_path=filepathchromedriver, options=chrome_options)
 
@@ -474,3 +473,226 @@ class AP2T:
             message = "Gagal screenshot"
             print("Error Message : ",  e)
             return "yes", message
+
+    def buka_info_pelanggan(self, tipe_pencarian: str, nomor_id: str, link_infopelanggan: str):
+        print("Membuka halaman Info Pelanggan")
+        print("Tipe Pencarian yang di gunakan : ", tipe_pencarian)
+        driver = self.driver
+        # Maximize page
+        driver.maximize_window()
+        # go to ap2t url
+        try:
+            driver.get(link_infopelanggan)
+            time.sleep(2)
+            print("Info Pelanggan Berhasil di buka")
+            # find edit text input
+            edit_text = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/fieldset/div/div/div[4]/div/div/div/div[2]/div/div/div/div[1]/input"))
+            )
+            edit_text.send_keys(nomor_id)
+            # pilih kategori
+            dropdwon_btn = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/fieldset/div/div/div[4]/div/div/div/div[1]/div/div/div/div[1]/div/img"))
+            )
+            dropdwon_btn.click()
+            time.sleep(1)
+            # pilih metode pencarian
+            categories = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located(
+                    (By.CLASS_NAME, "x-combo-list-item"))
+            )
+            print("Jumlah Kategori : ", str(len(categories)))
+            # Looping untuk get access tiap value dari kategori
+            try:
+                for i in categories:
+                    print(i.text)
+                    if (i.text.strip() == tipe_pencarian):
+                        i.click()
+                        break
+                    else:
+                        print("Kategori tidak ditemukan")
+                # Loading load data
+                time.sleep(1)
+                btnSearch = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div/div/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
+                )
+                btnSearch.click()
+                time.sleep(3)
+                # Ekstract Id Pelanggan
+                element0 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[1]/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div/table/tbody/tr/td[1]/div"))
+                )
+                id_pelanggan = element0.text
+                id_pelanggan = "Id Pelanggan : "+id_pelanggan+"\n"
+                print(id_pelanggan)
+                # Klik Tab DIL,sub tab main
+                btnDil = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[1]/div[1]/ul/li[2]"))
+                )
+                btnDil.click()
+                # Ekstract Info pelanggan
+                element1 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[1]/div/div/div/div[1]/div/div/div/div[1]/input"))
+                )
+                namapelanggan = element1.get_attribute("value")
+                namapelanggan = "Nama Pelanggan : "+namapelanggan+"\n"
+                element2 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[1]/div/div/div/div[2]/div/div/div/div[1]/input"))
+                )
+                tarif = element2.get_attribute("value")
+                tarif = "Tarif : "+tarif+"\n"
+                element3 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[1]/div/div/div/div[3]/div/div/div/div[1]/input"))
+                )
+                daya = element3.get_attribute("value")
+                daya = "Daya : "+daya+"\n"
+                time.sleep(1)
+                # PNJ
+                element4 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[5]/div/div/div/div[1]/div/div/div/div[1]/input"))
+                )
+                # Nama PNJ
+                element5 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[5]/div/div/div/div[2]/div/div/div/div[1]/input"))
+                )
+                # No Bang
+                element6 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[5]/div/div/div/div[3]/div/div/div/div[1]/input"))
+                )
+                # Ket No bang
+                element7 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[5]/div/div/div/div[4]/div/div/div/div[1]/input"))
+                )
+                # Kabupaten
+                element8 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[8]/div/div/div/div[2]/div/div/div/div[1]/input"))
+                )
+                # Kecamatan
+                element9 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[8]/div/div/div/div[3]/div/div/div/div[1]/input"))
+                )
+                # Desa
+                element10 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[1]/div/div/div[8]/div/div/div/div[4]/div/div/div/div[1]/input"))
+                )
+                alamat = "Alamat : "+element4.get_attribute("value") + " "+element5.get_attribute("value")+" "+element6.get_attribute("value")+" "+element7.get_attribute(
+                    "value")+" ,"+element10.get_attribute("value")+" ,"+element9.get_attribute("value")+" ,"+element8.get_attribute("value")+"\n"
+                # Klik tab APP
+                tabApp = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[1]/div[1]/ul/li[4]"))
+                )
+                tabApp.click()
+                # tab APP
+                # Get Nomor Meter
+                element11 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div[1]/div/div/div/div[3]/div/div/div/div[1]/input"))
+                )
+                nomor_meter = element11.get_attribute("value")
+                nomor_meter = "Nomor kWh Meter : "+nomor_meter+"\n"
+                print(nomor_meter)
+                # Get Merk kWh Meter
+                element12 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div[1]/div/div/div/div[1]/div/div/div/div[1]/input"))
+                )
+                merk_meter = element12.get_attribute("value")
+                merk_meter = "Merk kWh Meter : "+merk_meter+"\n"
+                print(merk_meter)
+                versiKRN = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div[4]/div/div/div/div[1]/div/div/div/div[1]/input"))
+                )
+                krn = "Versi KRN : "+versiKRN.get_attribute("value")+"\n"
+                # Merge semua data
+                dataPelanggan = id_pelanggan+nomor_meter + \
+                    namapelanggan+tarif+daya+alamat+merk_meter+krn
+                time.sleep(1)
+                informasi = dataPelanggan
+                message = "Berhasil Ambil Info Pelanggan"
+                time.sleep(1)
+                return "yes", informasi, message
+            except Exception as e:
+                message = "Kategori gagal di peroleh\nMessage Error : "+str(e)
+                print(message)
+                return "no", "null", message
+        except Exception as e:
+            message = "Gagal membuka Info Pelanggan"
+            print(message)
+            print("Error message : ", e)
+            return "no", "null", message
+
+
+class ACMT:
+    def __init__(self, filepatchromedriver, download_dir, user_options, url_acmt):
+        pm = Parameter()
+        self.filepathchromedriver = filepatchromedriver
+        self.download_dir = download_dir
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument(
+            user_options)
+        chrome_options.add_argument(pm.ignore_ssl_errors)
+        chrome_options.add_argument(pm.ignore_certificate_errors)
+        self.url_acmt = url_acmt
+        self.driver = webdriver.Chrome(self.filepathchromedriver)
+        self.tipe = "ACMT"
+
+    def open_acmt(self):
+        print("Membuka halaman AP2T")
+        driver = self.driver
+        # Maximize page
+        driver.maximize_window()
+        # go to ap2t url
+        try:
+            driver.get(self.url_acmt)
+            time.sleep(2)
+            message = self.tipe + " Berhasil di buka"
+            print(message)
+            return "yes", message
+        except Exception as e:
+            message = "Gagal membuka "+self.tipe+"\nError message : " + str(e)
+            print(message)
+            return "no", message
+
+    def login_acmt(self, username: str, password: str):
+        self.driver.maximize_window()
+        try:
+            username = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div[1]/div/div/div/div[1]/div[1]/div/input"))
+            )
+            username.send_keys("32131.vendor")  # sisa ganti jadi variabel
+            password = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div[1]/div/div/div/div[2]/div[1]/div/input"))
+            )
+            password.send_keys("billmanbisa")  # sisa ganti jadi variabel
+            btnlogin = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div[2]/div/div/div/div/div[1]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/table/tbody/tr/td[2]/table/tbody/tr[2]/td[2]/em/button"))
+            )
+            btnlogin.click()
+            message = "Berhasil login "+self.tipe
+            print(message)
+            time.sleep(5)
+            return "yes", message
+        except Exception as e:
+            message = "Gagal login ACMT\nMessage Error : "+str(e)
+            print(message)
+            return "no", message

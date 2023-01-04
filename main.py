@@ -54,7 +54,7 @@ def read_command(update, context):
                 chat_id=pm.chat_id, text="Tipe Pencarian tidak ditemukan")
     elif (update.message.text[:8] == "infoacmt" and update.message.text[8:9] == "|" or update.message.text[:8] == "Infoacmt" and update.message.text[8:9] == "|" or update.message.text[:8] == "INFOACMT" and update.message.text[8:9] == "|"):
         context.bot.send_message(
-            chat_id=pm.chat_id, text="Memulai pengecekan Info pelanggan ACMT idpel : ")
+            chat_id=pm.chat_id, text="Memulai pengecekan Info pelanggan ACMT idpel : "+update.message.text[9:])
     else:
         print("command tidak dikenal")
         context.bot.send_message(

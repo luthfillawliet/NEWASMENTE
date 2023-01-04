@@ -91,9 +91,13 @@ class Asmente():
         if (status == "yes"):
             print(message)
             print("Memulai login ACMT")
+            [status, message] = acmt.login_acmt(username_acmt="32131.vendor",
+                                                password_acmt="billmanbisa")
+            if(status == "yes"):
+                [status]
         else:
             print(message)
             print("Gagal buka acmt")
-        informasi = ""
-        message = ""
+        informasi = "Informasi"
+        message = "pesan"
         return status, informasi, message

@@ -20,7 +20,7 @@ class Asmente():
                 password_ap2t] = df.get_userlink_bykodeunit(kdunit=kodeunit, jenis_user="TL TEKNIK", part_link_awal=pm.linkpengaduanct, part_link_akhir=pm.linkpengaduanct_2)
             if (username_ap2t != "null" and password_ap2t != "0"):
                 print("Login username : ")
-                status = ap2t.login_ap2t(
+                [status, message] = ap2t.login_ap2t(
                     username_ap2t=username_ap2t, password_ap2t=password_ap2t)
                 # cek login
                 if (status == "yes"):
@@ -64,7 +64,6 @@ class Asmente():
                         return "no", message
 
                 else:
-                    message = "Gagal Login"
                     print(message)
                     return "no", message
             else:

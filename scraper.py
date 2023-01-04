@@ -85,17 +85,28 @@ class AP2T:
                         (By.XPATH, "/html/body/form/div[7]/div[2]/div[1]/div/div/div/div/div[1]/div/div[2]/div[2]/div/div/div/div/div/table/tbody/tr/td/table/tbody/tr/td[2]/em/button"))
                 )
                 btnLogin.click()
-                return "yes"
+                time.sleep(3)
+                try:
+                    welcome = WebDriverWait(self.driver, 15).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[1]/div[5]/div/div/div/div[1]/div/div[1]/div/table/tbody/tr/td[3]/span/span"))
+                    )
+                    message = "Berhasil Login"
+                    return "yes", message
+                except Exception as e:
+                    message = "Gagal Login\nMessage Error : "+str(e)
+                    print(message)
+                    return "no", message
             except Exception as e:
                 message = "Gagal klk login"
                 print(message)
                 print("Error message : ", e)
-                return "no"
+                return "no", message
         except Exception as e:
             message = "Gagal login ap2t"
             print(message)
             print("Error Message : ", e)
-            return "no"
+            return "no", message
 
     def input_pengaduan_ct(self, id_pelanggan, petugas_dan_keterangan, link_pengaduan_ct):
         try:
@@ -688,10 +699,20 @@ class ACMT:
                     (By.XPATH, "/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div[2]/div/div/div/div/div[1]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/table/tbody/tr/td[2]/table/tbody/tr[2]/td[2]/em/button"))
             )
             btnlogin.click()
-            message = "Berhasil login "+self.tipe
-            print(message)
-            time.sleep(5)
-            return "yes", message
+            time.sleep(3)
+            # cobba identifikasi tombol logout
+            try:
+                log_out = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[1]/div[1]/div/table/tbody/tr/td[1]/table/tbody/tr/td/table/tbody/tr[2]/td[2]/em/button"))
+                )
+                message = "Berhasil login "+self.tipe
+                print(message)
+                return "yes", message
+            except Exception as e:
+                message = "Gagal login "+self.tipe+"\nMessage Error : "+str(e)
+                print(message)
+                return "no", message
         except Exception as e:
             message = "Gagal login ACMT\nMessage Error : "+str(e)
             print(message)

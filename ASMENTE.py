@@ -1,4 +1,5 @@
 from scraper import AP2T
+from scraper import ACMT
 from parameter import Parameter
 from DataFrame import dataframe
 import time
@@ -74,4 +75,26 @@ class Asmente():
             print(message)
             return "no", message
 
-    #  def infopelanggan(tipe_pencarian : str, nomor_id:str):
+    def cek_infopelanggan(tipe_pencarian: str, nomor_id: str, link_infopelanggan: str):
+        pm = Parameter()
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                    filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        # Buka link info pelanggan
+        [status, informasi, message] = ap2t.buka_info_pelanggan(
+            tipe_pencarian=tipe_pencarian, nomor_id=nomor_id, link_infopelanggan=link_infopelanggan)
+        return status, informasi, message
+
+    def info_pelanggan_acmt(id_pelanggan: str):
+        pm = Parameter()
+        acmt = ACMT(filepatchromedriver=pm.filepathchromedriver,
+                    download_dir=pm.download_dir, user_options=pm.user_options, url_acmt=pm.url_acmt)
+        status, message = acmt.open_acmt()
+        if (status == "yes"):
+            print(message)
+            print("Memulai login ACMT")
+        else:
+            print(message)
+            print("Gagal buka acmt")
+        informasi = ""
+        message = ""
+        return status, informasi, message

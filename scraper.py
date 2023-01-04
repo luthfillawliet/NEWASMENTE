@@ -11,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from pywinauto.application import Application
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver import ActionChains
 
 
 class AP2T:
@@ -665,7 +666,7 @@ class ACMT:
         self.tipe = "ACMT"
 
     def open_acmt(self):
-        print("Membuka halaman AP2T")
+        print("Membuka halaman "+self.tipe)
         driver = self.driver
         # Maximize page
         driver.maximize_window()
@@ -681,19 +682,19 @@ class ACMT:
             print(message)
             return "no", message
 
-    def login_acmt(self, username: str, password: str):
+    def login_acmt(self, username_acmt: str, password_acmt: str):
         self.driver.maximize_window()
         try:
             username = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div[1]/div/div/div/div[1]/div[1]/div/input"))
             )
-            username.send_keys("32131.vendor")  # sisa ganti jadi variabel
+            username.send_keys(username_acmt)  # sisa ganti jadi variabel
             password = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div[1]/div/div/div/div[2]/div[1]/div/input"))
             )
-            password.send_keys("billmanbisa")  # sisa ganti jadi variabel
+            password.send_keys(password_acmt)  # sisa ganti jadi variabel
             btnlogin = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div[2]/div/div/div/div/div[1]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/table/tbody/tr/td[2]/table/tbody/tr[2]/td[2]/em/button"))
@@ -717,3 +718,21 @@ class ACMT:
             message = "Gagal login ACMT\nMessage Error : "+str(e)
             print(message)
             return "no", message
+
+    def buka_informasi_pelanggan(self):
+        try:
+            opsi_info_pelanggan = WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[2]/div[2]/div[1]/div/table/tbody/tr/td/div/table/tbody/tr/td/div[7]/div[1]/span[2]"))
+            )
+            # Definisi objek Action Chain for double click
+            action = ActionChains(self.driver)
+            action.double_click(opsi_info_pelanggan).perform()
+            time.sleep(5)
+            informasi = "Sementara"
+            message = "Berhasil buka Informasi pelanggan"
+            return "yes", informasi, message
+        except Exception as e:
+            message = "Gagal buka informasi pelanggan\nMessage Error : "+str(e)
+            informasi = "null"
+            return "no", informasi, message

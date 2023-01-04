@@ -19,6 +19,7 @@ def start(update, context):
 
 
 def read_command(update, context):
+    print(update.message.chat_id)
     if (update.message.text[:2] == "ct" or update.message.text[:2] == "Ct" or update.message.text[:2] == "CT"):
         # Eksekusi buat CT
         context.bot.send_message(
@@ -55,6 +56,11 @@ def read_command(update, context):
     elif (update.message.text[:8] == "infoacmt" and update.message.text[8:9] == "|" or update.message.text[:8] == "Infoacmt" and update.message.text[8:9] == "|" or update.message.text[:8] == "INFOACMT" and update.message.text[8:9] == "|"):
         context.bot.send_message(
             chat_id=pm.chat_id, text="Memulai pengecekan Info pelanggan ACMT idpel : "+update.message.text[9:])
+        [status, informasi, message] = Asmente.info_pelanggan_acmt(
+            id_pelanggan=update.message.text[9:])
+        context.bot.send_message(
+            chat_id=pm.chat_id, text=informasi)
+
     else:
         print("command tidak dikenal")
         context.bot.send_message(

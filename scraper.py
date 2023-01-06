@@ -99,7 +99,7 @@ class AP2T:
                     print(message)
                     return "no", message
             except Exception as e:
-                message = "Gagal klk login"
+                message = "Gagal klk login, pastikan user sedang tidak digunakan/Mac addres terdaftar"
                 print(message)
                 print("Error message : ", e)
                 return "no", message

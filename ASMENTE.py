@@ -91,9 +91,9 @@ class Asmente():
         if (status == "yes"):
             print(message)
             print("Memulai login ACMT")
-            [status, message] = acmt.login_acmt(username_acmt="32131.vendor",
-                                                password_acmt="billmanbisa")
-            if(status == "yes"):
+            [status, message] = acmt.login_acmt(username_acmt=pm.username_acmt,
+                                                password_acmt=pm.password_acmt)
+            if (status == "yes"):
                 [status]
         else:
             print(message)
@@ -101,3 +101,51 @@ class Asmente():
         informasi = "Informasi"
         message = "pesan"
         return status, informasi, message
+
+    def is_user_authenticated(chat_id: str):
+        try:
+            df = dataframe()
+            pm = Parameter()
+            [status, list_user, message] = df.get_authenticated_user(
+                filepathlistuser=pm.filepathlistuser)
+            print("Status : ", status, "\nMessage : ", message)
+            print("List user id : ", chat_id)
+            print("Tipe data chat id : ", type(chat_id))
+            print(list_user)
+            identifier = False
+            for i in list_user:
+                print(i, " Setelah konversi :", str(type(i)))
+                print("list :", i, "Type : ", type(i))
+                if (str(i) == str(chat_id)):
+                    print("User di temukan")
+                    message = "User terautentifikasi"
+                    identifier = True
+                    break
+            print(message)
+            if (identifier == True):
+                return "yes", message
+            else:
+                message = "User tidak terdaftar, silahkan hubungi Admin"
+                return "no", message
+
+        except Exception as e:
+            message = "User tidak terdaftar\n" + "Message Error : "+str(e)
+            return "no", message
+
+    def kdunit_user(chat_id: int, kode_unit: int):
+        df = dataframe()
+        [status, kode_unit_user, message] = df.get_kode_unit_user(
+            chat_id=chat_id)
+        print("Memulai komparasi kode unit input dan hasil baca chat id user...")
+        try:
+            if (status == "yes" and str(kode_unit_user) == kode_unit):
+                message = "Kode unit sesuai"
+                print(message)
+                return "yes", message
+            else:
+                message = "Tidak ada kode unit yang sesuai"
+                print(message)
+                return "no", message
+        except Exception as e:
+            message = "Kode unit tidak sesuai\nMessage Error : "+str(e)
+            return "no", message

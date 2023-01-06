@@ -4,14 +4,45 @@ import pandas as pd
 class Parameter:
 
     def __init__(self):
-        # bot token id
-        self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"
-        # group chat id
-        self.chat_id = -828901164
+
+        # Setting server baru :
         # filepath executable file chromedriver, sesuaikan dengan versi chrome komputer masing2 server, jangan lupa di ekstrak
         self.filepathchromedriver = r'chromedriver\chromedriver.exe'
         # lokasi file executable AP2T Enkripsi, ada di folder PT PLN. AP2T Enkripsi
         self.filepathenkripsi = r'C:\Program Files (x86)\PT PLN (PERSERO)\AP2T ENKRIPSI\Token.exe'
+        # jika mau menggunakan cache bawaan browser, silahkan di aktifkan (uncomment), lokasi atur sesuai lokasi cache
+        self.user_options = "user-data-dir=C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"
+        # file list user
+        self.filepathlistuser = r'data\listuser\listuser.xlsx'
+        # sheet name list user
+        self.sheetname_listuserid = "listuserid"
+        self.username_acmt = "32131.vendor"
+        self.password_acmt = "billmanbisa"
+
+        # pengaturan options security SSL
+        self.ignore_ssl_errors = "--ignore-ssl-errors=yes"
+        self.ignore_certificate_errors = "--ignore-certificate-errors"
+
+        # setting bot baru
+        # bot token id
+        self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"
+        # group chat id
+        self.chat_id = -828901164
+
+        # Setting jika ada perubahan alamat, link atau domain dari aplikasi korporat
+        # Link By Pass AP2T (Tidak usah di ubah jika tidak ada perubahan domain ap2t dari pusat)
+        # Pengaduan CT
+        self.linkpengaduanct = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user='
+        self.linkpengaduanct_2 = '&page=tranI14&password=mblendez'
+        self.linktindakanpengaduan = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user='
+        self.linktindakanpengaduan_2 = '&page=tranI14Jwb&password=mblendez'
+        self.linkaktivasimeter = "https://ap2t.pln.co.id/ap2t/frm_EntriMeter.aspx"
+        self.link_montok = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=9009026F&password=mblendez&page=formMonitoringPermohonanToken"
+        self.baselink_kct = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getcetaktokenbynoagenda&report=report/CR_PK_TOKEN_LPB.pdf&noagenda="
+        self.url_acmt = "https://portalapp.iconpln.co.id/acmt/"
+        self.link_info_pelanggan = "https://ap2t.pln.co.id/infopelanggannewap2t-dr/"
+
+        # Default (Di ganti sesuai kebutuhan developer/programmer)
         # Lokasi foto CT
         self.filepathct = 'fotoct\\'
         # lokasi download default
@@ -19,17 +50,3 @@ class Parameter:
         self.download_dir = 'download\\'
         # link ap2t
         self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'
-
-        self.filepathlistuser = r'data\listuser\listuser.xlsx'
-
-        # Link By Pass AP2T (Tidak usah di ubah jika tidak ada perubahan domain ap2t dari pusat)
-        # Pengaduan CT
-        self.linkpengaduanct = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user='
-        self.linkpengaduanct_2 = '&page=tranI14&password=mblendez'
-        self.linktindakanpengaduan = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user='
-        self.linktindakanpengaduan_2 = '&page=tranI14Jwb&password=mblendez'
-        self.user_options = {
-            "user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1"}
-        self.linkaktivasimeter = "https://ap2t.pln.co.id/ap2t/frm_EntriMeter.aspx"
-        self.link_montok = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=9009026F&password=mblendez&page=formMonitoringPermohonanToken"
-        self.baselink_kct = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getcetaktokenbynoagenda&report=report/CR_PK_TOKEN_LPB.pdf&noagenda="

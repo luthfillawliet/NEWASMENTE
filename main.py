@@ -23,24 +23,28 @@ def read_command(update, context):
     chat_id = update.message.chat_id
     print(update.message.chat_id)
     [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
-    [status_kdunit, message_kdunit] = Asmente.kdunit_user(
-        chat_id=chat_id, kode_unit=update.message.text[16:21])
-    if (status == "yes" and status_kdunit == "yes"):
+    if (status == "yes"):
         if (update.message.text[:2] == "ct" or update.message.text[:2] == "Ct" or update.message.text[:2] == "CT"):
-            # Eksekusi buat CT
-            context.bot.send_message(
-                chat_id=chat_id, text="Memulai pembuatan CT Idpel : \n"+update.message.text[3:15]+"\nKode Unit : "+update.message.text[16:21]+"\nKeterangan : "+update.message.text[22:])
-            status, message = Asmente.buatCT(
-                id_pelanggan=update.message.text[3:15], kodeunit=update.message.text[16:21], keteranganCT=update.message.text[22:])
-            if (status == "yes"):
-                print("STATUS MAIN : ", message)
-                context.bot.send_message(chat_id=chat_id, text=message)
-                time.sleep(2)
-                resp = requests.post(
-                    "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_ct))
-            else:
-                print("STATUS MAIN : ", message)
-                context.bot.send_message(chat_id=chat_id, text=message)
+            [status_kdunit, message_kdunit] = Asmente.kdunit_user(
+                chat_id=chat_id, kode_unit=update.message.text[16:21])
+            if (status_kdunit == "yes"):
+                # Eksekusi buat CT
+                context.bot.send_message(
+                    chat_id=chat_id, text="Memulai pembuatan CT Idpel : \n"+update.message.text[3:15]+"\nKode Unit : "+update.message.text[16:21]+"\nKeterangan : "+update.message.text[22:])
+                status, message = Asmente.buatCT(
+                    id_pelanggan=update.message.text[3:15], kodeunit=update.message.text[16:21], keteranganCT=update.message.text[22:])
+                if (status == "yes"):
+                    print("STATUS MAIN : ", message)
+                    context.bot.send_message(chat_id=chat_id, text=message)
+                    time.sleep(2)
+                    resp = requests.post(
+                        "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_ct))
+                else:
+                    print("STATUS MAIN : ", message)
+                    context.bot.send_message(chat_id=chat_id, text=message)
+            elif (status_kdunit == "no"):
+                context.bot.send_message(
+                    chat_id=chat_id, text=message_kdunit)
         elif ((update.message.text[:4] == "info" and update.message.text[4:5] == "|") or (update.message.text[:4] == "Info" and update.message.text[4:5] == "|") or (update.message.text[:4] == "INFO" and update.message.text[4:5] == "|")):
             if (update.message.text[5:6] == "0"):
                 context.bot.send_message(
@@ -66,17 +70,14 @@ def read_command(update, context):
                 id_pelanggan=update.message.text[9:])
             context.bot.send_message(
                 chat_id=chat_id, text=informasi)
-
+            context.bot.send_message(
+                chat_id=chat_id, text=message)
         else:
             print("command tidak dikenal")
             context.bot.send_message(
                 chat_id=chat_id, text="command tidak dikenal")
-    elif (status == "yes" and status_kdunit == "no"):
-        message = "Periksa kode unit user..."
-        context.bot.send_message(
-            chat_id=chat_id, text=message)
     else:
-        message = "Hubungi admin untuka autentikasi user..."
+        print(message)
         context.bot.send_message(
             chat_id=chat_id, text=message)
 

@@ -94,12 +94,11 @@ class Asmente():
             [status, message] = acmt.login_acmt(username_acmt=pm.username_acmt,
                                                 password_acmt=pm.password_acmt)
             if (status == "yes"):
-                [status]
+                [status, informasi, message] = acmt.buka_informasi_pelanggan()
         else:
             print(message)
             print("Gagal buka acmt")
-        informasi = "Informasi"
-        message = "pesan"
+        informasi = "null"
         return status, informasi, message
 
     def is_user_authenticated(chat_id: str):

@@ -28,3 +28,33 @@ class dataframe():
             message = "Gagal ambil username, password dan get link, periksa File Excel dan kode unit\Message Error : " + e
             print(message)
             return link, "null", "0"
+
+    def get_authenticated_user(self, filepathlistuser: str):
+        try:
+            # coba get list user dari database
+            df = pd.read_excel(io=filepathlistuser,
+                               sheet_name=pm.sheetname_listuserid)
+            print(df)
+            list_id = df["chat_id"].values.tolist()
+            message = "Berhasil get list authenticated user"
+            print(message)
+            return "yes", list_id, message
+        except Exception as e:
+            list_id = []
+            message = "Lst id gagal di ambil\nMessage Error : "+str(e)
+            print(message)
+            return "no", list_id, message
+
+    def get_kode_unit_user(self, chat_id: int):
+        try:
+            df = pd.read_excel(io=pm.filepathlistuser,
+                               sheet_name=pm.sheetname_listuserid)
+            selected_row = df[df["chat_id"] == chat_id]
+            print(selected_row)
+            print("kode unit selected : ", selected_row["kode_unit"].item())
+            message = "Berhasil get kode unit chat id"
+            print(message)
+            return "yes", selected_row["kode_unit"].item(), message
+        except Exception as e:
+            message = "Gagal mengambil kode unit user\nMessage Error : "+str(e)
+            return "no", "null", message

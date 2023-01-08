@@ -58,3 +58,16 @@ class dataframe():
         except Exception as e:
             message = "Gagal mengambil kode unit user\nMessage Error : "+str(e)
             return "no", "null", message
+
+    def get_user_acmt(self):
+        try:
+            df = pd.read_excel(io=pm.filepathlistuser, sheet_name="Sheet1")
+            selected_row = df[df["Akun"] == "ACMT"]
+            username = selected_row["NIP"].item()
+            password = selected_row["Password_AP2T"].item()
+            print("Username : ", username, "Password : ", password)
+            return "yes", username, password
+        except Exception as e:
+            message = "Gagal read list user acmt\nMessage Error : "+str(e)
+            print(message)
+            return "no", "null", "null"

@@ -55,11 +55,9 @@ class Asmente():
                                     print(message)
                                     return "no", message
                             else:
-                                message = "Gagal Aktivasi Token"
                                 print(message)
                                 return "no", message
                     else:
-                        message = "Gagal input pengaduan"
                         print(message)
                         return "no", message
 
@@ -67,10 +65,8 @@ class Asmente():
                     print(message)
                     return "no", message
             else:
-                message = "Gagal membuat link dan ambil Username serta password"
                 return "no", message
         else:
-            message = "Gagal buka Web AP2T"
             print(message)
             return "no", message
 
@@ -85,21 +81,29 @@ class Asmente():
 
     def info_pelanggan_acmt(id_pelanggan: str):
         pm = Parameter()
+        df = dataframe()
         acmt = ACMT(filepatchromedriver=pm.filepathchromedriver,
                     download_dir=pm.download_dir, user_options=pm.user_options, url_acmt=pm.url_acmt)
         status, message = acmt.open_acmt()
         if (status == "yes"):
             print(message)
             print("Memulai login ACMT")
-            [status, message] = acmt.login_acmt(username_acmt=pm.username_acmt,
-                                                password_acmt=pm.password_acmt)
+            # get username and password
+            [status_user, username_acmt, password_acmt] = df.get_user_acmt()
+            [status, message] = acmt.login_acmt(username_acmt=username_acmt,
+                                                password_acmt=password_acmt)
             if (status == "yes"):
-                [status, informasi, message] = acmt.buka_informasi_pelanggan()
+                [status, informasi, message] = acmt.buka_informasi_pelanggan(
+                    id_pelanggan)
+                return status, informasi, message
+            else:
+                print(message)
+                return status, informasi, message
         else:
             print(message)
             print("Gagal buka acmt")
-        informasi = "null"
-        return status, informasi, message
+            informasi = "null"
+            return status, informasi, message
 
     def is_user_authenticated(chat_id: str):
         try:
@@ -147,4 +151,24 @@ class Asmente():
                 return "no", message
         except Exception as e:
             message = "Kode unit tidak sesuai\nMessage Error : "+str(e)
+            return "no", message
+
+    def reset_imei(kode_unit: str, user_id: str):
+        pm = Parameter()
+        # buka AP2T
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver, filepathenkripsi=pm.filepathenkripsi,
+                    urlap2t=pm.urlap2t, download_dir=pm.download_dir, filepathct=pm.filepathct, user_options=pm.user_options)
+        status = ap2t.open_ap2t()
+        if (status == "yes"):
+            status, message = ap2t.login_ap2t(
+                "9615040FY", password_ap2t="Asdar-40")
+            if (status == "yes"):
+                print("Mencoba buka master imei")
+                [status, message] = ap2t.buka_reset_imei(
+                    nama_petugas=user_id, kode_unit=kode_unit)
+                return "yes", message
+            else:
+                message = "Gagal Login AP2T, "+message
+                return "no", message
+        else:
             return "no", message

@@ -1,6 +1,6 @@
 import time
-import os
-import datetime
+import pyautogui
+
 
 from parameter import Parameter
 from selenium import webdriver
@@ -48,7 +48,7 @@ class AP2T:
             print("Error message : ", e)
             return "no"
 
-    def login_ap2t(self, username_ap2t, password_ap2t):
+    def login_ap2t(self, username_ap2t: str, password_ap2t: str):
         print("uSERNAME : ", username_ap2t, "\PASSWORD : ", password_ap2t)
         try:
             # Masukkan UserID
@@ -99,14 +99,14 @@ class AP2T:
                     print(message)
                     return "no", message
             except Exception as e:
-                message = "Gagal klk login, pastikan user sedang tidak digunakan/Mac addres terdaftar"
+                message = "Gagal klk login, pastikan user sedang tidak digunakan/Mac addres terdaftar\nError Message : " + \
+                    str(e)
                 print(message)
-                print("Error message : ", e)
                 return "no", message
         except Exception as e:
-            message = "Gagal login ap2t"
+            message = "Gagal Entry username dan password\nError Message : " + \
+                str(e)
             print(message)
-            print("Error Message : ", e)
             return "no", message
 
     def input_pengaduan_ct(self, id_pelanggan, petugas_dan_keterangan, link_pengaduan_ct):
@@ -650,6 +650,116 @@ class AP2T:
             print("Error message : ", e)
             return "no", "null", message
 
+    def buka_reset_imei(self, nama_petugas: str, kode_unit: str):
+        try:
+            # Menu pencatatan meter
+            menu_imei = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[5]/div/div/div/div[2]/div/div/div[1]/div/div/div/div/div/div[2]/div[2]/ul/li/ul/li[2]/div"))
+            )
+            # double click
+            action = ActionChains(self.driver)
+            action.double_click(menu_imei).perform()
+            time.sleep(1)
+            # Catat meter terpusat
+            menu_imei = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[5]/div/div/div/div[2]/div/div/div[1]/div/div/div/div/div/div[2]/div[2]/ul/li/ul/li[2]/ul/li[8]/div"))
+            )
+            action.double_click(menu_imei).perform()
+            time.sleep(1)
+            # Master imei
+            menu_imei = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[5]/div/div/div/div[2]/div/div/div[1]/div/div/div/div/div/div[2]/div[2]/ul/li/ul/li[2]/ul/li[8]/ul/li[4]/div"))
+            )
+            menu_imei.click()
+            time.sleep(2)
+            try:
+                # identifikasi div IMEI
+                div_imei = WebDriverWait(self.driver, 20).until(
+                    EC.presence_of_element_located(
+                        (By.ID, "Master Imei_IFrame"))
+                )
+                print("Berhasil identifikasi tab reset imei")
+                src_value = div_imei.get_attribute("src")
+                print("Src: ", src_value)
+                # klik dropdown
+                try:
+                    # buka di new tab
+                    # Buka Tab baru
+                    self.driver.execute_script(
+                        "window.open('"+src_value+"');")
+                    time.sleep(3)  # Bisa di ubah sesuai kebutuhan
+                    # pindah di tab baru
+                    self.driver.switch_to.window(self.driver.window_handles[1])
+                    print("Berhasil PINDAH KE TAB BARU RESET IMEI")
+                    # get child element
+                    btn_dropdown = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[1]/div/div[2]/div[1]/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[3]/div/div[2]/div"))
+                    )
+                    btn_dropdown.click()
+                    print("Berhasil klik dropdown")
+                    time.sleep(1)
+                    pyautogui.press('down', presses=3)
+                    # JANGAN LUPA JADIKAN PARAMETER
+                    print("berhasil klik down 3x")
+                    time.sleep(1)
+                    pyautogui.press('return')
+                    time.sleep(1)
+                    btn_load = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[1]/div/div[2]/div[1]/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[5]/div/table/tbody/tr[2]/td[2]/em/button"))
+                    )
+                    btn_load.click()
+                    time.sleep(1)
+                    # hitung jumlah row petugas
+                    ptgs_rows = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_all_elements_located(
+                            (By.CLASS_NAME, "x-grid3-row"))
+                    )
+                    print("JUmlah petugas : ", str(len(ptgs_rows)))
+                    print("Nama petugas pencarian = "+nama_petugas)
+                    for i in range(len(ptgs_rows)):
+                        xpath = "/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[2]/div/div["+str(
+                                i+1)+"]/table/tbody/tr/td[2]"
+                        selected_rows = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, xpath))
+                        )
+                        print("nama petugas row : "+str(i+1) +
+                              " = "+selected_rows.text)
+                        # JANGAN LUPA DI VARIABELKAN
+                        if (selected_rows.text.strip() == (kode_unit+"."+nama_petugas)):
+                            print("petugas ditemukan")
+                            selected_rows.click()
+                            print("petugas di klik")
+                            time.sleep(1)
+                            break
+                        else:
+                            print("petugas tidak ditemukan")
+                        # /html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[2]/div/div[2]/table/tbody/tr/td[2] #sitaba
+                        # /html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[2]/div/div[1]/table/tbody/tr/td[2]
+                    # Xpath
+                    # /html/body/div[1]/div/div[2]/div[1]/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[3]/div/div[2]/input[2]
+                    # name
+                    # unitup-hidden
+                    time.sleep(10)
+                    return "yes", "Berhasil reset imei user"
+                except Exception as e:
+                    message = "Gagal find unit\nMessage Error : "+str(e)
+                    print(message)
+                    return "no", message
+                    # id btn dropdown = x-auto-45
+                    # /html/body/div[1]/div/div[2]/div[1]/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[3]/div/div[2]
+            except Exception as e:
+                message = "Gagal identifikasi tab reset imei\nMessage Error : " + \
+                    str(e)
+                print(message)
+        except Exception as e:
+            print("Gagal klik dropdown\nMessage Error : "+str(e))
+
 
 class ACMT:
     def __init__(self, filepatchromedriver, download_dir, user_options, url_acmt):
@@ -719,19 +829,82 @@ class ACMT:
             print(message)
             return "no", message
 
-    def buka_informasi_pelanggan(self):
+    def buka_informasi_pelanggan(self, infopelanggan: str):
         try:
             opsi_info_pelanggan = WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "/html/body/div[1]/div[2]/div[2]/div[1]/div/table/tbody/tr/td/div/table/tbody/tr/td/div[7]/div[1]/span[2]"))
             )
             # Definisi objek Action Chain for double click
+            # double click info
             action = ActionChains(self.driver)
             action.double_click(opsi_info_pelanggan).perform()
-            time.sleep(5)
-            informasi = "Sementara"
-            message = "Berhasil buka Informasi pelanggan"
-            return "yes", informasi, message
+            time.sleep(1)
+            try:
+                informasi_list = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[2]/div[2]/div[1]/div/table/tbody/tr/td/div/table/tbody/tr/td/div[7]/div[2]/div[1]/div/span[2]"))
+                )
+                informasi_list.click()
+                time.sleep(1)
+                # Ekstract data
+                tvIdpel = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[2]/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[1]/div[1]/div/input"))
+                )
+                tvIdpel.send_keys(infopelanggan)
+                tvIdpel.send_keys(Keys.RETURN)
+                time.sleep(1)
+                namaacmt = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[2]/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[2]/div[1]/div/input"))
+                )
+                alamatacmt = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[2]/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[3]/div[1]/div/textarea"))
+                )
+                unitacmt = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[2]/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[4]/div[1]/div/input"))
+                )
+                tarifacmt = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[2]/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[5]/div[1]/div/input"))
+                )
+                dayaacmt = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[2]/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[6]/div[1]/div/input"))
+                )
+                nomormeteracmt = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[2]/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[7]/div[1]/div/input"))
+                )
+                kddkacmt = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[2]/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[8]/div[1]/div/input"))
+                )
+                garduacmt = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[2]/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[9]/div[1]/div/input"))
+                )
+                nama = "Nama : "+namaacmt.get_attribute("value")+"\n"
+                alamat = "Alamat : "+alamatacmt.get_attribute("value")+"\n"
+                unit = "Kode Unit : "+unitacmt.get_attribute("value")+"\n"
+                tarif = "Tarif : "+tarifacmt.get_attribute("value")+"\n"
+                daya = "Daya : "+dayaacmt.get_attribute("value")+"\n"
+                nomormeter = "Nomor Meter ACMT : " + \
+                    nomormeteracmt.get_attribute("value")+"\n"
+                kddk = "Kode Kedudukan : "+kddkacmt.get_attribute("value")+"\n"
+                gardu = "Kode Gardu : "+garduacmt.get_attribute("value")
+                # Merge info
+                informasi = nama+alamat+unit+tarif+daya+nomormeter+kddk+gardu
+                message = "Berhasil buka Informasi pelanggan"
+                return "yes", informasi, message
+            except Exception as e:
+                message = "Gagal cari informasi pelanggan\nMessage Error : " + \
+                    str(e)
+                informasi = "null"
+                return "no", informasi, message
         except Exception as e:
             message = "Gagal buka informasi pelanggan\nMessage Error : "+str(e)
             informasi = "null"

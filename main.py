@@ -72,6 +72,19 @@ def read_command(update, context):
                 chat_id=chat_id, text=informasi)
             context.bot.send_message(
                 chat_id=chat_id, text=message)
+        elif (update.message.text[:9] == "resetimei" or update.message.text[:9] == "Resetimei" or update.message.text[:9] == "RESETIMEI"):
+            id_input = update.message.text[16:]
+            kode_unit = update.message.text[10:15]
+            context.bot.send_message(
+                chat_id=chat_id, text="Memulai reset imei petugas id : "+kode_unit+"."+id_input)
+            [status, message] = Asmente.reset_imei(
+                kode_unit=kode_unit, user_id=id_input)
+            if (status == "yes"):
+                context.bot.send_message(
+                    chat_id=chat_id, text=message)
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text=message)
         else:
             print("command tidak dikenal")
             context.bot.send_message(

@@ -16,8 +16,6 @@ class Parameter:
         self.filepathlistuser = r'data\listuser\listuser.xlsx'
         # sheet name list user
         self.sheetname_listuserid = "listuserid"
-        self.username_acmt = "32131.vendor"
-        self.password_acmt = "billmanbisa"
 
         # pengaturan options security SSL
         self.ignore_ssl_errors = "--ignore-ssl-errors=yes"
@@ -41,6 +39,8 @@ class Parameter:
         self.baselink_kct = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getcetaktokenbynoagenda&report=report/CR_PK_TOKEN_LPB.pdf&noagenda="
         self.url_acmt = "https://portalapp.iconpln.co.id/acmt/"
         self.link_info_pelanggan = "https://ap2t.pln.co.id/infopelanggannewap2t-dr/"
+        # reset imei
+        self.url_resetimei = "https://ap2t.pln.co.id/acmt/Acmt.html?sessionid=4vfjje45dm11otflmo3wfrfn&page=frmMasterImei&userid=9615040FY"
 
         # Default (Di ganti sesuai kebutuhan developer/programmer)
         # Lokasi foto CT

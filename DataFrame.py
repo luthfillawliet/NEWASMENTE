@@ -71,3 +71,11 @@ class dataframe():
             message = "Gagal read list user acmt\nMessage Error : "+str(e)
             print(message)
             return "no", "null", "null"
+
+    def get_jumlah_klik_resetimei(self, kodeunit_cari: str):
+        df = pd.read_excel(io=pm.filepathlistuser, sheet_name="listulp")
+        rows_klik = df[df["kode_unit"] == kodeunit_cari]
+        jumlah_perulangan = rows_klik["no"].item()
+        print("jumlah klik : ", jumlah_perulangan)
+        print(type(jumlah_perulangan))
+        return int(jumlah_perulangan)

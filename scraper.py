@@ -651,6 +651,22 @@ class AP2T:
             print("Error message : ", e)
             return "no", "null", message
 
+    def just_buka_info_pelanggan(self):
+        pm = Parameter()
+        print("Membuka halaman Info Pelanggan")
+        # go to ap2t url
+        try:
+            self.driver.get(pm.link_info_pelanggan)
+            time.sleep(2)
+            message = "Info Pelanggan Berhasil di buka"
+            print(message)
+            return "yes", message
+        except Exception as e:
+            message = "Gagal membuka Info Pelanggan\nMessage Error : "+str(e)
+            print(message)
+            print("Error message : ", e)
+            return "no", message
+
     def buka_reset_imei(self, nama_petugas: str, kode_unit: str):
         try:
             # Menu pencatatan meter
@@ -770,6 +786,55 @@ class AP2T:
                 print(message)
         except Exception as e:
             print("Gagal klik dropdown\nMessage Error : "+str(e))
+
+    def info_blocking_token(self, id_pelanggan: str):
+        self.driver.maximize_window()
+        [status, message] = self.just_buka_info_pelanggan()
+        print(message)
+        if (status == "yes"):
+            time.sleep(2)
+            # masukkan idpel
+            # # find edit text input
+            edit_text = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/fieldset/div/div/div[4]/div/div/div/div[2]/div/div/div/div[1]/input"))
+            )
+            edit_text.send_keys(id_pelanggan)
+            # pilih kategori
+            dropdwon_btn = WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/fieldset/div/div/div[4]/div/div/div/div[1]/div/div/div/div[1]/div/img"))
+            )
+            dropdwon_btn.click()
+            time.sleep(1)
+            # pilih metode pencarian
+            categories = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located(
+                    (By.CLASS_NAME, "x-combo-list-item"))
+            )
+            print("Jumlah Kategori : ", str(len(categories)))
+            # Looping untuk get access tiap value dari kategori
+            try:
+                for i in categories:
+                    print(i.text)
+                    if (i.text.strip() == "Id Pelanggan"):
+                        i.click()
+                        break
+                    else:
+                        print("Kategori tidak ditemukan")
+                # Loading load data
+                time.sleep(1)
+                btnSearch = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div/div/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
+                )
+                btnSearch.click()
+                time.sleep(2)
+                return "yes", message
+            except Exception as e:
+                message = "Kategori gagal di peroleh\nMessage Error : "+str(e)
+                print(message)
+                return "no", message
 
 
 class ACMT:

@@ -18,6 +18,13 @@ def start(update, context):
         chat_id=pm.chat_id, text="Bot Standby...")
 
 
+def findnth(string, substring, n):
+    parts = string.split(substring, n + 1)
+    if len(parts) <= n + 1:
+        return -1
+    return len(string) - len(parts[-1]) - len(substring)
+
+
 def read_command(update, context):
     # chat_id = pm.chat_id
     chat_id = update.message.chat_id
@@ -85,14 +92,48 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
+        elif (update.message.text[:3] == "add" or update.message.text[:3] == "Add" or update.message.text[:3] == "ADD"):
+            # cek level user
+            [status, level_user, message] = Asmente.get_level_user(
+                chat_id=chat_id)
+            if (status == "yes" and (level_user == "owner" or level_user == "admin")):
+                separator_1 = findnth(update.message.text, "|", 1)
+                separator_2 = findnth(update.message.text, "|", 2)
+                separator_3 = findnth(update.message.text, "|", 3)
+                separator_4 = findnth(update.message.text, "|", 4)
+                chat_id_daftar = int(update.message.text[4:separator_1])
+                nama = update.message.text[separator_2+1:separator_3]
+                nomor_telfon = update.message.text[separator_3+1:separator_4]
+                context.bot.send_message(
+                    chat_id=pm.chat_id_admin, text="Memulai add user dengan chat id : "+str(chat_id_daftar)+"\n"+"Kode Unit : "+str(update.message.text[separator_1+1:separator_2]))
+                [status, message] = Asmente.add_new_user(
+                    chat_id_daftar=chat_id_daftar, kode_unit=update.message.text[separator_1+1:separator_2], nama=nama, nomor_telfon=nomor_telfon, level=update.message.text[separator_4+1:])
+                context.bot.send_message(
+                    chat_id=pm.chat_id_admin, text=message)
+            else:
+                context.bot.send_message(
+                    chat_id=update.message.chat_id, text="User tidak punya hak akses")
+        elif (len(update.message.text) == 20 and (update.message.text[:7] == "Infokct" or update.message.text[:7] == "infokct")):
+            context.bot.send_message(
+                chat_id=update.message.chat_id, text="Memulai cek info KCT KRN Idpel : "+update.message.text[8:])
+            [status, message] = Asmente.get_kct_krn(
+                Id_pelanggan=update.message.text[8:])
+            context.bot.send_message(
+                chat_id=update.message.chat_id, text=message)
         else:
             print("command tidak dikenal")
             context.bot.send_message(
                 chat_id=chat_id, text="command tidak dikenal")
     else:
         print(message)
+        # notif ke user
         context.bot.send_message(
             chat_id=chat_id, text=message)
+        # notif ke admin
+        context.bot.send_message(
+            chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
+        context.bot.send_message(
+            chat_id=pm.chat_id_admin, text=str(chat_id))
 
 
 def main():

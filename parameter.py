@@ -16,6 +16,7 @@ class Parameter:
         self.filepathlistuser = r'data\listuser\listuser.xlsx'
         # sheet name list user
         self.sheetname_listuserid = "listuserid"
+        self.fileexcelkct = r'krn\sudahbaca.xls'
 
         # pengaturan options security SSL
         self.ignore_ssl_errors = "--ignore-ssl-errors=yes"
@@ -26,6 +27,8 @@ class Parameter:
         self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"
         # group chat id
         self.chat_id = -828901164
+        # chat_id admin
+        self.chat_id_admin = 1029804860  # chat id luthfil
 
         # Setting jika ada perubahan alamat, link atau domain dari aplikasi korporat
         # Link By Pass AP2T (Tidak usah di ubah jika tidak ada perubahan domain ap2t dari pusat)

@@ -1,5 +1,6 @@
 import time
 import pyautogui
+from DataFrame import dataframe
 
 
 from parameter import Parameter
@@ -702,7 +703,12 @@ class AP2T:
                     btn_dropdown.click()
                     print("Berhasil klik dropdown")
                     time.sleep(1)
-                    pyautogui.press('down', presses=3)
+                    # hitung jumlah klik
+                    df = dataframe()
+                    jumlahklik = df.get_jumlah_klik_resetimei(
+                        kodeunit_cari=int(kode_unit))
+                    print("Jumlah klik :", jumlahklik)
+                    pyautogui.press('down', presses=jumlahklik)
                     # JANGAN LUPA JADIKAN PARAMETER
                     print("berhasil klik down 3x")
                     time.sleep(1)
@@ -739,20 +745,25 @@ class AP2T:
                             break
                         else:
                             print("petugas tidak ditemukan")
-                        # /html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[2]/div/div[2]/table/tbody/tr/td[2] #sitaba
-                        # /html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[2]/div/div[1]/table/tbody/tr/td[2]
-                    # Xpath
-                    # /html/body/div[1]/div/div[2]/div[1]/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[3]/div/div[2]/input[2]
-                    # name
-                    # unitup-hidden
+                    # Klik tombolnya
+                    btn_reset = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[1]/div/div[2]/div[1]/div/div[1]/div[2]/div[1]/div/div/div/form/div/div[2]/div[2]/div/div[1]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/table/tbody/tr/td[2]/table/tbody/tr[2]/td[2]/em/button"))
+                    )
+                    btn_reset.click()
+                    time.sleep(1)
+                    # yes
+                    btn_reset = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[6]/div[2]/div[2]/div/div/div/div/div[1]/table/tbody/tr/td[1]/table/tbody/tr/td[1]/table/tbody/tr[2]/td[2]/em/button"))
+                    )
+                    btn_reset.click()
                     time.sleep(10)
                     return "yes", "Berhasil reset imei user"
                 except Exception as e:
                     message = "Gagal find unit\nMessage Error : "+str(e)
                     print(message)
                     return "no", message
-                    # id btn dropdown = x-auto-45
-                    # /html/body/div[1]/div/div[2]/div[1]/div/div[1]/div[2]/div[1]/div/div/div/form/fieldset[1]/div/div[3]/div/div[2]
             except Exception as e:
                 message = "Gagal identifikasi tab reset imei\nMessage Error : " + \
                     str(e)

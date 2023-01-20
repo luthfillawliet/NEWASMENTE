@@ -153,6 +153,23 @@ class Asmente():
             message = "Kode unit tidak sesuai\nMessage Error : "+str(e)
             return "no", message
 
+    def get_kode_unit(chat_id: int):
+        dat = dataframe()
+        [status, kode_unit, message] = dat.get_kode_unit_user(chat_id=chat_id)
+        if (status == "yes"):
+            return "yes", kode_unit, message
+        else:
+            return "no", kode_unit, message
+
+    def get_level_user(chat_id: int):
+        dat = dataframe()
+        [status, level_user, message] = dat.get_level_user_data(
+            chat_id=chat_id)
+        if (status == "yes"):
+            return "yes", level_user, message
+        else:
+            return "no", level_user, message
+
     def reset_imei(kode_unit: str, user_id: str):
         pm = Parameter()
         # buka AP2T
@@ -172,3 +189,28 @@ class Asmente():
                 return "no", message
         else:
             return "no", message
+
+    def add_new_user(chat_id_daftar: int, kode_unit: int, nama: str, nomor_telfon: str, level: str):
+        pm = Parameter()
+        dat = dataframe()
+        status, number_rows, message = dat.get_last_row(
+            filepathlistuser=pm.filepathlistuser, sheetname="listuserid")
+        if (status == "yes"):
+            [status, message] = dat.write_data_userid(filepathlistuser=pm.filepathlistuser,
+                                                      sheetname="listuserid", row=number_rows, kode_unit=kode_unit, nama=nama, nomor_telfon=nomor_telfon, level=level, chat_id=chat_id_daftar)
+            if (status == "yes"):
+                print(message)
+                return "yes", message
+            else:
+                print(message)
+                return "no", message
+        else:
+            print("Gagal get rows\n", message)
+            return "no", message
+
+    def get_kct_krn(Id_pelanggan: int):
+        dat = dataframe()
+        pm = Parameter()
+        [status, message] = dat.baca_kct(
+            filepath_kct_krn=pm.fileexcelkct, id_pelanggan=Id_pelanggan)
+        return status, message

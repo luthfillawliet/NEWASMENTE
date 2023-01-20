@@ -120,6 +120,8 @@ def read_command(update, context):
                 Id_pelanggan=update.message.text[8:])
             context.bot.send_message(
                 chat_id=update.message.chat_id, text=message)
+        elif (update.message.text[:10] == "Infoblokir" or update.message.text[:10] == "infoblokir"):
+            Asmente.cek_blocking_token(id_pelanggan=update.message.text[11:])
         else:
             print("command tidak dikenal")
             context.bot.send_message(

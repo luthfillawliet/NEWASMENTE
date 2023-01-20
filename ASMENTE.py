@@ -214,3 +214,11 @@ class Asmente():
         [status, message] = dat.baca_kct(
             filepath_kct_krn=pm.fileexcelkct, id_pelanggan=Id_pelanggan)
         return status, message
+
+    def cek_blocking_token(id_pelanggan: str):
+        pm = Parameter()
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver, filepathenkripsi=pm.filepathenkripsi,
+                    urlap2t=pm.urlap2t, download_dir=pm.download_dir, filepathct=pm.filepathct, user_options=pm.user_options)
+        status, message = ap2t.info_blocking_token(
+            id_pelanggan=id_pelanggan)
+        print(message)

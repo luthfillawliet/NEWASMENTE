@@ -222,3 +222,4 @@ class Asmente():
         status, message = ap2t.info_blocking_token(
             id_pelanggan=id_pelanggan)
         print(message)
+        return status, message

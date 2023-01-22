@@ -846,30 +846,55 @@ class AP2T:
                     )
                     tabPrepaid.click()
                     time.sleep(1)
-                    parentCategories = WebDriverWait(self.driver, 10).until(
-                        EC.presence_of_element_located(
-                            (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div"))
-                    )
-                    child_elements = parentCategories.find_elements_by_xpath(
-                        ".//tr")
-                    jumlah_tunggakan = len(child_elements)
-                    print("Jumlah tunggakan = "+str(jumlah_tunggakan))
-                    inforegister = ""
-                    if (len(child_elements)) > 0:
-                        for i in range(len(child_elements)):
-                            print("\nTunggakan ke - "+str(i+1))
-                            child_element = WebDriverWait(self.driver, 10).until(
-                                EC.presence_of_element_located(
-                                    (By.XPATH, ("/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]")))
-                            )
-                            grand_child_elements = child_element.find_elements_by_xpath(
-                                ".//td")
-                            for j in grand_child_elements:
-                                print(j.text, end=" ")
-                                inforegister = inforegister+j.text+"  "
-                    message = str(jumlah_tunggakan) + inforegister
-                    time.sleep(1)
-                    return "yes", message
+                    # Get jumlah rows blocking token
+                    try:
+                        rows_got = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located(
+                            (By.CLASS_NAME, "x-grid3-row-table")))
+                        print("JUmlah rows : ", str(len(rows_got)))
+                        message = "Nomor Register Tunggakan Idpel "+id_pelanggan+" :\n"
+                        time.sleep(1)
+
+                        # jumlah_tunggakan = len(child_elements)
+                        # print("Jumlah tunggakan = "+str(jumlah_tunggakan))
+                        # inforegister = ""
+                        if (len(rows_got)) > 0:
+                            for i in range(len(rows_got)):
+                                print("\nTunggakan ke - "+str(i+1))
+                                try:
+                                    cell_nomor_register = WebDriverWait(self.driver, 2).until(
+                                        EC.presence_of_element_located(
+                                            (By.XPATH, ("/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[3]/div")))
+                                    )
+                                    cell_rupiah = WebDriverWait(self.driver, 3).until(
+                                        EC.presence_of_element_located(
+                                            (By.XPATH, ("/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[6]/div")))
+                                    )
+                                    tgl_jth_tempo = WebDriverWait(self.driver, 3).until(
+                                        EC.presence_of_element_located(
+                                            (By.XPATH, ("/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[4]/div")))
+                                    )
+                                    # tanggal jatuh tempo
+                                    print("Nomor Register : " +
+                                          cell_nomor_register.text + " Rupiah Tag : "+cell_rupiah.text)
+                                    message = message+"No register : "+cell_nomor_register.text + \
+                                        " Rupiah Tag : "+cell_rupiah.text+" Jatuh tempo : "+tgl_jth_tempo.text+"\n"
+                                except Exception:
+                                    pass
+                            print(message)
+                            return "yes", message
+                        else:
+                            message = "Nomor register tidak ada"
+                            return "yes", message
+                        #         grand_child_elements = child_element.find_elements_by_xpath(
+                        #             ".//td")
+                        #         for j in grand_child_elements:
+                        #             print(j.text, end=" ")
+                        #             inforegister = inforegister+j.text+"  "
+                    # message = str(jumlah_tunggakan) + inforegister
+                    except Exception as e:
+                        message = "Gagal hitung jumlah rows"
+                        print(message)
+                        return "no", message
                 except Exception as e:
                     message = "Gagal cek tab blocking token\nMessage Error : " + \
                         str(e)

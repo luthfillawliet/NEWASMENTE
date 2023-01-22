@@ -792,7 +792,7 @@ class AP2T:
         [status, message] = self.just_buka_info_pelanggan()
         print(message)
         if (status == "yes"):
-            time.sleep(2)
+            time.sleep(1)
             # masukkan idpel
             # # find edit text input
             edit_text = WebDriverWait(self.driver, 10).until(
@@ -885,12 +885,6 @@ class AP2T:
                         else:
                             message = "Nomor register tidak ada"
                             return "yes", message
-                        #         grand_child_elements = child_element.find_elements_by_xpath(
-                        #             ".//td")
-                        #         for j in grand_child_elements:
-                        #             print(j.text, end=" ")
-                        #             inforegister = inforegister+j.text+"  "
-                    # message = str(jumlah_tunggakan) + inforegister
                     except Exception as e:
                         message = "Gagal hitung jumlah rows"
                         print(message)

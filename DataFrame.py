@@ -172,3 +172,24 @@ class dataframe():
             message = "Gagal load excel\n"+str(e)
             print(message)
             return "no", message
+
+    def log_data(self, chat_id: int, activity: str, time: str):
+        pm = Parameter()
+        try:
+            status, last_row, message = self.get_last_row(
+                filepathlistuser=pm.filepathlistuser, sheetname="log")
+            if (status == "yes"):
+                print("Last row : "+str(last_row))
+                print(message)
+                # Write number of rows
+                workbook = openpyxl.load_workbook(filename=pm.filepathlistuser)
+                worksheet = workbook.get_sheet_by_name("log")
+                worksheet.cell(row=last_row, column=1).value = last_row-1
+                worksheet.cell(row=last_row, column=2).value = chat_id
+                worksheet.cell(row=last_row, column=3).value = activity
+                worksheet.cell(row=last_row, column=4).value = time
+                workbook.save(pm.filepathlistuser)
+            else:
+                print("Gagal write log data")
+        except Exception as e:
+            print("Gagal write log\nMesage Error : ", str(e))

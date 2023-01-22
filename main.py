@@ -1,7 +1,9 @@
 from ASMENTE import Asmente
 from parameter import Parameter
+from DataFrame import dataframe
 from FILEMANAGER import filemanager
 import time
+import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.update import Update
@@ -46,6 +48,10 @@ def read_command(update, context):
                     time.sleep(2)
                     resp = requests.post(
                         "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_ct))
+                    # Write log data
+                    dat = dataframe()
+                    dat.log_data(chat_id=chat_id,
+                                 activity="clear tamper", time=str(datetime.datetime.now()))
                 else:
                     print("STATUS MAIN : ", message)
                     context.bot.send_message(chat_id=chat_id, text=message)
@@ -60,6 +66,10 @@ def read_command(update, context):
                     tipe_pencarian="Id Pelanggan", nomor_id=update.message.text[7:], link_infopelanggan=pm.link_info_pelanggan)
                 context.bot.send_message(
                     chat_id=chat_id, text="Info Pelanggan berdasarkan Id Pelanggan :\n"+informasi)
+                # Write log data
+                dat = dataframe()
+                dat.log_data(chat_id=chat_id,
+                             activity="Info Pelanggan", time=str(datetime.datetime.now()))
             elif (update.message.text[5:6] == "1"):
                 context.bot.send_message(
                     chat_id=chat_id, text="Memulai Pencarian Informasi Nomor Meter :\n"+update.message.text[7:])
@@ -67,6 +77,10 @@ def read_command(update, context):
                     tipe_pencarian="Nomor Meter", nomor_id=update.message.text[7:], link_infopelanggan=pm.link_info_pelanggan)
                 context.bot.send_message(
                     chat_id=chat_id, text="Info Pelanggan berdasarkan Nomor Meter \n:"+informasi)
+                # Write log data
+                dat = dataframe()
+                dat.log_data(chat_id=chat_id,
+                             activity="Info Pelanggan", time=str(datetime.datetime.now()))
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Tipe Pencarian tidak ditemukan")
@@ -79,6 +93,10 @@ def read_command(update, context):
                 chat_id=chat_id, text=informasi)
             context.bot.send_message(
                 chat_id=chat_id, text=message)
+            # Write log data
+            dat = dataframe()
+            dat.log_data(chat_id=chat_id,
+                         activity="Info ACMT", time=str(datetime.datetime.now()))
         elif (update.message.text[:9] == "resetimei" or update.message.text[:9] == "Resetimei" or update.message.text[:9] == "RESETIMEI"):
             id_input = update.message.text[16:]
             kode_unit = update.message.text[10:15]
@@ -89,6 +107,10 @@ def read_command(update, context):
             if (status == "yes"):
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
+                # Write log data
+                dat = dataframe()
+                dat.log_data(chat_id=chat_id,
+                             activity="reset imei", time=str(datetime.datetime.now()))
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
@@ -110,6 +132,10 @@ def read_command(update, context):
                     chat_id_daftar=chat_id_daftar, kode_unit=update.message.text[separator_1+1:separator_2], nama=nama, nomor_telfon=nomor_telfon, level=update.message.text[separator_4+1:])
                 context.bot.send_message(
                     chat_id=pm.chat_id_admin, text=message)
+                # Write log data
+                dat = dataframe()
+                dat.log_data(chat_id=chat_id,
+                             activity="Add user", time=str(datetime.datetime.now()))
             else:
                 context.bot.send_message(
                     chat_id=update.message.chat_id, text="User tidak punya hak akses")
@@ -120,8 +146,21 @@ def read_command(update, context):
                 Id_pelanggan=update.message.text[8:])
             context.bot.send_message(
                 chat_id=update.message.chat_id, text=message)
-        elif (update.message.text[:10] == "Infoblokir" or update.message.text[:10] == "infoblokir"):
-            Asmente.cek_blocking_token(id_pelanggan=update.message.text[11:])
+            # Write log data
+            dat = dataframe()
+            dat.log_data(chat_id=chat_id,
+                         activity="clear tamper", time=str(datetime.datetime.now()))
+        elif (update.message.text[:10] == "Info kct krn" or update.message.text[:10] == "infoblokir"):
+            context.bot.send_message(
+                chat_id=chat_id, text="Memulai pengecekan blocking token idppel : "+update.message.text[11:])
+            status, message = Asmente.cek_blocking_token(
+                id_pelanggan=update.message.text[11:])
+            context.bot.send_message(
+                chat_id=chat_id, text=message)
+            # Write log data
+            dat = dataframe()
+            dat.log_data(chat_id=chat_id,
+                         activity="Infoblokir", time=str(datetime.datetime.now()))
         else:
             print("command tidak dikenal")
             context.bot.send_message(

@@ -830,7 +830,50 @@ class AP2T:
                 )
                 btnSearch.click()
                 time.sleep(2)
-                return "yes", message
+                ############################# TARUH FUNGSI YANG MAU DI LAKUKAN DI SINI ###############################
+                try:
+                    # buka tab info prepaid
+                    tabPrepaid = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[1]/div[1]/ul/li[8]"))
+                    )
+                    tabPrepaid.click()
+                    print("Berhasil kli tab prepaid")
+                    time.sleep(1)
+                    tabPrepaid = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[1]/div[1]/ul/li[6]"))
+                    )
+                    tabPrepaid.click()
+                    time.sleep(1)
+                    parentCategories = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div"))
+                    )
+                    child_elements = parentCategories.find_elements_by_xpath(
+                        ".//tr")
+                    jumlah_tunggakan = len(child_elements)
+                    print("Jumlah tunggakan = "+str(jumlah_tunggakan))
+                    inforegister = ""
+                    if (len(child_elements)) > 0:
+                        for i in range(len(child_elements)):
+                            print("\nTunggakan ke - "+str(i+1))
+                            child_element = WebDriverWait(self.driver, 10).until(
+                                EC.presence_of_element_located(
+                                    (By.XPATH, ("/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]")))
+                            )
+                            grand_child_elements = child_element.find_elements_by_xpath(
+                                ".//td")
+                            for j in grand_child_elements:
+                                print(j.text, end=" ")
+                                inforegister = inforegister+j.text+"  "
+                    message = str(jumlah_tunggakan) + inforegister
+                    time.sleep(1)
+                    return "yes", message
+                except Exception as e:
+                    message = "Gagal cek tab blocking token\nMessage Error : " + \
+                        str(e)
+                    return "no", message
             except Exception as e:
                 message = "Kategori gagal di peroleh\nMessage Error : "+str(e)
                 print(message)

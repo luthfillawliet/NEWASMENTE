@@ -23,12 +23,13 @@ class Parameter:
         self.ignore_certificate_errors = "--ignore-certificate-errors"
 
         # setting bot baru
-        # bot token id
+        # bot token id, di ganti jika ganti bot
         self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"
         # group chat id
         self.chat_id = -828901164
         # chat_id admin
-        self.chat_id_admin = 1029804860  # chat id luthfil
+        # chat id luthfil, bisa di ganti disesuaikan dengan admin server
+        self.chat_id_admin = 1029804860
 
         # Setting jika ada perubahan alamat, link atau domain dari aplikasi korporat
         # Link By Pass AP2T (Tidak usah di ubah jika tidak ada perubahan domain ap2t dari pusat)
@@ -53,3 +54,9 @@ class Parameter:
         self.download_dir = 'download\\'
         # link ap2t
         self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'
+
+        # Parameter aplikasi si gadis
+        self.username_amicon = 'pusat\\asdar02'
+        self.password_amicon = '9615040-a28'
+        self.bot_token = '5609784768:AAEsTvveovQsc6OeVRssPTHQvEVMcmF4Sx8'
+        self.user_browser_cache = "user-data-dir=C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"

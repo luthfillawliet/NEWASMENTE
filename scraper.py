@@ -1,18 +1,25 @@
+from selenium.webdriver import ActionChains
+from selenium.webdriver.support.ui import Select
+from pywinauto.application import Application
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium import webdriver
+
+# Library sigadis
 import time
 import pyautogui
+import datetime
+import os
+import base64
+import easyocr
+from post_api import post_data
+
 from DataFrame import dataframe
-
-
 from parameter import Parameter
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.options import Options
-from pywinauto.application import Application
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver import ActionChains
+pm = Parameter()
 
 
 class AP2T:
@@ -254,7 +261,8 @@ class AP2T:
                 # save nomor agenda
                 btnSaveT = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located(
-                        (By.XPATH, "/html/body/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div/div/div/div[2]/div[1]/div/div/div/form/fieldset[3]/div/div[2]/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
+                        (By.XPATH, "/html/body/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div/div/div/div[2]/div[1]/div/div/div/form/fieldset[4]/div/div[2]/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
+                    # /html/body/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div/div/div/div[2]/div[1]/div/div/div/form/fieldset[4]/div/div[2]/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button
                 )
                 btnSaveT.click()
                 time.sleep(1)
@@ -1047,3 +1055,233 @@ class ACMT:
             message = "Gagal buka informasi pelanggan\nMessage Error : "+str(e)
             informasi = "null"
             return "no", informasi, message
+
+# Create class for scraping AMICON
+
+
+class Amicon():
+    url = "https://amicon.pln.co.id/#/dashboard_technical"
+
+    def __init__(self, username: str, password: str):
+        self._username = username
+        self._password = password
+
+        self.filepathchromedriver = pm.filepathchromedriver
+        self.download_dir = pm.download_dir
+
+        options = webdriver.ChromeOptions()
+
+        # Setting cache di komputer server
+        user_options = pm.user_browser_cache
+
+        options.add_argument(user_options)
+        options.add_argument('--disable-gpu')
+        options.add_argument("enable-automation")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-extensions")
+        options.add_argument("--dns-prefetch-disable")
+        # Passing SSL Security
+        options.add_argument("--ignore-ssl-errors=yes")
+        options.add_argument("--ignore-certificate-errors")
+
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
+
+        # memberikan waktu menunggu halaman terload
+        self.implicitly_wait(10)
+        self.driver = webdriver.Chrome(self.filepathchromedriver)
+
+    def first_page(self):
+        print("Membuak ahalaman amicon")
+        self.driver
+        self.maximize_window()
+
+    def login(self):
+        time.sleep(5)
+        user_elm = self.find_element(
+            By.CSS_SELECTOR, 'input[placeholder="Username"]')
+        user_elm.send_keys(self._username)
+
+        pwd_elm = self.find_element(
+            By.CSS_SELECTOR, 'input[placeholder="Password"]')
+        pwd_elm.send_keys(self._password)
+        time.sleep(2)
+        self.save_captcha(filename='captcha.png')
+        captcha = self.read_captcha('captcha.png')
+        time.sleep(2)
+
+        # captcha input
+        captcha_inp = self.find_element(
+            By.CSS_SELECTOR, 'input[placeholder="Enter Code"]')
+        captcha_inp.send_keys(captcha)
+
+        login_btn = self.find_element(
+            By.CSS_SELECTOR, 'button[class="btn login_btn"]')
+        login_btn.click()
+
+    def cek_login(self):
+        # cek apakah amicon sudah dalam posisi terlogin atau belum
+        time.sleep(5)
+        try:
+            btn_search = WebDriverWait(self, 10).until(EC.presence_of_element_located(
+                (By.XPATH, "/html/body/app-dashboard/div/main/div/app-monitoring/div/div[1]/div/div/dx-form/div/div/div/div/div/div[2]/div/div/div/dxi-item/dx-button")))
+            message = "Sudah login"
+            return "yes", message
+        except Exception as e:
+            message = "Tidak login"
+            print(message, "\nMessage Error :", str(e))
+            return "no", message
+
+    def refresh_captcha(self):
+        time.sleep(1)
+        refresh = WebDriverWait(self, 10).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, 'button[title="Refresh Code"]')))
+        # driver.find_element(By.CSS_SELECTOR, 'button[title="Refresh Code"]')
+        refresh.click()
+        time.sleep(3)
+
+    def save_captcha(self, filename):
+        # canvas = driver.find_element(By.ID, 'myCanvas')
+        canvas = WebDriverWait(self, 10).until(
+            EC.visibility_of_element_located(
+                (By.ID, 'myCanvas')
+            )
+        )
+        # get the canvas as a PNG base64 string
+        canvas_base64 = self.execute_script(
+            "return arguments[0].toDataURL('image/png').substring(21);", canvas)
+
+        # decode
+        canvas_png = base64.b64decode(canvas_base64)
+
+        # save to a file
+        with open(filename, 'wb') as f:
+            f.write(canvas_png)
+
+    @staticmethod
+    def read_captcha(filename):
+        reader = easyocr.Reader(gpu=True,
+                                lang_list=['en', 'id'])  # this needs to run only once to load the model into memory
+        result = reader.readtext(filename)
+        return result[0][1]
+
+    def click_monitoring(self):
+        self.find_element(
+            By.XPATH, '/html/body/app-dashboard/div/div/nav/ul/li[7]').click()
+        time.sleep(1)
+
+    def click_load_profile(self):
+        self.find_element(
+            By.CSS_SELECTOR, 'a[href="#/monitoring/loadprofile"]').click()
+        time.sleep(1)
+
+    def click_search(self):
+        time.sleep(3)
+        # click search
+        try:
+            btn_search = WebDriverWait(self, 10).until(EC.presence_of_element_located(
+                (By.XPATH, "/html/body/app-dashboard/div/main/div/app-monitoringloadprofile/div[2]/div[2]/div/div[2]/div[1]/dx-form/div/div/div/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/div[2]/div/div/div/dxi-item/dx-button")))
+            # btn_search.click()
+            self.execute_script("arguments[0].click();", btn_search)
+        except Exception as e:
+            print("Gagal klik search\nMessage Error : ", str(e))
+        # self.find_element(
+        #     By.CSS_SELECTOR, 'dx-button[aria-label="Search"]').click()
+        # print()
+        time.sleep(1)
+
+    def pilih_gardu(self, id_gardu):
+        time.sleep(3)
+        # click filter
+        input_idp = self.find_element(By.XPATH,
+                                      '//*[@id="gridContainer"]/div/div[5]/div[2]/table/tbody/tr[2]/td[5]/div/div[2]/div/div/input')
+        input_idp.click()
+
+        # masukan id gardu
+        input_idp.send_keys(id_gardu)
+        # click details
+        self.find_element(By.CSS_SELECTOR, f'i[id="btn{id_gardu}"]').click()
+        time.sleep(0.5)
+        self.find_element(By.XPATH, '//span[text()="Detail"]').click()
+        time.sleep(2)
+
+    def pilih_tanggal(self):
+        # isi tanggal
+        hari_ini = datetime.datetime.now().strftime('%d/%m/%Y')
+        # 10 hari yang lalu
+        hari_awal = (datetime.datetime.now() -
+                     datetime.timedelta(days=10)).strftime('%d/%m/%Y')
+        tgl_awal = self.find_element(By.CSS_SELECTOR, '[id$=startDate]')
+        tgl_awal.clear()
+        tgl_awal.send_keys(hari_awal)
+        ActionChains(self).send_keys(Keys.ENTER).perform()
+
+        tgl_akhir = self.find_element(By.CSS_SELECTOR, '[id$=endDate]')
+        tgl_akhir.clear()
+        tgl_akhir.send_keys(hari_ini)
+        ActionChains(self).send_keys(Keys.ENTER).perform()
+
+        # click search
+        self.find_element(By.CSS_SELECTOR, 'dx-button[icon="search"]').click()
+        time.sleep(3)
+
+    def export_to_excel(self):
+        # sebelum di download hapus dulu file yang ada di foldernya
+        try:
+            os.remove(os.path.join(self.download_dir,
+                      'Load Profile Detail.xlsx'))
+        except FileNotFoundError:
+            pass
+
+        try:
+            btn_export = WebDriverWait(self, 10).until(EC.presence_of_element_located(
+                (By.XPATH, "/html/body/app-dashboard/div/main/div/app-monitoringloadprofile/div[2]/div[2]/div/div[2]/app-detailloadprofile/div/div[3]/div/dx-data-grid/div/div[4]/div/div/div[3]/div[1]/div/div")))
+            self.execute_script("arguments[0].click();", btn_export)
+            # btn_export.click()
+            # click export to excel
+            # self.find_element(
+            #     By.CSS_SELECTOR, 'div[title="Export all data"]').click()
+        except Exception as e:
+            print("Gagal klik export to excel\nError Message : ", str(e))
+
+        # open_excel = self.find_element(By.XPATH, '//*[@id="btnOpen"]')
+        # open_excel.click()
+
+        # chek file
+        while not os.path.exists(os.path.join(self.download_dir, 'Load Profile Detail.xlsx')):
+            time.sleep(2)
+            # print('download selesai')
+        time.sleep(1)
+
+    def download_data(self, daftar_gd: list):
+        self.first_page()
+        status, message = self.cek_login()
+        print(message)
+        if (status != "yes"):
+            self.login()
+        self.click_monitoring()
+        self.click_load_profile()
+        berhasil = []
+        gagal = []
+        # self.implicitly_wait(15)
+        for gd in daftar_gd:
+            try:
+                time.sleep(1)
+                self.click_search()
+                self.pilih_gardu(gd)
+                self.pilih_tanggal()
+                # scroll ke bawah
+                pyautogui.press("down", presses=10)
+                self.export_to_excel()
+                post_data(gd)
+                print(f'{gd}: berhasil di update')
+                berhasil.append(gd)
+                self.refresh()
+            except:
+                self.refresh()
+                print(f'{gd}: Gagal')
+                gagal.append(gd)
+            # time.sleep(1)
+        print('Selesai mengupdate data')
+        self.quit()
+        return {'berhasil': berhasil, 'gagal': gagal}

@@ -9,15 +9,25 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.update import Update
 from telegram.ext.callbackcontext import CallbackContext
 import requests
+# Import Amicon object
+from scraper import Amicon
+from post_api import get_gardu
+import logging
 
 pm = Parameter()
 fm = filemanager()
+# enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def start(update, context):
+    chat_id = update.message.chat_id
     query = update.callback_query
     context.bot.send_message(
-        chat_id=pm.chat_id, text="Bot Standby...")
+        chat_id=chat_id, text="Bot Standby...")
 
 
 def findnth(string, substring, n):
@@ -25,6 +35,8 @@ def findnth(string, substring, n):
     if len(parts) <= n + 1:
         return -1
     return len(string) - len(parts[-1]) - len(substring)
+
+# List perintah Asmen TE
 
 
 def read_command(update, context):
@@ -114,6 +126,19 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
+        elif (update.message.text[:9] == "Aktifasi" or update.message.text[:9] == "aktifasi" or update.message.text[:9] == "AKTIFASI" or update.message.text[:9] == "Aktivasi" or update.message.text[:9] == "aktivasi"):
+            [status, level_user, message] = Asmente.get_level_user(
+                chat_id=chat_id)
+            if (status == "yes" and (level_user == "admin" or level_user == "owner")):
+                id_pelanggan = update.message.text[16:28]
+                kode_unit = update.message.text[10:15]
+                petugas_dan_keterangan = update.message.text[29:]
+                print("Memulai aktivasi meter")
+                context.bot.send_message(
+                    chat_id=chat_id, text="Memulai aktivasi meter idpel : "+id_pelanggan+"\n"+"Kode Unit : "+kode_unit+"\nKeterangan : "+petugas_dan_keterangan)
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="Periksa kembali command dan hak akses user")
         elif (update.message.text[:3] == "add" or update.message.text[:3] == "Add" or update.message.text[:3] == "ADD"):
             # cek level user
             [status, level_user, message] = Asmente.get_level_user(
@@ -149,8 +174,8 @@ def read_command(update, context):
             # Write log data
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
-                         activity="clear tamper", time=str(datetime.datetime.now()))
-        elif (update.message.text[:10] == "Info kct krn" or update.message.text[:10] == "infoblokir"):
+                         activity="Infokct krn", time=str(datetime.datetime.now()))
+        elif (update.message.text[:10] == "Infoblokir" or update.message.text[:10] == "infoblokir"):
             context.bot.send_message(
                 chat_id=chat_id, text="Memulai pengecekan blocking token idppel : "+update.message.text[11:])
             status, message = Asmente.cek_blocking_token(
@@ -177,14 +202,80 @@ def read_command(update, context):
             chat_id=pm.chat_id_admin, text=str(chat_id))
 
 
+def log_info(update: Update):
+    chat_id = update.message.chat_id
+    user = update.effective_user.full_name
+    waktu = datetime.datetime.now()
+
+    print(f'{waktu} - group: {chat_id} - user: {user}')
+
+
+def start_sigadis(update: Update, context: CallbackContext):
+    update.message.reply_text(
+        text=f'Hai {update.effective_user.first_name} Selamat datang, silahkan ketik /update ',
+        parse_mode='markdown'
+    )
+
+
+def update_data(update: Update, context: CallbackContext):
+    log_info(update)
+    update.message.reply_text(
+        text='Baik, mohon tunggu...', parse_mode='markdown')
+    try:
+        s = time.perf_counter()
+        bot = Amicon(username=pm.username_amicon, password=pm.password_amicon)
+        result = bot.download_data(get_gardu())
+        f = time.perf_counter()
+        waktu = round((f - s), 2)
+        update.message.reply_text(
+            text=f'Berhasil update data Gardu dari AMICON ({waktu}s)'
+                 f'\nBerhasil : {result["berhasil"]}\n'
+                 f'Gagal : {result["gagal"]}\n',
+            parse_mode='markdown')
+    except Exception as e:
+        update.message.reply_text(
+            text='Gagal Update data Gardu dari AMICON',
+            parse_mode='markdown')
+        return
+
+
+def update_data_otomatis(context: CallbackContext):
+    """Fungsi ini membuat Thread untuk update masing2 UP3"""
+    try:
+        s = time.perf_counter()
+        bot = Amicon(username=pm.username_amicon, password=pm.password_amicon)
+        bot.download_data(get_gardu())
+        f = time.perf_counter()
+        waktu = round((f - s), 2)
+        context.bot.send_message(text=f'Berhasil update data Gardu dari AMICON ({waktu}s)',
+                                 reply_markup='markdown')
+    except Exception as e:
+        context.bot.send_message(
+            text='Gagal Update data Gardu dari AMICON',
+            parse_mode='markdown')
+        return
+
+
 def main():
     # bot Telegram
     # Create updater and pass in Bot's auth key.
     updater = Updater(token=pm.tokenbot, use_context=True)
     # Get dispatcher to register handlers
     dispatcher = updater.dispatcher
+    # Mengecek kesiapan bot
     dispatcher.add_handler(CommandHandler(
         'start', start, run_async=True))
+    # Run Aplikasi si gadis
+    dispatcher.add_handler(CommandHandler('start_sigadis', update_data))
+
+    # Run daily basis
+    # Membuat scheduler untuk update saldo tunggakan
+    j = updater.job_queue
+    # Jam 3.30 setiap hari
+    j.run_daily(
+        update_data_otomatis,
+        days=(0, 1, 2, 3, 4, 5, 6), time=datetime.time(hour=10, minute=39, second=00)
+    )
 
     # Message Handler harus d pasang paling terakhir
     dispatcher.add_handler(MessageHandler(Filters.text, read_command))

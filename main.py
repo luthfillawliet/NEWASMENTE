@@ -51,7 +51,7 @@ def read_command(update, context):
                     # Write log data
                     dat = dataframe()
                     dat.log_data(chat_id=chat_id,
-                                 activity="clear tamper", time=str(datetime.datetime.now()))
+                                 activity="clear tamper idpel :"+update.message.text[3:15], time=str(datetime.datetime.now()))
                 else:
                     print("STATUS MAIN : ", message)
                     context.bot.send_message(chat_id=chat_id, text=message)

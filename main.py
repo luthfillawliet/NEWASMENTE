@@ -30,6 +30,16 @@ def start(update, context):
         chat_id=chat_id, text="Bot Standby...")
 
 
+def informasi(update, context):
+    chat_id = update.message.chat_id
+    text1 = "1. Untuk mengakses info pelanggan dengan idpel, silahkan ketik :\n'Info|0|<12 digit idpel>'\nPencarian denga nomor meter 'Info|1|<nomor meter>'\n"
+    text2 = "2. Untuk mengakses info pelanggan via ACMT dengan idpel. silahkan ketik 'Infoacmt|<12 digit idpel>'\n"
+    text3 = "3. Untuk mengakses Info blocking token dari AP2T dengan idpel, silahkan ketik : Infoblokir|<12 digit Idpel>"
+    text4 = "4. Untuk mengakses token KCT Upgrade KRN dengan idpel, silahkan ketik : Infokct"
+    context.bot.send_message(
+        chat_id=chat_id, text="Informasi cara pemakaian : ")
+
+
 def findnth(string, substring, n):
     parts = string.split(substring, n + 1)
     if len(parts) <= n + 1:
@@ -154,7 +164,7 @@ def read_command(update, context):
                 context.bot.send_message(
                     chat_id=pm.chat_id_admin, text="Memulai add user dengan chat id : "+str(chat_id_daftar)+"\n"+"Kode Unit : "+str(update.message.text[separator_1+1:separator_2]))
                 [status, message] = Asmente.add_new_user(
-                    chat_id_daftar=chat_id_daftar, kode_unit=update.message.text[separator_1+1:separator_2], nama=nama, nomor_telfon=nomor_telfon, level=update.message.text[separator_4+1:])
+                    chat_id_daftar=chat_id_daftar, kode_unit=int(update.message.text[separator_1+1:separator_2]), nama=nama, nomor_telfon=nomor_telfon, level=update.message.text[separator_4+1:])
                 context.bot.send_message(
                     chat_id=pm.chat_id_admin, text=message)
                 # Write log data
@@ -266,8 +276,8 @@ def main():
     dispatcher.add_handler(CommandHandler(
         'start', start, run_async=True))
     # Run Aplikasi si gadis
-    dispatcher.add_handler(CommandHandler('start_sigadis', update_data))
-
+    dispatcher.add_handler(CommandHandler('start_sigadis', start_sigadis))
+    dispatcher.add_handler(CommandHandler('update', update_data))
     # Run daily basis
     # Membuat scheduler untuk update saldo tunggakan
     j = updater.job_queue

@@ -178,7 +178,7 @@ class Asmente():
         status = ap2t.open_ap2t()
         if (status == "yes"):
             status, message = ap2t.login_ap2t(
-                "9615040FY", password_ap2t="Asdar-40")
+                "9615040FY", password_ap2t="Asdar-41")
             if (status == "yes"):
                 print("Mencoba buka master imei")
                 [status, message] = ap2t.buka_reset_imei(

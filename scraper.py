@@ -782,7 +782,7 @@ class AP2T:
                             (By.XPATH, "/html/body/div[6]/div[2]/div[2]/div/div/div/div/div[1]/table/tbody/tr/td[1]/table/tbody/tr/td[1]/table/tbody/tr[2]/td[2]/em/button"))
                     )
                     btn_reset.click()
-                    time.sleep(10)
+                    time.sleep(5)
                     return "yes", "Berhasil reset imei user"
                 except Exception as e:
                     message = "Gagal find unit\nMessage Error : "+str(e)
@@ -1056,18 +1056,18 @@ class ACMT:
             informasi = "null"
             return "no", informasi, message
 
-# Create class for scraping AMICON
+# Create class for scraping
 
 
-class Amicon():
+class Amicon(webdriver.Chrome):
     url = "https://amicon.pln.co.id/#/dashboard_technical"
 
     def __init__(self, username: str, password: str):
         self._username = username
         self._password = password
 
-        self.filepathchromedriver = pm.filepathchromedriver
-        self.download_dir = pm.download_dir
+        base_dir = os.path.join(os.getcwd(), 'data')
+        self.download_dir = os.path.join(base_dir, 'source')
 
         options = webdriver.ChromeOptions()
 
@@ -1086,13 +1086,15 @@ class Amicon():
 
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
+        super(Amicon, self).__init__(
+            # executable_path=os.path.join(self._driver_path, 'chromedriver.exe'),
+            options=options)
+
         # memberikan waktu menunggu halaman terload
         self.implicitly_wait(10)
-        self.driver = webdriver.Chrome(self.filepathchromedriver)
 
     def first_page(self):
-        print("Membuak ahalaman amicon")
-        self.driver
+        self.get(self.url)
         self.maximize_window()
 
     def login(self):
@@ -1227,9 +1229,11 @@ class Amicon():
 
     def export_to_excel(self):
         # sebelum di download hapus dulu file yang ada di foldernya
+        print("Mencari load profile detail .xlsx")
         try:
             os.remove(os.path.join(self.download_dir,
                       'Load Profile Detail.xlsx'))
+            print("Berhasil menghapus load profile detail.xlsx")
         except FileNotFoundError:
             pass
 
@@ -1271,7 +1275,7 @@ class Amicon():
                 self.pilih_gardu(gd)
                 self.pilih_tanggal()
                 # scroll ke bawah
-                pyautogui.press("down", presses=10)
+                # pyautogui.press("down", presses=10)
                 self.export_to_excel()
                 post_data(gd)
                 print(f'{gd}: berhasil di update')

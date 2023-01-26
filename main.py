@@ -67,10 +67,13 @@ def read_command(update, context):
                 # Eksekusi buat CT
                 context.bot.send_message(
                     chat_id=chat_id, text="Memulai pembuatan CT Idpel : \n"+update.message.text[3:15]+"\nKode Unit : "+update.message.text[16:21]+"\nKeterangan : "+update.message.text[22:])
-                status, message = Asmente.buatCT(
+                status, jumlahct, message = Asmente.buatCT(
                     id_pelanggan=update.message.text[3:15], kodeunit=update.message.text[16:21], keteranganCT=update.message.text[22:])
                 if (status == "yes"):
                     print("STATUS MAIN : ", message)
+                    # Kirim jumlah permintaan CT
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Jumlah Permintaan CT : "+str(jumlahct))
                     context.bot.send_message(chat_id=chat_id, text=message)
                     time.sleep(2)
                     resp = requests.post(

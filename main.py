@@ -60,6 +60,7 @@ def read_command(update, context):
     print(update.message.chat_id)
     [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
     if (status == "yes"):
+        # COmmand untuk semua user yang terautentikasi
         if (update.message.text[:2] == "ct" or update.message.text[:2] == "Ct" or update.message.text[:2] == "CT"):
             [status_kdunit, message_kdunit] = Asmente.kdunit_user(
                 chat_id=chat_id, kode_unit=update.message.text[16:21])
@@ -204,6 +205,16 @@ def read_command(update, context):
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
                          activity="Infoblokir", time=str(datetime.datetime.now()))
+        elif ((update.message.text[:9] == "broadcast" or update.message.text[:9] == "Broadcast") and update.message.text[9:10] == "|"):
+            # cek level user
+            [status, level_user, message] = Asmente.get_level_user(
+                chat_id=chat_id)
+            if (status == "yes" and (level_user == "owner" or level_user == "admin")):
+                context.bot.send_message(
+                    chat_id=chat_id, text="Mengirim pesan broadcast")
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="Level user tidak memiliki autentikasi")
         else:
             print("command tidak dikenal")
             context.bot.send_message(

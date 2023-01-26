@@ -126,6 +126,7 @@ class dataframe():
             return "no", "null", "null"
 
     def get_jumlah_klik_resetimei(self, kodeunit_cari: str):
+        # Jumlah klik tombol down di sesuaikan dengan nomor letak ULP nya pada dropdown AP2T reset imei
         df = pd.read_excel(io=pm.filepathlistuser, sheet_name="listulp")
         rows_klik = df[df["kode_unit"] == kodeunit_cari]
         jumlah_perulangan = rows_klik["no"].item()

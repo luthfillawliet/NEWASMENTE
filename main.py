@@ -32,12 +32,17 @@ def start(update, context):
 
 def informasi(update, context):
     chat_id = update.message.chat_id
-    text1 = "1. Untuk mengakses info pelanggan dengan idpel, silahkan ketik :\n'Info|0|<12 digit idpel>'\nPencarian denga nomor meter 'Info|1|<nomor meter>'\n"
-    text2 = "2. Untuk mengakses info pelanggan via ACMT dengan idpel. silahkan ketik 'Infoacmt|<12 digit idpel>'\n"
-    text3 = "3. Untuk mengakses Info blocking token dari AP2T dengan idpel, silahkan ketik : Infoblokir|<12 digit Idpel>"
-    text4 = "4. Untuk mengakses token KCT Upgrade KRN dengan idpel, silahkan ketik : Infokct"
+    text1 = "1. Untuk mengakses info pelanggan dengan idpel, silahkan ketik :\n'Info|0|12 digit idpel , contoh Info|0|32131xxxxxxx'\nPencarian denga nomor meter 'Info|1|nomor meter' , contoh Info|1|450xxxxxxxx\n"
+    text2 = "2. Untuk mengakses info pelanggan via ACMT dengan idpel. silahkan ketik 'Infoacmt|12 digit idpel' , contoh : Infoacmt 32111xxxxxxx\n"
+    text3 = "3. Untuk mengakses Info blocking token dari AP2T dengan idpel, silahkan ketik : Infoblokir|12 digit Idpel , contoh : Infoblokir|32121xxxxxxx\n"
+    text4 = "4. Untuk mengakses token KCT Upgrade KRN dengan idpel, silahkan ketik : Infokct idpel, contoh : Infokct 32131xxxxxxx\n"
+    text5 = "5. Untuk pembbuatan CT, ketik 'Ct|12 Digit Idpel|kode unit|Keterangan (Penyebab periksa, petugas dan keterangan lainnya)'\ncontoh : Ct|32131xxxxxxx|32131|ganti mcb, petugas fulan\n"
+    text6 = "6. Untuk menambah user baru (Hanya bisa di akses untuk role admin), ketik 'Add|chat_id|kode unit|Nama User|Nomor Telfon|level user'\nContoh : 'Add|817654873|32131|Fulan bin fulan|081321765487|user\n"
+    text7 = "7. Untuk reset Imei HP ACMT petugas Cater, ketik 'Resetimei|Kode unit|user petugas (tanpa kode uni)' , Contoh : Resetimei|32131|sitaba\n"
+    text_penutup = "Info lebih lanjut silahkan hubungi Luthfil, TE UP3 Makassar selatan"
+    merge_text = text1+text2+text3+text4+text5+text6+text7+text_penutup
     context.bot.send_message(
-        chat_id=chat_id, text="Informasi cara pemakaian : ")
+        chat_id=chat_id, text="Informasi cara pemakaian : "+"\n"+merge_text)
 
 
 def findnth(string, substring, n):
@@ -275,6 +280,9 @@ def main():
     # Mengecek kesiapan bot
     dispatcher.add_handler(CommandHandler(
         'start', start, run_async=True))
+    # Mengecek kesiapan bot
+    dispatcher.add_handler(CommandHandler(
+        'informasi', informasi, run_async=True))
     # Run Aplikasi si gadis
     dispatcher.add_handler(CommandHandler('start_sigadis', start_sigadis))
     dispatcher.add_handler(CommandHandler('update', update_data))

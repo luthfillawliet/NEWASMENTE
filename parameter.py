@@ -6,17 +6,22 @@ class Parameter:
     def __init__(self):
 
         # Setting server baru :
+        # index, digunakan untuk server dengan spesifikasi rendah (os windows < 10)
+        # 0 untuk server baru, 1 untuk server lama
+        self.index = 0
         # filepath executable file chromedriver, sesuaikan dengan versi chrome komputer masing2 server, jangan lupa di ekstrak
         self.filepathchromedriver = r'chromedriver\chromedriver.exe'
         # lokasi file executable AP2T Enkripsi, ada di folder PT PLN. AP2T Enkripsi
         self.filepathenkripsi = r'C:\Program Files (x86)\PT PLN (PERSERO)\AP2T ENKRIPSI\Token.exe'
         # jika mau menggunakan cache bawaan browser, silahkan di aktifkan (uncomment), lokasi atur sesuai lokasi cache
-        self.user_options = r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data'
+        self.user_options = "user-data-dir=C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"
         # file list user
         self.filepathlistuser = r'data\listuser\listuser.xlsx'
         # sheet name list user
         self.sheetname_listuserid = "listuserid"
         self.fileexcelkct = r'krn\sudahbaca.xls'
+        # filepath log
+        self.filepathlog = r'data\log\log.xlsx'
 
         # pengaturan options security SSL
         self.ignore_ssl_errors = "--ignore-ssl-errors=yes"
@@ -59,4 +64,4 @@ class Parameter:
         self.username_amicon = 'pusat\\asdar02'
         self.password_amicon = '9615040-a28'
         self.bot_token = self.tokenbot
-        self.user_browser_cache = "user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data"
+        self.user_browser_cache = "user-data-dir=C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"

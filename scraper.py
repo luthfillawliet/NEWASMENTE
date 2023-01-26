@@ -336,7 +336,9 @@ class AP2T:
             if (nomoragenda != "0"):
                 self.cetak_token(nomoragenda=nomoragenda,
                                  link_ct=url_cetak_token)
-                return ["yes", "Cari token berdasarkan Idpel Berhasil"]
+                return ["yes", jumlahCT, "Cari token berdasarkan Idpel Berhasil"]
+            else:
+                return ["no", 0, "Gagal cari token berdasarkan idpel"]
         elif (tipe_pencarian == 2):
             # Eksekusi pencarian berdasarkan Nomor Meter
             print("Cari token berdasarkan Nomor Meter")

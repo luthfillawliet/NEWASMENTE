@@ -43,32 +43,32 @@ class Asmente():
                             print(message)
                             if (status == "yes" and int(nomor_id) > 0):
                                 print("Eksekusi monitoring permohonan token")
-                                status, message = ap2t.monitoring_token(
+                                status, jumlah_ct, message = ap2t.monitoring_token(
                                     tipe_pencarian=0, nomor_id=id_pelanggan, url_monitoring_token=pm.link_montok, url_cetak_token=pm.baselink_kct, index=pm.index)
                                 if (status == "yes"):
                                     print("Lanjut cetak Screenshoot")
                                     status, message = ap2t.take_screenshoot(
                                         direktori=pm.filepathct, file_name="fotoct.png", index=pm.index)
-                                    return "yes", message
+                                    return "yes", jumlah_ct, message
                                 else:
                                     message = "Gagal Eksekusi monitoring permohonan token"
                                     print(message)
-                                    return "no", message
+                                    return "no", 0, message
                             else:
                                 print(message)
-                                return "no", message
+                                return "no", 0, message
                     else:
                         print(message)
-                        return "no", message
+                        return "no", 0, message
 
                 else:
                     print(message)
-                    return "no", message
+                    return "no", 0, message
             else:
-                return "no", message
+                return "no", 0, message
         else:
             print(message)
-            return "no", message
+            return "no", 0, message
 
     def cek_infopelanggan(tipe_pencarian: str, nomor_id: str, link_infopelanggan: str):
         pm = Parameter()

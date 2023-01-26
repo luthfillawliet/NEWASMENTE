@@ -117,7 +117,7 @@ class AP2T:
             print(message)
             return "no", message
 
-    def input_pengaduan_ct(self, id_pelanggan, petugas_dan_keterangan, link_pengaduan_ct):
+    def input_pengaduan_ct(self, id_pelanggan, petugas_dan_keterangan, link_pengaduan_ct, index: int = 0):
         try:
             # Buka Tab baru
             self.driver.execute_script(
@@ -126,7 +126,8 @@ class AP2T:
             print("Berhasil buka tab permohonan pengaduan")
             try:
                 # pindah tab ke tab pengaduan
-                self.driver.switch_to.window(self.driver.window_handles[1])
+                self.driver.switch_to.window(
+                    self.driver.window_handles[1+index])
                 # In
                 tfidpel = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located(
@@ -231,7 +232,7 @@ class AP2T:
             print(message)
             return ["no", message, 0]
 
-    def tindakan_pengaduan_ct(self, nomor_agenda, link_tindakan_pengaduan_ct):
+    def tindakan_pengaduan_ct(self, nomor_agenda, link_tindakan_pengaduan_ct, index: int = 0):
         try:
             # Buka Tab baru
             self.driver.execute_script(
@@ -239,7 +240,8 @@ class AP2T:
             time.sleep(5)  # Bisa di ubah sesuai kebutuhan
             try:
                 # pindah tab ke tab pengaduan
-                self.driver.switch_to.window(self.driver.window_handles[2])
+                self.driver.switch_to.window(
+                    self.driver.window_handles[2+index])
                 print("Berhasil buka tab Tindakan pengaduan")
                 # Clsoe pop up  notif
                 btnClose = WebDriverWait(self.driver, 10).until(
@@ -278,14 +280,14 @@ class AP2T:
             print(message)
             return ["no", message, nomor_agenda]
 
-    def aktivasi_ct(self, nomoragenda, link_aktivasi_meter):
+    def aktivasi_ct(self, nomoragenda, link_aktivasi_meter, index: int = 0):
         try:
             print("Memulai aktivasi token")
             self.driver.execute_script(
                 "window.open('"+link_aktivasi_meter+"');")
             time.sleep(5)  # Bisa di ubah sesuai kebutuhan
             # pindah tab ke tab pengaduan
-            self.driver.switch_to.window(self.driver.window_handles[3])
+            self.driver.switch_to.window(self.driver.window_handles[3+index])
             noAgendaAktivasi = WebDriverWait(self.driver, 15).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "/html/body/form/div[3]/div/div/div/div/div/div[2]/div/div[2]/div[1]/div/div/div/div/div[1]/fieldset/div/div/div/div[1]/div/div[2]/input"))
@@ -319,7 +321,7 @@ class AP2T:
             print(message)
             return ["no", message, nomoragenda]
 
-    def monitoring_token(self, tipe_pencarian, nomor_id, url_monitoring_token, url_cetak_token):
+    def monitoring_token(self, tipe_pencarian, nomor_id, url_monitoring_token, url_cetak_token, index: int = 0):
         # Buka link monitoring token
 
         # Tipe pencarian : 0, jika idpel, 1 jika nomor meter. dan 2 jika nomor agenda
@@ -327,7 +329,7 @@ class AP2T:
             # Eksekusi pencarian berdasarkan Idpel
             print("Cari token berdasarkan Idpel")
             self.monitoring_cari_idpel(
-                url_montok=url_monitoring_token, idpel=nomor_id)
+                url_montok=url_monitoring_token, idpel=nomor_id, index=index)
             status, jumlahCT = self.get_jumlah_request(
                 jenis_token="CLEAR TAMPER")
             nomoragenda = self.show_last_kct()
@@ -345,7 +347,7 @@ class AP2T:
             # Kode dasar pencarian tidak dikenal
             print("Kode dasar pencarian tidak dikenal")
 
-    def monitoring_cari_idpel(self, url_montok, idpel):
+    def monitoring_cari_idpel(self, url_montok, idpel, index: int = 0):
         try:
             # masukkan idpel
             self.driver.execute_script(
@@ -353,7 +355,7 @@ class AP2T:
             time.sleep(5)  # Bisa di ubah sesuai kebutuhan
             # pindah tab ke tab pengaduan
             # Ubah untuk testing dan run
-            self.driver.switch_to.window(self.driver.window_handles[4])
+            self.driver.switch_to.window(self.driver.window_handles[4+index])
             # klik dropdown kategori search
             btnKategori = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
@@ -481,11 +483,11 @@ class AP2T:
         except Exception as e:
             return ["no"]
 
-    def take_screenshoot(self, direktori: str, file_name: str):
+    def take_screenshoot(self, direktori: str, file_name: str, index: int = 0):
         print("Memulai screenshoot")
         time.sleep(3)
         # ganti jika tes dan running
-        self.driver.switch_to.window(self.driver.window_handles[5])
+        self.driver.switch_to.window(self.driver.window_handles[5+index])
         try:
             self.driver.save_screenshot(direktori+"fotoct.png")
             message = "Berhasil kirim screenshot"
@@ -675,7 +677,7 @@ class AP2T:
             print("Error message : ", e)
             return "no", message
 
-    def buka_reset_imei(self, nama_petugas: str, kode_unit: str):
+    def buka_reset_imei(self, nama_petugas: str, kode_unit: str, index: int = 0):
         try:
             # Menu pencatatan meter
             menu_imei = WebDriverWait(self.driver, 10).until(
@@ -717,7 +719,8 @@ class AP2T:
                         "window.open('"+src_value+"');")
                     time.sleep(3)  # Bisa di ubah sesuai kebutuhan
                     # pindah di tab baru
-                    self.driver.switch_to.window(self.driver.window_handles[1])
+                    self.driver.switch_to.window(
+                        self.driver.window_handles[1+index])
                     print("Berhasil PINDAH KE TAB BARU RESET IMEI")
                     # get child element
                     btn_dropdown = WebDriverWait(self.driver, 10).until(

@@ -27,28 +27,28 @@ class Asmente():
                     print("Login Berhasil")
                     # Jika sukses, buat pengaduan
                     [status, message, nomoragenda] = ap2t.input_pengaduan_ct(
-                        id_pelanggan=id_pelanggan, petugas_dan_keterangan=keteranganCT, link_pengaduan_ct=link_pengaduan)
+                        id_pelanggan=id_pelanggan, petugas_dan_keterangan=keteranganCT, link_pengaduan_ct=link_pengaduan, index=pm.index)
                     if (status == "yes" and int(nomoragenda) > 0):
                         print(message, "dengan nomor Agenda : ", nomoragenda)
                         # Get user untuk tindakan pengaduan, pake user spv TE
                         [link_tindakan_pengaduan_ct, username_ap2t, password_ap2t] = df.get_userlink_bykodeunit(
                             kdunit=kodeunit, jenis_user="TL TE", part_link_awal=pm.linktindakanpengaduan, part_link_akhir=pm.linktindakanpengaduan_2)
                         [status, message, nomoragenda] = ap2t.tindakan_pengaduan_ct(
-                            nomor_agenda=nomoragenda, link_tindakan_pengaduan_ct=link_tindakan_pengaduan_ct)
+                            nomor_agenda=nomoragenda, link_tindakan_pengaduan_ct=link_tindakan_pengaduan_ct, index=pm.index)
                         if (status == "yes" and int(nomoragenda) > 0):
                             print(
                                 "Berhasil Entry tindakan pengaduan dengan nomor agenda : ", nomoragenda)
                             [status, message, nomor_id] = ap2t.aktivasi_ct(
-                                nomoragenda=nomoragenda, link_aktivasi_meter=pm.linkaktivasimeter)
+                                nomoragenda=nomoragenda, link_aktivasi_meter=pm.linkaktivasimeter, index=pm.index)
                             print(message)
                             if (status == "yes" and int(nomor_id) > 0):
                                 print("Eksekusi monitoring permohonan token")
                                 status, message = ap2t.monitoring_token(
-                                    tipe_pencarian=0, nomor_id=id_pelanggan, url_monitoring_token=pm.link_montok, url_cetak_token=pm.baselink_kct)
+                                    tipe_pencarian=0, nomor_id=id_pelanggan, url_monitoring_token=pm.link_montok, url_cetak_token=pm.baselink_kct, index=pm.index)
                                 if (status == "yes"):
                                     print("Lanjut cetak Screenshoot")
                                     status, message = ap2t.take_screenshoot(
-                                        direktori=pm.filepathct, file_name="fotoct.png")
+                                        direktori=pm.filepathct, file_name="fotoct.png", index=pm.index)
                                     return "yes", message
                                 else:
                                     message = "Gagal Eksekusi monitoring permohonan token"
@@ -98,7 +98,7 @@ class Asmente():
                 return status, informasi, message
             else:
                 print(message)
-                return status, informasi, message
+                return status, "gagal get Info ACMT", message
         else:
             print(message)
             print("Gagal buka acmt")
@@ -182,7 +182,7 @@ class Asmente():
             if (status == "yes"):
                 print("Mencoba buka master imei")
                 [status, message] = ap2t.buka_reset_imei(
-                    nama_petugas=user_id, kode_unit=kode_unit)
+                    nama_petugas=user_id, kode_unit=kode_unit, index=pm.index)
                 return "yes", message
             else:
                 message = "Gagal Login AP2T, "+message

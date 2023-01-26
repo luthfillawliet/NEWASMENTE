@@ -177,18 +177,18 @@ class dataframe():
         pm = Parameter()
         try:
             status, last_row, message = self.get_last_row(
-                filepathlistuser=pm.filepathlistuser, sheetname="log")
+                filepathlistuser=pm.filepathlog, sheetname="log")
             if (status == "yes"):
                 print("Last row : "+str(last_row))
                 print(message)
                 # Write number of rows
-                workbook = openpyxl.load_workbook(filename=pm.filepathlistuser)
+                workbook = openpyxl.load_workbook(filename=pm.filepathlog)
                 worksheet = workbook.get_sheet_by_name("log")
                 worksheet.cell(row=last_row, column=1).value = last_row-1
                 worksheet.cell(row=last_row, column=2).value = chat_id
                 worksheet.cell(row=last_row, column=3).value = activity
                 worksheet.cell(row=last_row, column=4).value = time
-                workbook.save(pm.filepathlistuser)
+                workbook.save(pm.filepathlog)
             else:
                 print("Gagal write log data")
         except Exception as e:

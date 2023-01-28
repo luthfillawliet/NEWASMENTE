@@ -145,6 +145,23 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
+        elif ((update.message.text[:6] == "montok" or update.message.text[:6] == "Montok" or update.message.text[:6] == "MONTOK") and len(update.message.text) > 18):
+            # cek tipe pencarian
+            tipe_pencarian = update.message.text[7:8]
+            id_pencarian = update.message.text[9:]
+            if (tipe_pencarian == "0"):
+                context.bot.send_message(
+                    chat_id=chat_id, text="Memulai monitoring permohonan token Idpel : "+id_pencarian)
+                Asmente.info_montok(
+                    url_montok=pm.link_montok, tipe_pencarian=tipe_pencarian, id_pencarian=id_pencarian)
+            elif (tipe_pencarian == "1"):
+                context.bot.send_message(
+                    chat_id=chat_id, text="Memulai monitoring permohonan token Nomor Meter : "+id_pencarian)
+                Asmente.info_montok(
+                    url_montok=pm.link_montok, tipe_pencarian=tipe_pencarian, id_pencarian=id_pencarian)
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="Tipe Pencarian tidak diketahui")
         elif (update.message.text[:9] == "Aktifasi" or update.message.text[:9] == "aktifasi" or update.message.text[:9] == "AKTIFASI" or update.message.text[:9] == "Aktivasi" or update.message.text[:9] == "aktivasi"):
             [status, level_user, message] = Asmente.get_level_user(
                 chat_id=chat_id)
@@ -211,7 +228,23 @@ def read_command(update, context):
                 chat_id=chat_id)
             if (status == "yes" and (level_user == "owner" or level_user == "admin")):
                 context.bot.send_message(
-                    chat_id=chat_id, text="Mengirim pesan broadcast")
+                    chat_id=chat_id, text="Memulai mengirim pesan broadcast")
+                df = dataframe.get_all_userid(pm.filepathlistuser, "all")
+                pesan = update.message.text[(findnth(
+                    update.message.text, "|", 1)+1):]
+                for i in df:
+                    # print("chat id : ", str(i))
+                    try:
+                        context.bot.send_message(
+                            chat_id=i, text="Pesan Broadcast dari Admin : ")
+                        context.bot.send_message(
+                            chat_id=i, text=pesan+"\n\n"+update.message.text[findnth(update.message.text, "|", 0)+1:findnth(update.message.text, "|", 1)])
+                        # Write log data
+                        dat = dataframe()
+                        dat.log_data(chat_id=chat_id,
+                                     activity="Broadcast by : "+chat_id, time=str(datetime.datetime.now()))
+                    except:
+                        pass
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Level user tidak memiliki autentikasi")
@@ -252,14 +285,15 @@ def update_data(update: Update, context: CallbackContext):
         text='Baik, mohon tunggu...', parse_mode='markdown')
     try:
         s = time.perf_counter()
-        bot = Amicon(username=pm.username_amicon, password=pm.password_amicon)
+        bot = Amicon(username=pm.username_amicon,
+                     password=pm.password_amicon)
         result = bot.download_data(get_gardu())
         f = time.perf_counter()
         waktu = round((f - s), 2)
         update.message.reply_text(
             text=f'Berhasil update data Gardu dari AMICON ({waktu}s)'
-                 f'\nBerhasil : {result["berhasil"]}\n'
-                 f'Gagal : {result["gagal"]}\n',
+            f'\nBerhasil : {result["berhasil"]}\n'
+            f'Gagal : {result["gagal"]}\n',
             parse_mode='markdown')
     except Exception as e:
         update.message.reply_text(
@@ -272,7 +306,8 @@ def update_data_otomatis(context: CallbackContext):
     """Fungsi ini membuat Thread untuk update masing2 UP3"""
     try:
         s = time.perf_counter()
-        bot = Amicon(username=pm.username_amicon, password=pm.password_amicon)
+        bot = Amicon(username=pm.username_amicon,
+                     password=pm.password_amicon)
         bot.download_data(get_gardu())
         f = time.perf_counter()
         waktu = round((f - s), 2)

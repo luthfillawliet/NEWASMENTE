@@ -29,7 +29,8 @@ class Parameter:
 
         # setting bot baru
         # bot token id, di ganti jika ganti bot
-        self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"
+        # self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"  # new_asmente_bot
+        self.tokenbot = "5081663366:AAF9XrOVwtlD6gFTf7fh7qTbQXMixpe_XSI"  # ulpsgm_bot
         # group chat id
         self.chat_id = -828901164
         # chat_id admin

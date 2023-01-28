@@ -911,6 +911,66 @@ class AP2T:
                 print(message)
                 return "no", message
 
+    def buka_montok(self, url_montok: str):
+        try:
+            self.driver.get(url_montok)
+            message = "berhasil buka monitoring permohonan token"
+            return "yes", message
+        except Exception as e:
+            message = "Gagal buka monitoring permohonan token\n" + \
+                "Error message : "+str(e)
+            print(message)
+            return "no", message
+
+    def get_history_montok(self, tipe_pencarian: str = "0", id_pencarian: str = "0"):
+        try:
+            # klik dropdown kategori search
+            btnKategori = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[2]/div/div[1]/div[2]/div[1]/div/div/div/form/table/tbody/tr[3]/td/fieldset/div/div/div[2]/div/div/div/div[1]/div/div/div/div[1]/div/img"))
+            )
+            btnKategori.click()
+            print("Berhasil klik")
+            time.sleep(1)
+            # get semua child element dulu
+            parentCategories = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located(
+                    (By.CLASS_NAME, "x-combo-list-item"))
+            )
+            print("Panjang Array : "+str(len(parentCategories)))
+            print(str(len(parentCategories)))
+            kategori = "PER IDPEL"
+            if (tipe_pencarian == "0"):
+                kategori = "PER IDPEL"
+            else:
+                kategori = "PER NOMOR METER"
+            for items in parentCategories:
+                if (items.text == kategori):
+                    items.click()
+                    break
+            print("Berhasil klik pilihan dropdown")
+            tfIdpel = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[2]/div/div[1]/div[2]/div[1]/div/div/div/form/table/tbody/tr[3]/td/fieldset/div/div/div[2]/div/div/div/div[2]/div/div/div/div[1]/input"))
+            )
+            tfIdpel.send_keys(id_pencarian)
+            print("Entry Idpel berhasil")
+            btnFilter = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div[1]/div[2]/div/div[1]/div[2]/div[1]/div/div/div/form/table/tbody/tr[4]/td/div/div/div[2]/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]"))
+            )
+            # Klik search idpel
+            btnFilter.click()
+            print("Berhasil klik Filter")
+            time.sleep(10)
+            message = "berhasil get monitoring permohonan token"
+            return "yes", message
+        except Exception as e:
+            message = "gagal get monitoring permohonan token\nError Message : " + \
+                str(e)
+            print(message)
+            return "yes", message
+
 
 class ACMT:
     def __init__(self, filepatchromedriver, download_dir, user_options, url_acmt):

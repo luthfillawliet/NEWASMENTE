@@ -194,3 +194,9 @@ class dataframe():
                 print("Gagal write log data")
         except Exception as e:
             print("Gagal write log\nMesage Error : ", str(e))
+
+    @staticmethod
+    def get_all_userid(filepathlistuserid: str, level_user: str):
+        df = pd.read_excel(io=filepathlistuserid, sheet_name="listuserid")
+        #print(df)
+        return df["chat_id"]

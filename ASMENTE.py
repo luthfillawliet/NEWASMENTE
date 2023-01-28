@@ -223,3 +223,12 @@ class Asmente():
             id_pelanggan=id_pelanggan)
         print(message)
         return status, message
+
+    def info_montok(url_montok: str, tipe_pencarian: str, id_pencarian: str):
+        pm = Parameter()
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                    filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        [status, message] = ap2t.buka_montok(url_montok=url_montok)
+        if (status == "yes"):
+            [status, message] = ap2t.get_history_montok(
+                tipe_pencarian=tipe_pencarian, id_pencarian=id_pencarian)

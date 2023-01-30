@@ -232,3 +232,6 @@ class Asmente():
         if (status == "yes"):
             [status, message] = ap2t.get_history_montok(
                 tipe_pencarian=tipe_pencarian, id_pencarian=id_pencarian)
+            return "yes", message
+        else:
+            return "no", message

@@ -11,6 +11,7 @@ from telegram.ext.callbackcontext import CallbackContext
 import requests
 # Import Amicon object
 from scraper import Amicon
+from scraper import AP2T
 from post_api import get_gardu
 import logging
 
@@ -235,6 +236,19 @@ def read_command(update, context):
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
                          activity="Infoblokir", time=str(datetime.datetime.now()))
+        elif ((update.message.text[:8] == "cetakkct" or update.message.text[:8] == "Cetakkct" or update.message.text[:8] == "CETAKKCT") and len(update.message.text) == 27):
+            context.bot.send_message(
+                chat_id=chat_id, text="Memulai cetak KCT Token dengan nomor agenda : "+update.message.text[9:])
+            ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver, filepathenkripsi=pm.filepathenkripsi,
+                        urlap2t=pm.urlap2t, download_dir=pm.download_dir, filepathct=pm.filepathct, user_options=pm.user_options)
+            status, message = ap2t.cetak_token(
+                nomoragenda=update.message.text[9:], link_ct=pm.baselink_kct)
+            if (status == "yes"):
+                status, message = ap2t.take_screenshoot(
+                    direktori=pm.filepathct, file_name="foto_kct.png", index=pm.index, numbertab=1)
+                if (status == "yes"):
+                    resp = requests.post(
+                        "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_ct))
         elif ((update.message.text[:9] == "broadcast" or update.message.text[:9] == "Broadcast") and update.message.text[9:10] == "|"):
             # cek level user
             [status, level_user, message] = Asmente.get_level_user(

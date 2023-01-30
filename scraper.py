@@ -485,11 +485,12 @@ class AP2T:
         except Exception as e:
             return ["no"]
 
-    def take_screenshoot(self, direktori: str, file_name: str, index: int = 0):
+    def take_screenshoot(self, direktori: str, file_name: str, numbertab: int = 5, index: int = 0):
         print("Memulai screenshoot")
         time.sleep(3)
         # ganti jika tes dan running
-        self.driver.switch_to.window(self.driver.window_handles[5+index])
+        self.driver.switch_to.window(
+            self.driver.window_handles[numbertab+index])
         try:
             self.driver.save_screenshot(direktori+"fotoct.png")
             message = "Berhasil kirim screenshot"
@@ -1005,7 +1006,8 @@ class AP2T:
                                   cell_nomor_agenda.text + " Tgl Transaksi : "+cell_tgl_transaksi.text)
                             message = message+"No register : "+cell_nomor_agenda.text + \
                                 " Tgl Transaksi : "+cell_tgl_transaksi.text+" Jenis Transaksi : " + \
-                                cell_jenis_transaksi.text+" Status Agenda : : "+cell_status_agenda.text+" Petugas : "+cell_petugas.text+" Kd Unit : "+cell_unit.text+"\n"
+                                cell_jenis_transaksi.text+" Status Agenda : : "+cell_status_agenda.text + \
+                                " Petugas : "+cell_petugas.text+" Kd Unit : "+cell_unit.text+"\n"
                         except Exception:
                             pass
                     return "yes", message

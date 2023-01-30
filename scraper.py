@@ -962,14 +962,66 @@ class AP2T:
             # Klik search idpel
             btnFilter.click()
             print("Berhasil klik Filter")
-            time.sleep(10)
-            message = "berhasil get monitoring permohonan token"
-            return "yes", message
+            # Get semua kct nya
+            try:
+                kctrows = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located(
+                        (By.CLASS_NAME, "x-grid3-row"))
+                )
+                print("panjang rows : "+str(len(kctrows)))
+                if (len(kctrows) > 0):
+                    time.sleep(1)
+                    message = "berhasil get monitoring permohonan token"
+                    # Coba get nilai kolomnya
+                    for i in range(len(kctrows)):
+                        print("\nKCT ke - "+str(i+1))
+                        try:
+                            cell_nomor_agenda = WebDriverWait(self.driver, 2).until(
+                                EC.presence_of_element_located(
+                                    (By.XPATH, ("/html/body/div[1]/div[2]/div/div[2]/div[2]/div[1]/div/div/div/form/table/tbody/tr/td/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[1]/div")))
+                            )
+                            cell_tgl_transaksi = WebDriverWait(self.driver, 3).until(
+                                EC.presence_of_element_located(
+                                    (By.XPATH, ("/html/body/div[1]/div[2]/div/div[2]/div[2]/div[1]/div/div/div/form/table/tbody/tr/td/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[9]/div")))
+                            )
+                            cell_jenis_transaksi = WebDriverWait(self.driver, 3).until(
+                                EC.presence_of_element_located(
+                                    (By.XPATH, ("/html/body/div[1]/div[2]/div/div[2]/div[2]/div[1]/div/div/div/form/table/tbody/tr/td/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[10]/div")))
+                            )
+                            cell_status_agenda = WebDriverWait(self.driver, 3).until(
+                                EC.presence_of_element_located(
+                                    (By.XPATH, ("/html/body/div[1]/div[2]/div/div[2]/div[2]/div[1]/div/div/div/form/table/tbody/tr/td/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[14]/div")))
+                            )
+                            cell_petugas = WebDriverWait(self.driver, 3).until(
+                                EC.presence_of_element_located(
+                                    (By.XPATH, ("/html/body/div[1]/div[2]/div/div[2]/div[2]/div[1]/div/div/div/form/table/tbody/tr/td/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[25]/div")))
+                            )
+                            cell_unit = WebDriverWait(self.driver, 3).until(
+                                EC.presence_of_element_located(
+                                    (By.XPATH, ("/html/body/div[1]/div[2]/div/div[2]/div[2]/div[1]/div/div/div/form/table/tbody/tr/td/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[28]/div")))
+                            )
+                            # tanggal jatuh tempo
+                            print("Nomor Agenda : " +
+                                  cell_nomor_agenda.text + " Tgl Transaksi : "+cell_tgl_transaksi.text)
+                            message = message+"No register : "+cell_nomor_agenda.text + \
+                                " Tgl Transaksi : "+cell_tgl_transaksi.text+" Jenis Transaksi : " + \
+                                cell_jenis_transaksi.text+" Status Agenda : : "+cell_status_agenda.text+" Petugas : "+cell_petugas.text+" Kd Unit : "+cell_unit.text+"\n"
+                        except Exception:
+                            pass
+                    return "yes", message
+                else:
+                    message = "Jumlah permohonan token = 0"
+                    return "yes", message
+            except Exception as e:
+                message = "gagal get monitoring permohonan token\nError Message : " + \
+                    str(e)
+                print(message)
+                return "no", message
         except Exception as e:
-            message = "gagal get monitoring permohonan token\nError Message : " + \
+            message = "gagal get kategori permohonan token\nError Message : " + \
                 str(e)
             print(message)
-            return "yes", message
+            return "no", message
 
 
 class ACMT:

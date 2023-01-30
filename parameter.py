@@ -57,6 +57,7 @@ class Parameter:
         self.filepathct = 'fotoct\\'
         # lokasi download default
         self.files_foto_ct = 'fotoct\\fotoct.png'
+        self.files_foto_kct = 'fotoct\\foto_kct.png'
         self.download_dir = 'download\\'
         # link ap2t
         self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'

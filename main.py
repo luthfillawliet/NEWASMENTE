@@ -39,8 +39,9 @@ def informasi(update, context):
     text5 = "5. Untuk pembbuatan CT, ketik 'Ct|12 Digit Idpel|kode unit|Keterangan (Penyebab periksa, petugas dan keterangan lainnya)'\ncontoh : Ct|32131xxxxxxx|32131|ganti mcb, petugas fulan\n"
     text6 = "6. Untuk menambah user baru (Hanya bisa di akses untuk role admin), ketik 'Add|chat_id|kode unit|Nama User|Nomor Telfon|level user'\nContoh : 'Add|817654873|32131|Fulan bin fulan|081321765487|user\n"
     text7 = "7. Untuk reset Imei HP ACMT petugas Cater, ketik 'Resetimei|Kode unit|user petugas (tanpa kode uni)' , Contoh : Resetimei|32131|sitaba\n"
+    text8 = "8. Untuk Cek monitoring permohonan token berdasarkan Idpelnomor meter (kode 0 untuk idpel, 1 untuk nomor emter), 'ketik Montok|kode pencarian (0 / 1)|id pelanggan/nomor meter (sesuai dengan kategori)', contoh Montok|0|321500xxxxxx , atau Montok|1|14456787659\n"
     text_penutup = "Info lebih lanjut silahkan hubungi Luthfil, TE UP3 Makassar selatan"
-    merge_text = text1+text2+text3+text4+text5+text6+text7+text_penutup
+    merge_text = text1+text2+text3+text4+text5+text6+text7+text8+text_penutup
     context.bot.send_message(
         chat_id=chat_id, text="Informasi cara pemakaian : "+"\n"+merge_text)
 
@@ -152,13 +153,25 @@ def read_command(update, context):
             if (tipe_pencarian == "0"):
                 context.bot.send_message(
                     chat_id=chat_id, text="Memulai monitoring permohonan token Idpel : "+id_pencarian)
-                Asmente.info_montok(
+                status, message = Asmente.info_montok(
                     url_montok=pm.link_montok, tipe_pencarian=tipe_pencarian, id_pencarian=id_pencarian)
+                if (status == "yes"):
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Hasil monitoring permohonan token Id pelanggan : "+id_pencarian+"\n"+message)
+                else:
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Gagal monitoring permohonan token Id pelanggan : "+id_pencarian+"\n"+message)
             elif (tipe_pencarian == "1"):
                 context.bot.send_message(
                     chat_id=chat_id, text="Memulai monitoring permohonan token Nomor Meter : "+id_pencarian)
-                Asmente.info_montok(
+                status, message = Asmente.info_montok(
                     url_montok=pm.link_montok, tipe_pencarian=tipe_pencarian, id_pencarian=id_pencarian)
+                if (status == "yes"):
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Hasil monitoring permohonan token Nomor meter : "+id_pencarian+"\n"+message)
+                else:
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Gagal monitoring permohonan token Nomor Meter : "+id_pencarian+"\n"+message)
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Tipe Pencarian tidak diketahui")

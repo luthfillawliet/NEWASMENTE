@@ -60,12 +60,13 @@ class dataframe():
                 username.item()+part_link_akhir
             # print("Username : ", username, "\nPassword : ", pasword)
             print(link)
-            print("Length user : ", len(username.item()),
-                  "\nLength password : ", len(password.item()), "(", password.item(), ")")
+            # print("Length user : ", len(username.item()),
+            #       "\nLength password : ", len(password.item()), "(", password.item(), ")")
             message = "Berhasil get link dan username - password"
             return link, username.item(), password.item()
         except Exception as e:
-            message = "Gagal ambil username, password dan get link, periksa File Excel dan kode unit\Message Error : " + e
+            message = "Gagal ambil username, password dan get link, periksa File Excel dan kode unit\Message Error : " + \
+                str(e)
             print(message)
             return link, "null", "0"
 
@@ -198,5 +199,5 @@ class dataframe():
     @staticmethod
     def get_all_userid(filepathlistuserid: str, level_user: str):
         df = pd.read_excel(io=filepathlistuserid, sheet_name="listuserid")
-        #print(df)
+        # print(df)
         return df["chat_id"]

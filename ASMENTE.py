@@ -2,15 +2,16 @@ from scraper import AP2T
 from scraper import ACMT
 from parameter import Parameter
 from DataFrame import dataframe
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import time
+pm = Parameter()
+df = dataframe()
 
 
 class Asmente():
     def buatCT(id_pelanggan: str, kodeunit: str, keteranganCT: str):
         # excute main
         print("Memulai New Asmen TE : ")
-        pm = Parameter()
-        df = dataframe()
         ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
                     filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
         status = ap2t.open_ap2t()
@@ -27,7 +28,7 @@ class Asmente():
                     print("Login Berhasil")
                     # Jika sukses, buat pengaduan
                     [status, message, nomoragenda] = ap2t.input_pengaduan_ct(
-                        id_pelanggan=id_pelanggan, petugas_dan_keterangan=keteranganCT, link_pengaduan_ct=link_pengaduan, index=pm.index)
+                        id_pelanggan=id_pelanggan, petugas_dan_keterangan=keteranganCT, link_pengaduan_ct=link_pengaduan, index=pm.index, nomortabdefault=1)
                     if (status == "yes" and int(nomoragenda) > 0):
                         print(message, "dengan nomor Agenda : ", nomoragenda)
                         # Get user untuk tindakan pengaduan, pake user spv TE
@@ -132,7 +133,7 @@ class Asmente():
                 return "no", message
 
         except Exception as e:
-            message = "User tidak terdaftar\n" + "Message Error : "+str(e)
+            message = "Gagal mengecek id user\n" + "Message Error : "+str(e)
             return "no", message
 
     def kdunit_user(chat_id: int, kode_unit: int):
@@ -235,3 +236,50 @@ class Asmente():
             return "yes", message
         else:
             return "no", message
+
+    def buatPengaduanHarAPP(id_pelanggan: str = "0", kode_unit: str = 0, nomor_meter_lama: str = 0, keterangan: str = "Tanpa Keterangan"):
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                    filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        # Login
+        [link_pengaduan, username, password] = df.get_userlink_bykodeunit(
+            kdunit=kode_unit, jenis_user="TL TEKNIK", part_link_awal=pm.linkpengaduanct, part_link_akhir=pm.linkpengaduanct_2)
+        status = ap2t.open_ap2t()
+        if (status == "yes"):
+            [status, message] = ap2t.login_ap2t(
+                username_ap2t=username, password_ap2t=password)
+            if (status == "yes"):
+                # Get link pengaduan
+                [link_pengaduan, username, password] = df.get_userlink_bykodeunit(
+                    kdunit=kode_unit, jenis_user="TL YAN GAN DAN ADM", part_link_awal=pm.linkpengaduanct, part_link_akhir=pm.linkpengaduanct_2)
+                [status, message, nomoragenda] = ap2t.input_pengaduan_ct(
+                    id_pelanggan=id_pelanggan, fungsi_dropdown="PENGADUAN TEKNIS", petugas_dan_keterangan=nomor_meter_lama+" Keterangan : "+keterangan, nomortabdefault=1, link_pengaduan_ct=link_pengaduan)
+                return "yes", message, nomoragenda
+            else:
+                return "no", message, 0
+        else:
+            return "no", message, 0
+
+
+class ReplyButton():
+
+    @staticmethod
+    def opsi_aktivasi():
+        buttons = [[InlineKeyboardButton("Pengaduan", callback_data="pengaduan")],
+                   [InlineKeyboardButton("TindakanPengaduan", callback_data="tindakan")], [
+            InlineKeyboardButton("Aktivasi", callback_data="aktivasiapp")],
+            [InlineKeyboardButton("Cetak PK", callback_data="cetakpkaktivasi")], [InlineKeyboardButton(
+                "Cetak BA", callback_data="cetakba")], [InlineKeyboardButton("cetakkct", callback_data="cetakkctaktivasi")],
+            [InlineKeyboardButton("Peremajaan", callback_data="remaja")]]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        return reply_markup
+
+    def execute_button(data: str, kode_unit: int = "32131"):
+        if (data == "pengaduan"):
+            text_helper = "pengaduan|" + \
+                str(kode_unit)+"|Idpel|NomorMeterLama|Keterangan dan petugas"
+            return text_helper
+        elif (data == "tindakan"):
+            text_helper = "tindakanpengaduan|kode|18 Digit Nomor Agenda"
+            return text_helper
+        else:
+            return "Kesalahan pada kode"

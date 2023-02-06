@@ -57,7 +57,7 @@ class AP2T:
             return "no"
 
     def login_ap2t(self, username_ap2t: str, password_ap2t: str):
-        print("uSERNAME : ", username_ap2t, "\PASSWORD : ", password_ap2t)
+        print("USERNAME : ", username_ap2t, "PASSWORD : ", password_ap2t)
         try:
             # Masukkan UserID
             userid = WebDriverWait(driver=self.driver, timeout=2).until(
@@ -117,8 +117,9 @@ class AP2T:
             print(message)
             return "no", message
 
-    def input_pengaduan_ct(self, id_pelanggan, petugas_dan_keterangan, link_pengaduan_ct, index: int = 0):
+    def input_pengaduan_ct(self, id_pelanggan: str = "0", fungsi_dropdown: str = "PERMINTAAN CLEAR TAMPER", petugas_dan_keterangan: str = "", link_pengaduan_ct: str = "", index: int = 0, nomortabdefault: int = 1):
         try:
+            print(link_pengaduan_ct)
             # Buka Tab baru
             self.driver.execute_script(
                 "window.open('"+link_pengaduan_ct+"');")
@@ -127,7 +128,7 @@ class AP2T:
             try:
                 # pindah tab ke tab pengaduan
                 self.driver.switch_to.window(
-                    self.driver.window_handles[1+index])
+                    self.driver.window_handles[nomortabdefault+index])
                 # In
                 tfidpel = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located(
@@ -147,17 +148,22 @@ class AP2T:
                 # Get parent categories
                 parentCategories = WebDriverWait(self.driver, 15).until(
                     EC.presence_of_all_elements_located(
-                        (By.CLASS_NAME, "x-combo-list-inner"))
+                        # (By.CLASS_NAME, "x-combo-list-inner")) #Berhasil untuk buat CT
+                        (By.CLASS_NAME, "x-combo-list-item"))
                 )
                 try:
                     # print(str(len(child_elements)))
                     print("Berhasil get child elements")
+                    print("jumlah item = ", str(len(parentCategories)))
                     for items in parentCategories:
                         print(items.text)
-                        if (items.text == "PERMINTAAN CLEAR TAMPER"):
+                        if (items.text.strip() == fungsi_dropdown):
+                            print("Item ditemukan")
                             # klik itemnya
                             items.click()
                             break
+                        else:
+                            print("item tidak sesuai")
                     time.sleep(1)
                     # Input Petugas dan Keterangan
                     field_keterngan = WebDriverWait(self.driver, 3).until(
@@ -166,14 +172,15 @@ class AP2T:
                         )
                     )
                     field_keterngan.send_keys(petugas_dan_keterangan)
-                    time.sleep(1)
-                    # pilih dropdown penyebab periksa
-                    btnAlasan = WebDriverWait(self.driver, 15).until(
-                        EC.presence_of_element_located(
-                            (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div/div/div/div[1]/div/div/div[2]/div/div/fieldset/div/div/div[9]/div[1]/div/img"))
-                    )
-                    btnAlasan.click()
-                    time.sleep(3)
+                    time.sleep(1)  # Untuk troubleshoot saja
+                    if (fungsi_dropdown == "PERMINTAAN CLEAR TAMPER"):
+                        # pilih dropdown penyebab periksa
+                        btnAlasan = WebDriverWait(self.driver, 15).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div/div/div/div[1]/div/div/div[2]/div/div/fieldset/div/div/div[9]/div[1]/div/img"))
+                        )
+                        btnAlasan.click()
+                        time.sleep(2)
                     try:
                         # get parent elements
                         parentPenyebab = WebDriverWait(self.driver, 3).until(
@@ -200,30 +207,41 @@ class AP2T:
                         btnSave.click()
                         time.sleep(2)
                         # copy nomor agendanya
-                        noAgenda = WebDriverWait(self.driver, 15).until(
-                            EC.presence_of_element_located(
-                                (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div/div/div/div[1]/div/div/div[1]/div/div/fieldset/div/div/div[1]/div/div/div/div[1]/div/div/div/div[1]/input"))
-                        )
-                        nomoragenda = noAgenda.get_attribute("value")
-                        # klik tombol success nya
-                        btnSuccess = WebDriverWait(self.driver, 15).until(
-                            EC.presence_of_element_located(
-                                (By.XPATH, "/html/body/div[14]/div[2]/div[2]/div/div/div/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
-                        )
-                        btnSuccess.click()
-                        print(nomoragenda)
-                        time.sleep(1)
-                        return ["yes", "Berhasil buat pengaduan", nomoragenda]
+                        try:
+                            noAgenda = WebDriverWait(self.driver, 15).until(
+                                EC.presence_of_element_located(
+                                    (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div/div/div/div[1]/div/div/div[1]/div/div/fieldset/div/div/div[1]/div/div/div/div[1]/div/div/div/div[1]/input"))
+                            )
+                            nomoragenda = noAgenda.get_attribute("value")
+                            print(nomoragenda)
+                            # klik tombol success nya
+                            try:
+                                btnSuccess = WebDriverWait(self.driver, 15).until(
+                                    EC.presence_of_element_located(
+                                        (By.XPATH, "/html/body/div[14]/div[2]/div[2]/div/div/div/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
+                                )
+                                btnSuccess.click()
+                                time.sleep(1)
+                                return ["yes", "Berhasil buat pengaduan", nomoragenda]
+                            except Exception as e:
+                                message = "Gagal klik konfirmasi\nMessage Error : " + \
+                                    str(e)
+                                return ["yes", message, nomoragenda]
+                        except Exception as e:
+                            message = "Gagal get nomor agenda\nMessage Error : " + \
+                                str(e)
+                            return ["no", message, 0]
                     except:
                         message = "Gagal pilih dropdown penyebab"
                         print(message)
                         return ["no", message, 0]
-                except:
-                    message = "Gagal pilih menu pengaduan"
+                except Exception as e:
+                    message = "Gagal pilih menu pengaduan\nMessage Error : " + \
+                        str(e)
                     print(message)
                     return ["no", message, 0]
-            except:
-                message = "Gagal input pengaduan"
+            except Exception as e:
+                message = "Gagal input pengaduan\nError Message : "+str(e)
                 print(message)
                 return ["no", message, 0]
                 # Buka Link Pengaduan Pelanggan CT
@@ -1032,8 +1050,7 @@ class ACMT:
         self.filepathchromedriver = filepatchromedriver
         self.download_dir = download_dir
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument(
-            user_options)
+        chrome_options.add_argument(user_options)
         chrome_options.add_argument(pm.ignore_ssl_errors)
         chrome_options.add_argument(pm.ignore_certificate_errors)
         self.url_acmt = url_acmt

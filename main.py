@@ -1,10 +1,11 @@
 from ASMENTE import Asmente
+from ASMENTE import ReplyButton
 from parameter import Parameter
 from DataFrame import dataframe
 from FILEMANAGER import filemanager
 import time
 import datetime
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.update import Update
 from telegram.ext.callbackcontext import CallbackContext
@@ -27,24 +28,35 @@ logger = logging.getLogger(__name__)
 def start(update, context):
     chat_id = update.message.chat_id
     query = update.callback_query
-    context.bot.send_message(
-        chat_id=chat_id, text="Bot Standby...")
+    [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
+    if (status == "yes"):
+        context.bot.send_message(
+            chat_id=chat_id, text="Bot Standby...")
+    else:
+        context.bot.send_message(
+            chat_id=chat_id, text=message)
 
 
 def informasi(update, context):
     chat_id = update.message.chat_id
-    text1 = "1. Untuk mengakses info pelanggan dengan idpel, silahkan ketik :\n'Info|0|12 digit idpel , contoh Info|0|32131xxxxxxx'\nPencarian denga nomor meter 'Info|1|nomor meter' , contoh Info|1|450xxxxxxxx\n"
-    text2 = "2. Untuk mengakses info pelanggan via ACMT dengan idpel. silahkan ketik 'Infoacmt|12 digit idpel' , contoh : Infoacmt 32111xxxxxxx\n"
-    text3 = "3. Untuk mengakses Info blocking token dari AP2T dengan idpel, silahkan ketik : Infoblokir|12 digit Idpel , contoh : Infoblokir|32121xxxxxxx\n"
-    text4 = "4. Untuk mengakses token KCT Upgrade KRN dengan idpel, silahkan ketik : Infokct idpel, contoh : Infokct 32131xxxxxxx\n"
-    text5 = "5. Untuk pembbuatan CT, ketik 'Ct|12 Digit Idpel|kode unit|Keterangan (Penyebab periksa, petugas dan keterangan lainnya)'\ncontoh : Ct|32131xxxxxxx|32131|ganti mcb, petugas fulan\n"
-    text6 = "6. Untuk menambah user baru (Hanya bisa di akses untuk role admin), ketik 'Add|chat_id|kode unit|Nama User|Nomor Telfon|level user'\nContoh : 'Add|817654873|32131|Fulan bin fulan|081321765487|user\n"
-    text7 = "7. Untuk reset Imei HP ACMT petugas Cater, ketik 'Resetimei|Kode unit|user petugas (tanpa kode uni)' , Contoh : Resetimei|32131|sitaba\n"
-    text8 = "8. Untuk Cek monitoring permohonan token berdasarkan Idpelnomor meter (kode 0 untuk idpel, 1 untuk nomor emter), 'ketik Montok|kode pencarian (0 / 1)|id pelanggan/nomor meter (sesuai dengan kategori)', contoh Montok|0|321500xxxxxx , atau Montok|1|14456787659\n"
-    text_penutup = "Info lebih lanjut silahkan hubungi Luthfil, TE UP3 Makassar selatan"
-    merge_text = text1+text2+text3+text4+text5+text6+text7+text8+text_penutup
-    context.bot.send_message(
-        chat_id=chat_id, text="Informasi cara pemakaian : "+"\n"+merge_text)
+    [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
+    if (status == "yes"):
+        text1 = "1. Untuk mengakses info pelanggan dengan idpel, silahkan ketik :\n'Info|0|12 digit idpel , contoh Info|0|32131xxxxxxx'\nPencarian denga nomor meter 'Info|1|nomor meter' , contoh Info|1|450xxxxxxxx\n"
+        text2 = "2. Untuk mengakses info pelanggan via ACMT dengan idpel. silahkan ketik 'Infoacmt|12 digit idpel' , contoh : Infoacmt 32111xxxxxxx\n"
+        text3 = "3. Untuk mengakses Info blocking token dari AP2T dengan idpel, silahkan ketik : Infoblokir|12 digit Idpel , contoh : Infoblokir|32121xxxxxxx\n"
+        text4 = "4. Untuk mengakses token KCT Upgrade KRN dengan idpel, silahkan ketik : Infokct idpel, contoh : Infokct 32131xxxxxxx\n"
+        text5 = "5. Untuk pembbuatan CT, ketik 'Ct|12 Digit Idpel|kode unit|Keterangan (Penyebab periksa, petugas dan keterangan lainnya)'\ncontoh : Ct|32131xxxxxxx|32131|ganti mcb, petugas fulan\n"
+        text6 = "6. Untuk menambah user baru (Hanya bisa di akses untuk role admin), ketik 'Add|chat_id|kode unit|Nama User|Nomor Telfon|level user'\nContoh : 'Add|817654873|32131|Fulan bin fulan|081321765487|user\n"
+        text7 = "7. Untuk reset Imei HP ACMT petugas Cater, ketik 'Resetimei|Kode unit|user petugas (tanpa kode uni)' , Contoh : Resetimei|32131|sitaba\n"
+        text8 = "8. Untuk Cek monitoring permohonan token berdasarkan Idpelnomor meter (kode 0 untuk idpel, 1 untuk nomor emter), 'ketik Montok|kode pencarian (0 / 1)|id pelanggan/nomor meter (sesuai dengan kategori)', contoh Montok|0|321500xxxxxx , atau Montok|1|14456787659\n"
+        text9 = "9. Untuk cetak KCT dari Nomor Agenda, bisa ketik 'Cetakkct|18 digit Nomor Agenda' ,contoh : Cetakkct|321310054567857456"
+        text_penutup = "Info lebih lanjut silahkan hubungi Luthfil, TE UP3 Makassar selatan"
+        merge_text = text1+text2+text3+text4+text5+text6+text7+text8+text9+text_penutup
+        context.bot.send_message(
+            chat_id=chat_id, text="Informasi cara pemakaian : "+"\n"+merge_text)
+    else:
+        context.bot.send_message(
+            chat_id=chat_id, text=message)
 
 
 def findnth(string, substring, n):
@@ -54,6 +66,17 @@ def findnth(string, substring, n):
     return len(string) - len(parts[-1]) - len(substring)
 
 # List perintah Asmen TE
+
+
+def button(update, context):
+    query = update.callback_query
+    context.bot.send_message(text="Yang dipilih : %s" %
+                             query.data, chat_id=query.message.chat_id)
+    message = ReplyButton.execute_button(
+        data=query.data, kode_unit="32131")
+    # Coba kirim respon
+    context.bot.send_message(
+        chat_id=query.message.chat_id, text=message)
 
 
 def read_command(update, context):
@@ -180,12 +203,14 @@ def read_command(update, context):
             [status, level_user, message] = Asmente.get_level_user(
                 chat_id=chat_id)
             if (status == "yes" and (level_user == "admin" or level_user == "owner")):
-                id_pelanggan = update.message.text[16:28]
-                kode_unit = update.message.text[10:15]
-                petugas_dan_keterangan = update.message.text[29:]
-                print("Memulai aktivasi meter")
-                context.bot.send_message(
-                    chat_id=chat_id, text="Memulai aktivasi meter idpel : "+id_pelanggan+"\n"+"Kode Unit : "+kode_unit+"\nKeterangan : "+petugas_dan_keterangan)
+                # kode_unit = update.message.text[10:15]
+                # id_pelanggan = update.message.text[16:28]
+                # petugas_dan_keterangan = update.message.text[29:]
+                print("Memulai buat pengaduan meter")
+                reply_markup = ReplyButton.opsi_aktivasi()
+                query = update.callback_query
+                update.message.reply_text(
+                    'SIlahkan pilih :', reply_markup=reply_markup)
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Periksa kembali command dan hak akses user")
@@ -249,6 +274,12 @@ def read_command(update, context):
                 if (status == "yes"):
                     resp = requests.post(
                         "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_ct))
+                else:
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Gagal kirim screenshoot token\nError Meesage : "+message)
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="Gagal cetak token\nError Meesage : "+message)
         elif ((update.message.text[:9] == "broadcast" or update.message.text[:9] == "Broadcast") and update.message.text[9:10] == "|"):
             # cek level user
             [status, level_user, message] = Asmente.get_level_user(
@@ -275,6 +306,37 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Level user tidak memiliki autentikasi")
+        # fungsi aktivasi meter
+        elif ((update.message.text[:9] == "pengaduan" or update.message.text[:9] == "Pengaduan" or update.message.text[:9] == "PENGADUAN") and update.message.text[9:10] == "|"):
+            [status, level_user, message] = Asmente.get_level_user(
+                chat_id=chat_id)
+            if (status == "yes" and (level_user == "owner" or level_user == "admin")):
+                # Get kode unitnya dulu
+                kodeunit = update.message.text[10:15]
+                print("Kode unit chat id : ", kodeunit)
+                status, kodeunitbanding, message = Asmente.get_kode_unit(
+                    chat_id=chat_id)
+                print("Kode unit bandig dr excel : ", kodeunitbanding)
+                if (status == "yes" and kodeunit == str(kodeunitbanding)):
+                    id_pelanggan = update.message.text[16:28]
+                    nomor_meter_lama = update.message.text[29:40]
+                    keterangan = update.message.text[41:]
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Memulai Aktivasi kWh Meter\nIdpel : "+id_pelanggan+"\nKode Unit : "+update.message.text[10:15]+"\nNomor Meter Lama : "+nomor_meter_lama+"\nKeterangan : "+keterangan)
+                    [status, message, nomoragenda] = Asmente.buatPengaduanHarAPP(
+                        id_pelanggan=id_pelanggan, kode_unit=kodeunit, nomor_meter_lama=nomor_meter_lama, keterangan=keterangan)
+                    if (status == "yes" and nomoragenda != 0):
+                        context.bot.send_message(
+                            chat_id=chat_id, text="tindakanpengaduan|"+str(nomoragenda))
+                    else:
+                        context.bot.send_message(
+                            chat_id=chat_id, text="Gagal buat pengaduan\nMessage Error : "+message)
+                else:
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Kode Unit user tidak sesuai")
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="User tidak punya hak akses")
         else:
             print("command tidak dikenal")
             context.bot.send_message(
@@ -366,13 +428,13 @@ def main():
     # Membuat scheduler untuk update saldo tunggakan
     j = updater.job_queue
     # Jam 3.30 setiap hari
-    j.run_daily(
-        update_data_otomatis,
-        days=(0, 1, 2, 3, 4, 5, 6), time=datetime.time(hour=10, minute=39, second=00)
-    )
-
+    # j.run_daily(
+    #     update_data_otomatis,
+    #     days=(0, 1, 2, 3, 4, 5, 6), time=datetime.time(hour=10, minute=39, second=00)
+    # )
     # Message Handler harus d pasang paling terakhir
     dispatcher.add_handler(MessageHandler(Filters.text, read_command))
+    dispatcher.add_handler(CallbackQueryHandler(button))
     # Start polling
     updater.start_polling()
     # Stop

@@ -259,6 +259,17 @@ class Asmente():
         else:
             return "no", message, 0
 
+    def tindakanPengaduanHarAPP(nomoragenda: int, kode_unit: str):
+        print("Memulai tindakan pengaduan Nomor Agenda : ", str(nomoragenda))
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                    filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        # Get user untuk tindakan pengaduan, pake user spv TE
+        [link_tindakan_pengaduan_ct, username_ap2t, password_ap2t] = df.get_userlink_bykodeunit(
+            kdunit=kode_unit, jenis_user="TL TE", part_link_awal=pm.linktindakanpengaduan, part_link_akhir=pm.linktindakanpengaduan_2)
+        status, message, nomoragenda = ap2t.tindakan_pengaduan_ct(
+            nomor_agenda=nomoragenda, link_tindakan_pengaduan_ct=link_tindakan_pengaduan_ct, nomortabdefault=1, fungsi_dropdown="PENGADUAN TEKNIS")
+        return status, message, nomoragenda
+
 
 class ReplyButton():
 

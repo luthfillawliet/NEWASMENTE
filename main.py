@@ -327,7 +327,7 @@ def read_command(update, context):
                         id_pelanggan=id_pelanggan, kode_unit=kodeunit, nomor_meter_lama=nomor_meter_lama, keterangan=keterangan)
                     if (status == "yes" and nomoragenda != 0):
                         context.bot.send_message(
-                            chat_id=chat_id, text="tindakanpengaduan|"+str(nomoragenda))
+                            chat_id=chat_id, text="tindakanpengaduan|"+kodeunit+"|"+str(nomoragenda))
                     else:
                         context.bot.send_message(
                             chat_id=chat_id, text="Gagal buat pengaduan\nMessage Error : "+message)
@@ -337,6 +337,19 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="User tidak punya hak akses")
+        elif ((update.message.text[:8] == "tindakan" or update.message.text[:8] == "Tindakan" or update.message.text[:8] == "TINDAKAN") and len(update.message.text) == 33):
+            kode_unit = update.message.text[9:14]
+            nomoragenda = update.message.text[15:]
+            context.bot.send_message(
+                chat_id=chat_id, text="Memulai save tindakan pengaduan\nNomor Agenda : "+nomoragenda+"\nKode Unit : "+kode_unit)
+            status, message, nomoragenda = Asmente.tindakanPengaduanHarAPP(
+                nomoragenda=int(nomoragenda), kode_unit=kode_unit)
+            if (status == "yes"):
+                context.bot.send_message(
+                    chat_id=chat_id, text="Berhasil save tindakan pengaduan")
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text=message)
         else:
             print("command tidak dikenal")
             context.bot.send_message(

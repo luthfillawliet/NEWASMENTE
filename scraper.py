@@ -250,7 +250,7 @@ class AP2T:
             print(message)
             return ["no", message, 0]
 
-    def tindakan_pengaduan_ct(self, nomor_agenda, link_tindakan_pengaduan_ct, index: int = 0):
+    def tindakan_pengaduan_ct(self, nomor_agenda, link_tindakan_pengaduan_ct, fungsi_dropdown: str = "PERMINTAAN CLEAR TAMPER", index: int = 0, nomortabdefault: int = 2):
         try:
             # Buka Tab baru
             self.driver.execute_script(
@@ -259,7 +259,7 @@ class AP2T:
             try:
                 # pindah tab ke tab pengaduan
                 self.driver.switch_to.window(
-                    self.driver.window_handles[2+index])
+                    self.driver.window_handles[nomortabdefault+index])
                 print("Berhasil buka tab Tindakan pengaduan")
                 # Clsoe pop up  notif
                 btnClose = WebDriverWait(self.driver, 10).until(
@@ -278,23 +278,63 @@ class AP2T:
                 time.sleep(.5)
                 field_noagenda.send_keys(Keys.RETURN)
                 time.sleep(3)
-                # save nomor agenda
-                btnSaveT = WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located(
-                        (By.XPATH, "/html/body/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div/div/div/div[2]/div[1]/div/div/div/form/fieldset[4]/div/div[2]/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
-                    # /html/body/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div/div/div/div[2]/div[1]/div/div/div/form/fieldset[4]/div/div[2]/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button
-                )
-                btnSaveT.click()
-                time.sleep(1)
-                message = "Berhasil menyimpan tindakan pengaduan"
-                print(message)
-                return ["yes", message, nomor_agenda]
-            except:
-                message = "Gagal entry tindakan pengaduan"
+                # Jika fungsi permintaan clear tamper
+                if (fungsi_dropdown == "PERMINTAAN CLEAR TAMPER"):
+                    # save nomor agenda
+                    try:
+                        btnSaveT = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div/div/div/div[2]/div[1]/div/div/div/form/fieldset[4]/div/div[2]/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
+                        )
+                        btnSaveT.click()
+                        time.sleep(1)
+                        message = "Berhasil menyimpan tindakan pengaduan"
+                        print(message)
+                        return ["yes", message, nomor_agenda]
+                    except Exception as e:
+                        message = "Gagal klik btn Save\nMessage Error : " + \
+                            str(e)
+                        return "no", message, 0
+                elif (fungsi_dropdown == "PENGADUAN TEKNIS"):
+                    # Klik dropdown Uraian tindakan
+                    dropdown_btn = WebDriverWait(self.driver, 15).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div/div/div/div[2]/div[1]/div/div/div/form/fieldset[2]/div/div/div[3]/div[1]/div/img"))
+                    )
+                    dropdown_btn.click()
+                    parentCategories = WebDriverWait(self.driver, 15).until(
+                        EC.presence_of_all_elements_located(
+                            # (By.CLASS_NAME, "x-combo-list-inner")) #Berhasil untuk buat CT
+                            (By.CLASS_NAME, "x-combo-list-item"))
+                    )
+                    try:
+                        # print(str(len(child_elements)))
+                        print("Berhasil get child elements")
+                        print("jumlah item = ", str(len(parentCategories)))
+                        for items in parentCategories:
+                            print(items.text)
+                            if (items.text.strip() == "GANTI KWH METER"):
+                                print("Item ditemukan")
+                                # klik itemnya
+                                items.click()
+                                break
+                            else:
+                                print("item tidak sesuai")
+                        time.sleep(1)
+                        return ["yes", message, nomor_agenda]
+                    except Exception as e:
+                        message = "Gagal klik dropdown\nMessage Error : " + \
+                            str(e)
+                        print(message)
+                        return ["no", message, nomor_agenda]
+            except Exception as e:
+                message = "Gagal entry tindakan pengaduan\nMessage Error : " + \
+                    str(e)
                 print(message)
                 return ["no", message, nomor_agenda]
-        except:
-            message = "Gagal Buka Halaman Tindakan pengaduan"
+        except Exception as e:
+            message = "Gagal Buka Halaman Tindakan pengaduan\nMessage Error : " + \
+                str(e)
             print(message)
             return ["no", message, nomor_agenda]
 
@@ -664,9 +704,16 @@ class AP2T:
                         (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div[4]/div/div/div/div[1]/div/div/div/div[1]/input"))
                 )
                 krn = "Versi KRN : "+versiKRN.get_attribute("value")+"\n"
+                # Get Faktor Kali Meter
+                element13 = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[3]/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div[3]/div/div/div/div[6]/div/div/div/div[1]/input"))
+                )
+                fkm = element13.get_attribute("value")
+                fkm = "Faktor Kali Meter : "+fkm+"\n"
                 # Merge semua data
                 dataPelanggan = id_pelanggan+nomor_meter + \
-                    namapelanggan+tarif+daya+alamat+merk_meter+krn
+                    namapelanggan+tarif+daya+alamat+merk_meter+krn+fkm
                 time.sleep(1)
                 informasi = dataPelanggan
                 message = "Berhasil Ambil Info Pelanggan"

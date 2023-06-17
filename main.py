@@ -5,10 +5,10 @@ from DataFrame import dataframe
 from FILEMANAGER import filemanager
 import time
 import datetime
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue, CallbackQueryHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, filters, JobQueue, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.update import Update
-from telegram.ext.callbackcontext import CallbackContext
+from telegram import Update
+from telegram.ext import CallbackContext
 import requests
 # Import Amicon object
 from scraper import Amicon
@@ -446,7 +446,7 @@ def main():
     #     days=(0, 1, 2, 3, 4, 5, 6), time=datetime.time(hour=10, minute=39, second=00)
     # )
     # Message Handler harus d pasang paling terakhir
-    dispatcher.add_handler(MessageHandler(Filters.text, read_command))
+    dispatcher.add_handler(MessageHandler(filters.text, read_command))
     dispatcher.add_handler(CallbackQueryHandler(button))
     # Start polling
     updater.start_polling()

@@ -250,7 +250,7 @@ class AP2T:
             print(message)
             return ["no", message, 0]
 
-    def tindakan_pengaduan_ct(self, nomor_agenda, link_tindakan_pengaduan_ct, fungsi_dropdown: str = "PERMINTAAN CLEAR TAMPER", index: int = 0, nomortabdefault: int = 2):
+    def tindakan_pengaduan_ct(self, nomor_agenda, link_tindakan_pengaduan_ct, fungsi_dropdown: str = "PERMINTAAN CLEAR TAMPER", index: int = 0, nomortabdefault: int = 2, uraian_tindakan: str = "GANTI KWH METER", alasan_ganti_meter: str = "Relay rusak"):
         try:
             # Buka Tab baru
             self.driver.execute_script(
@@ -313,7 +313,8 @@ class AP2T:
                         print("jumlah item = ", str(len(parentCategories)))
                         for items in parentCategories:
                             print(items.text)
-                            if (items.text.strip() == "GANTI KWH METER"):
+                            # Di sesuaikan alasan ganti meternya
+                            if (items.text.strip() == uraian_tindakan):
                                 print("Item ditemukan")
                                 # klik itemnya
                                 items.click()
@@ -321,31 +322,73 @@ class AP2T:
                             else:
                                 print("item tidak sesuai")
                         time.sleep(1)
-                        return ["yes", message, nomor_agenda]
+                        # search Alasan Ganti Meter
+                        try:
+                            dropdown_btn_alasan = WebDriverWait(self.driver, 15).until(
+                                EC.presence_of_element_located(
+                                    (By.XPATH, "/html/body/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div/div/div/div[2]/div[1]/div/div/div/form/fieldset[2]/div/div/div[6]/div[1]/div/img"))
+                            )
+                            dropdown_btn_alasan.click()
+                            # Pilih alasan ganti meter
+                            parentCategories = WebDriverWait(self.driver, 15).until(
+                                EC.presence_of_all_elements_located(
+                                    (By.CLASS_NAME, "x-combo-list-item"))
+                            )
+                            for items in parentCategories:
+                                print(items.text)
+                                # Di sesuaikan alasan ganti meternya
+                                if (items.text.strip() == alasan_ganti_meter):
+                                    print("Item ditemukan")
+                                    # klik itemnya
+                                    items.click()
+                                    break
+                                else:
+                                    print("item tidak sesuai")
+                            # save nomor agenda
+                            try:
+                                btnSaveT = WebDriverWait(self.driver, 10).until(
+                                    EC.presence_of_element_located(
+                                        (By.XPATH, "/html/body/div[1]/div[2]/div/table/tbody/tr/td[1]/div/div/div/div/div[2]/div[1]/div/div/div/form/fieldset[4]/div/div[2]/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
+                                )
+                                btnSaveT.click()
+                                time.sleep(1)
+                                message = "Berhasil menyimpan tindakan pengaduan"
+                                print(message)
+                                time.sleep(1)
+                                return ["yes", message, nomor_agenda]
+                            except Exception as e:
+                                message = "Gagal klik btn Save\nMessage Error : " + \
+                                    str(e)
+                                return "no", message, 0
+                        except Exception as e:
+                            message = "Gagal pilih Alasan ganti meter\nMessage Error : " + \
+                                str(e)
+                            return ["no", message, 0]
                     except Exception as e:
-                        message = "Gagal klik dropdown\nMessage Error : " + \
+                        message = "Gagal pilih uraian tindakan\nMessage Error : " + \
                             str(e)
                         print(message)
-                        return ["no", message, nomor_agenda]
+                        return ["no", message, 0]
             except Exception as e:
                 message = "Gagal entry tindakan pengaduan\nMessage Error : " + \
                     str(e)
                 print(message)
-                return ["no", message, nomor_agenda]
+                return ["no", message, 0]
         except Exception as e:
             message = "Gagal Buka Halaman Tindakan pengaduan\nMessage Error : " + \
                 str(e)
             print(message)
-            return ["no", message, nomor_agenda]
+            return ["no", message, 0]
 
-    def aktivasi_ct(self, nomoragenda, link_aktivasi_meter, index: int = 0):
+    def aktivasi_ct(self, nomoragenda, link_aktivasi_meter, index: int = 0, nomortabdefault: int = 3, nomor_meter_baru: int = 0, fungsi_dropdown: str = "PERMINTAAN CLEAR TAMPER"):
         try:
             print("Memulai aktivasi token")
             self.driver.execute_script(
                 "window.open('"+link_aktivasi_meter+"');")
             time.sleep(5)  # Bisa di ubah sesuai kebutuhan
             # pindah tab ke tab pengaduan
-            self.driver.switch_to.window(self.driver.window_handles[3+index])
+            self.driver.switch_to.window(
+                self.driver.window_handles[nomortabdefault+index])
             noAgendaAktivasi = WebDriverWait(self.driver, 15).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "/html/body/form/div[3]/div/div/div/div/div/div[2]/div/div[2]/div[1]/div/div/div/div/div[1]/fieldset/div/div/div/div[1]/div/div[2]/input"))
@@ -359,21 +402,95 @@ class AP2T:
             )
             btnCari.click()
             time.sleep(3)
-            # klik simpan
-            btnSimpan = WebDriverWait(self.driver, 15).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "/html/body/form/div[3]/div/div/div/div/div/div[1]/div[2]/div/div[1]/div/table/tbody/tr/td[2]/table/tbody/tr/td[2]/em/button"))
-            )
-            btnSimpan.click()
-            # confirm simpan
-            btnSimpan = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "/html/body/div[5]/div[2]/div[2]/div/div/div/div/div/table/tbody/tr/td[2]/table"))
-            )
-            btnSimpan.click()
-            time.sleep(1)
-            message = "Berhasil aktivasi token"
-            return ["yes", message, nomoragenda]
+            if (fungsi_dropdown == "PERMINTAAN CLEAR TAMPER"):
+                # klik simpan
+                btnSimpan = WebDriverWait(self.driver, 15).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/form/div[3]/div/div/div/div/div/div[1]/div[2]/div/div[1]/div/table/tbody/tr/td[2]/table/tbody/tr/td[2]/em/button"))
+                )
+                btnSimpan.click()
+                # confirm simpan
+                btnSimpan = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[5]/div[2]/div[2]/div/div/div/div/div/table/tbody/tr/td[2]/table"))
+                )
+                btnSimpan.click()
+                time.sleep(1)
+                message = "Berhasil aktivasi token"
+                return ["yes", message, nomoragenda]
+            elif (fungsi_dropdown == "PENGADUAN TEKNIS"):
+                print("Fungsi dropdown yang di eksekusi :  "+fungsi_dropdown)
+                # Masukkan nomor kWh meter baru
+                text_field = WebDriverWait(self.driver, 10).until(
+                    # EC.presence_of_element_located(
+                    # (By.XPATH, "/html/body/form/div[3]/div/div/div/div/div/div[2]/div/div[2]/div[1]/div/div/div/div/div[3]/fieldset/div/div/div[1]/div[1]/div/input[2]"))
+                    EC.presence_of_element_located((By.ID, "cNoMeter"))
+                )
+                text_field.send_keys(nomor_meter_baru)
+                text_field.send_keys(Keys.RETURN)
+                time.sleep(2)
+                print(text_field.get_attribute("value"))
+                try:
+                    # save
+                    btnSimpan = WebDriverWait(self.driver, 15).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/form/div[3]/div/div/div/div/div/div[1]/div[2]/div/div[1]/div/table/tbody/tr/td[2]/table/tbody/tr/td[2]/em/button"))
+                        # (By.CLASS_NAME, "x-btn-text icon-databasesave"))
+                    )
+                    btnSimpan.click()
+                    print("Berhasil klik pertama")
+                    time.sleep(3)
+                    # notif nomor meter kosong muncul
+                    try:
+                        btnClose = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[6]/div[2]/div[2]/div/div/div/div/div/table/tbody/tr/td[1]/table"))
+                        )
+                        btnClose.click()
+                        time.sleep(1)
+                        btnSimpan.click()
+                        time.sleep(3)
+                        # Tekan tombol konfirmasi
+                        try:
+                            print("Coba klik ya")
+                            time.sleep(5)  # DI hapus nanti
+                            parentCategories = WebDriverWait(self.driver, 15).until(
+                                EC.presence_of_all_elements_located(
+                                    # (By.CLASS_NAME, "x-combo-list-inner")) #Berhasil untuk buat CT
+                                    (By.CLASS_NAME, "x-panel-btn-td"))
+                            )
+                            try:
+                                # print(str(len(child_elements)))
+                                print("Berhasil get child elements")
+                                print("jumlah item = ", str(
+                                    len(parentCategories)))
+                                for items in parentCategories:
+                                    print(items.text)
+                                    if (items.text.strip() == "Ya"):
+                                        print("Item ditemukan")
+                                        # klik itemnya
+                                        items.click()
+                                        break
+                                    else:
+                                        print("item tidak sesuai")
+                                time.sleep(1)
+                                return ["yes", message, nomoragenda]
+                            except Exception as e:
+                                message = "Gagal klik tombol konfirmasi\nMessage Error : " + \
+                                    str(e)
+                                return ["no", message, 0]
+                        except Exception as e:
+                            message = "Gagal klik tombol konfirmasi\nMessage Error : " + \
+                                str(e)
+                            return ["no", message, 0]
+                    except Exception as e:
+                        message = "Notif error nomor metr tidak muncul\nMessage Error : " + \
+                            str(e)
+                        return ["no", message, 0]
+                except Exception as e:
+                    message = "Gagal klik simpan\nMessage Error : "+str(e)
+                    print("gagal klik simpan")
+                    return "no", message, 0
         except:
             message = "Gagal aktivasi token"
             print(message)
@@ -707,7 +824,7 @@ class AP2T:
                 # Get Faktor Kali Meter
                 element13 = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located(
-                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[3]/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div[3]/div/div/div/div[6]/div/div/div/div[1]/input"))
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div[3]/div/div/div/div[6]/div/div/div/div[1]/input"))
                 )
                 fkm = element13.get_attribute("value")
                 fkm = "Faktor Kali Meter : "+fkm+"\n"
@@ -824,7 +941,7 @@ class AP2T:
                     print("Nama petugas pencarian = "+nama_petugas)
                     for i in range(len(ptgs_rows)):
                         xpath = "/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[2]/div/div["+str(
-                                i+1)+"]/table/tbody/tr/td[2]"
+                            i+1)+"]/table/tbody/tr/td[2]"
                         selected_rows = WebDriverWait(self.driver, 10).until(
                             EC.presence_of_element_located(
                                 (By.XPATH, xpath))
@@ -1069,7 +1186,7 @@ class AP2T:
                             # tanggal jatuh tempo
                             print("Nomor Agenda : " +
                                   cell_nomor_agenda.text + " Tgl Transaksi : "+cell_tgl_transaksi.text)
-                            message = message+"No register : "+cell_nomor_agenda.text + \
+                            message = message+"No Agenda : "+cell_nomor_agenda.text + \
                                 " Tgl Transaksi : "+cell_tgl_transaksi.text+" Jenis Transaksi : " + \
                                 cell_jenis_transaksi.text+" Status Agenda : : "+cell_status_agenda.text + \
                                 " Petugas : "+cell_petugas.text+" Kd Unit : "+cell_unit.text+"\n"
@@ -1343,7 +1460,7 @@ class Amicon(webdriver.Chrome):
         with open(filename, 'wb') as f:
             f.write(canvas_png)
 
-    @staticmethod
+    @ staticmethod
     def read_captcha(filename):
         reader = easyocr.Reader(gpu=True,
                                 lang_list=['en', 'id'])  # this needs to run only once to load the model into memory

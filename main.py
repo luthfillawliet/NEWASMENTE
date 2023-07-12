@@ -5,10 +5,10 @@ from DataFrame import dataframe
 from FILEMANAGER import filemanager
 import time
 import datetime
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters, JobQueue, CallbackQueryHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.update import Update
+from telegram.ext.callbackcontext import CallbackContext
 import requests
 # Import Amicon object
 from scraper import Amicon
@@ -35,6 +35,11 @@ def start(update, context):
     else:
         context.bot.send_message(
             chat_id=chat_id, text=message)
+        # notif ke admin
+        context.bot.send_message(
+            chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
+        context.bot.send_message(
+            chat_id=pm.chat_id_admin, text=str(chat_id))
 
 
 def informasi(update, context):
@@ -57,6 +62,11 @@ def informasi(update, context):
     else:
         context.bot.send_message(
             chat_id=chat_id, text=message)
+        # notif ke admin
+        context.bot.send_message(
+            chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
+        context.bot.send_message(
+            chat_id=pm.chat_id_admin, text=str(chat_id))
 
 
 def findnth(string, substring, n):
@@ -199,7 +209,7 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Tipe Pencarian tidak diketahui")
-        elif (update.message.text[:9] == "Aktifasi" or update.message.text[:9] == "aktifasi" or update.message.text[:9] == "AKTIFASI" or update.message.text[:9] == "Aktivasi" or update.message.text[:9] == "aktivasi"):
+        elif ((update.message.text[:8] == "Aktifasi" or update.message.text[:8] == "aktifasi" or update.message.text[:8] == "AKTIFASI" or update.message.text[:8] == "Aktivasi" or update.message.text[:8] == "aktivasi") and len(update.message.text) == 8):
             [status, level_user, message] = Asmente.get_level_user(
                 chat_id=chat_id)
             if (status == "yes" and (level_user == "admin" or level_user == "owner")):
@@ -327,10 +337,14 @@ def read_command(update, context):
                         id_pelanggan=id_pelanggan, kode_unit=kodeunit, nomor_meter_lama=nomor_meter_lama, keterangan=keterangan)
                     if (status == "yes" and nomoragenda != 0):
                         context.bot.send_message(
-                            chat_id=chat_id, text="tindakanpengaduan|"+kodeunit+"|"+str(nomoragenda))
+                            chat_id=chat_id, text="tindakan|"+kodeunit+"|"+str(nomoragenda))
                     else:
                         context.bot.send_message(
                             chat_id=chat_id, text="Gagal buat pengaduan\nMessage Error : "+message)
+                    # Write log data
+                    dat = dataframe()
+                    dat.log_data(chat_id=chat_id,
+                                 activity="Buat pengaduan APP Idpel : "+id_pelanggan, time=str(datetime.datetime.now()))
                 else:
                     context.bot.send_message(
                         chat_id=chat_id, text="Kode Unit user tidak sesuai")
@@ -346,10 +360,32 @@ def read_command(update, context):
                 nomoragenda=int(nomoragenda), kode_unit=kode_unit)
             if (status == "yes"):
                 context.bot.send_message(
-                    chat_id=chat_id, text="Berhasil save tindakan pengaduan")
+                    chat_id=chat_id, text="Berhasil save tindakan pengaduan Nomor Agenda " +
+                    str(nomoragenda))
+                context.bot.send_message(
+                    chat_id=chat_id, text="aktivasiapp|"+kode_unit+"|"+str(nomoragenda)+"|"+"Nomor Meter Baru")
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
+            # Write log data
+            dat = dataframe()
+            dat.log_data(chat_id=chat_id,
+                         activity="Save tindakan pengaduan Agenda: "+str(nomoragenda), time=str(datetime.datetime.now()))
+        elif ((update.message.text[:11] == "aktivasiapp" or update.message.text[:11] == "Aktivasiapp" or update.message.text[:11] == "AKTIVASIAPP") and len(update.message.text) == 48):
+            kode_unit = update.message.text[12:17]
+            nomoragenda = update.message.text[18:36]
+            nomor_meter_baru = update.message.text[37:]
+            context.bot.send_message(
+                chat_id=chat_id, text="Memulai aktivasi kWh meter dengan nomor agenda : "+nomoragenda+"\nNomor meter baru : "+nomor_meter_baru+"\nKode Unit : "+kode_unit)
+            status, message, nomoragenda = Asmente.aktivasiHarAPP(nomoragenda=int(
+                nomoragenda), kode_unit=kode_unit, nomor_meter_baru=nomor_meter_baru)
+            if (status == "yes" and nomoragenda != 0):
+                context.bot.send_message(
+                    chat_id=chat_id, text="cetakkct|"+str(nomoragenda))
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text=message)
+
         else:
             print("command tidak dikenal")
             context.bot.send_message(
@@ -446,7 +482,7 @@ def main():
     #     days=(0, 1, 2, 3, 4, 5, 6), time=datetime.time(hour=10, minute=39, second=00)
     # )
     # Message Handler harus d pasang paling terakhir
-    dispatcher.add_handler(MessageHandler(filters.text, read_command))
+    dispatcher.add_handler(MessageHandler(Filters.text, read_command))
     dispatcher.add_handler(CallbackQueryHandler(button))
     # Start polling
     updater.start_polling()

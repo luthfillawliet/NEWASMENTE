@@ -16,7 +16,7 @@ class Parameter:
         # lokasi file executable AP2T Enkripsi, ada di folder PT PLN. AP2T Enkripsi
         self.filepathenkripsi = r'C:\Program Files (x86)\PT PLN (PERSERO)\AP2T ENKRIPSI\Token.exe'
         # jika mau menggunakan cache bawaan browser, silahkan di aktifkan (uncomment), lokasi atur sesuai lokasi cache
-        self.user_options = "user-data-dir=C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"
+        self.user_options = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
         # file list user
         self.filepathlistuser = r'data\listuser\listuser.xlsx'
         # sheet name list user

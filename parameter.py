@@ -9,6 +9,8 @@ class Parameter:
         # index, digunakan untuk server dengan spesifikasi rendah (os windows < 10)
         # 0 untuk server baru, 1 untuk server lama
         self.index = 0
+        # nomortabdefault local dan server
+        self.nomortabdefaultpengaduan = 1
         # filepath executable file chromedriver, sesuaikan dengan versi chrome komputer masing2 server, jangan lupa di ekstrak
         self.filepathchromedriver = r'chromedriver\chromedriver.exe'
         # lokasi file executable AP2T Enkripsi, ada di folder PT PLN. AP2T Enkripsi

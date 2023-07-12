@@ -252,7 +252,7 @@ class Asmente():
                 [link_pengaduan, username, password] = df.get_userlink_bykodeunit(
                     kdunit=kode_unit, jenis_user="TL YAN GAN DAN ADM", part_link_awal=pm.linkpengaduanct, part_link_akhir=pm.linkpengaduanct_2)
                 [status, message, nomoragenda] = ap2t.input_pengaduan_ct(
-                    id_pelanggan=id_pelanggan, fungsi_dropdown="PENGADUAN TEKNIS", petugas_dan_keterangan=nomor_meter_lama+" Keterangan : "+keterangan, nomortabdefault=1, link_pengaduan_ct=link_pengaduan)
+                    id_pelanggan=id_pelanggan, fungsi_dropdown="PENGADUAN TEKNIS", petugas_dan_keterangan=nomor_meter_lama+" Keterangan : "+keterangan, nomortabdefault=pm.nomortabdefaultpengaduan, link_pengaduan_ct=link_pengaduan)
                 return "yes", message, nomoragenda
             else:
                 return "no", message, 0
@@ -267,8 +267,31 @@ class Asmente():
         [link_tindakan_pengaduan_ct, username_ap2t, password_ap2t] = df.get_userlink_bykodeunit(
             kdunit=kode_unit, jenis_user="TL TE", part_link_awal=pm.linktindakanpengaduan, part_link_akhir=pm.linktindakanpengaduan_2)
         status, message, nomoragenda = ap2t.tindakan_pengaduan_ct(
-            nomor_agenda=nomoragenda, link_tindakan_pengaduan_ct=link_tindakan_pengaduan_ct, nomortabdefault=1, fungsi_dropdown="PENGADUAN TEKNIS")
+            nomor_agenda=nomoragenda, link_tindakan_pengaduan_ct=link_tindakan_pengaduan_ct, nomortabdefault=pm.nomortabdefaultpengaduan, fungsi_dropdown="PENGADUAN TEKNIS")
         return status, message, nomoragenda
+
+    def aktivasiHarAPP(nomoragenda: int, kode_unit: str, nomor_meter_baru: str):
+        # print("Memulai aktivasi Har APP")
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                    filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        # Login
+        [link_pengaduan, username, password] = df.get_userlink_bykodeunit(
+            kdunit=kode_unit, jenis_user="TL TEKNIK", part_link_awal=pm.linkpengaduanct, part_link_akhir=pm.linkpengaduanct_2)
+        status = ap2t.open_ap2t()
+        if (status == "yes"):
+            [status, message] = ap2t.login_ap2t(
+                username_ap2t=username, password_ap2t=password)
+            if (status == "yes"):
+                # Get link Aktivasi meter
+                [status, message, nomor_id] = ap2t.aktivasi_ct(
+                    nomoragenda=nomoragenda, link_aktivasi_meter=pm.linkaktivasimeter, index=pm.index, nomortabdefault=pm.nomortabdefaultpengaduan, nomor_meter_baru=nomor_meter_baru, fungsi_dropdown="PENGADUAN TEKNIS")
+                return "yes", message, nomoragenda
+            else:
+                message = "Gagal Aktivasi"
+                return "no", message, 0
+        else:
+            message = "Gagal login"
+            return "no", message, 0
 
 
 class ReplyButton():
@@ -284,7 +307,7 @@ class ReplyButton():
         reply_markup = InlineKeyboardMarkup(buttons)
         return reply_markup
 
-    def execute_button(data: str, kode_unit: int = "32131"):
+    def execute_button(data: str, kode_unit: int = "11111"):
         if (data == "pengaduan"):
             text_helper = "pengaduan|" + \
                 str(kode_unit)+"|Idpel|NomorMeterLama|Keterangan dan petugas"

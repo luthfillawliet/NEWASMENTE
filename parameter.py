@@ -53,7 +53,8 @@ class Parameter:
         self.link_info_pelanggan = "https://ap2t.pln.co.id/infopelanggannewap2t-dr/"
         # reset imei
         self.url_resetimei = "https://ap2t.pln.co.id/acmt/Acmt.html?sessionid=4vfjje45dm11otflmo3wfrfn&page=frmMasterImei&userid=9615040FY"
-
+        # link Update Realisasi TS
+        self.url_tagsus = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getlaporantsgab&report=report/NONREK/rpt_ts_daftar_realisasi_pendapatan_penetapan_ts.xls&unitup=SEMUA&unitap=32AMS&unitupi=32&jenislap=DAFTAR%20REALISASI%20PENDAPATAN%20PENETAPAN%20TAGIHAN%20SUSULAN%20(TUNAI%20DAN%20ANGSURAN)&thbl=202307"
         # Default (Di ganti sesuai kebutuhan developer/programmer)
         # Lokasi foto CT
         self.filepathct = 'fotoct\\'

@@ -1356,6 +1356,7 @@ class ACMT:
             informasi = "null"
             return "no", informasi, message
 
+    
 # Create class for scraping
 
 

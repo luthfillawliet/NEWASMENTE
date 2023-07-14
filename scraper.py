@@ -1625,9 +1625,11 @@ class Helper:
             os.remove(file_path)
             message = f"The file '{filename_and_name_extension}' Berhasil di hapus."
             print(message)
+            return "yes", message
         else:
             message = f"The file '{filename_and_name_extension}' File tidak ditemukan."
             print(message)
-        return "yes", message
+            return "no",message
+        
     
 #Helper.delete_file(r'data\downloads','ReportServlet.xls')

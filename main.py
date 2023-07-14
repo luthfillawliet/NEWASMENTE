@@ -395,7 +395,7 @@ def read_command(update, context):
                     chat_id=chat_id, text=message)
             else:
                 context.bot.send_message(
-                    chat_id=chat_id, text=message)
+                    chat_id=chat_id, text="Gagal ambil kode unit\n"+message)
         else:
             print("command tidak dikenal")
             context.bot.send_message(

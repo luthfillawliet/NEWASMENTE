@@ -386,6 +386,8 @@ def read_command(update, context):
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
         elif ((update.message.text[:10] == "tagsusp2tl" or update.message.text[:10] == "Tagsusp2tl" or update.message.text[:10] == "TAGSUSP2TL")):
+            context.bot.send_message(
+                    chat_id=chat_id, text="Memulai Pembuatan Laporan Tagihan Susulan Hari ini")
             df = dataframe()
             tahun_bulan = "202307"
             [status,kode_unit_user,message] = df.get_kode_unit_user_tagsus(chat_id=chat_id)

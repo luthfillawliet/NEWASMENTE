@@ -305,8 +305,13 @@ class Asmente():
             if(status == "yes"):
                 #baca data excel ReportServlet
                 [status,message,df] = dataframe.read_reportservlet(skip_rows=8)
-                print(df)
-                return "yes",message
+                #print(df)
+                if(status == "yes"):
+                    TAB_NAME = "7.Juli_copy"
+                    [status,message] = dataframe.write_df_to_google_sheet(pm.filepathjson,GSHEET=pm.filename_googlespreadsheet_tagsus,TAB_NAME=TAB_NAME,df=df,first_row=9,first_col=1)
+                    return "yes",message
+                else:
+                    return "no", message
             #kirim Laporan
             else:
                 return "no",message

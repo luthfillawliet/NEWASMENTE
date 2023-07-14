@@ -72,6 +72,8 @@ class Parameter:
         self.namafiletagsus = "ReportServlet.xls"
         # link ap2t
         self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'
+        self.filepathjson = R'data\gsheet\monitoringpju-290711-01d17333a9eb.json'
+        self.filename_googlespreadsheet_tagsus = "Monitoring TS P2TL 2023"
 
         # Parameter aplikasi si gadis
         self.username_amicon = 'pusat\\asdar02'

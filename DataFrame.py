@@ -2,6 +2,8 @@ import pandas as pd
 import openpyxl
 import xlwt
 from parameter import Parameter
+import gspread #untuk akses google spreadsheet
+from gspread_dataframe import set_with_dataframe
 
 pm = Parameter()
 
@@ -230,5 +232,18 @@ class dataframe():
         # print(df)
         return df["chat_id"]
 
+#Write Data to Google Sheet
+    def write_df_to_google_sheet(filepathjson,GSHEET,TAB_NAME,df,first_row,first_col):
+        #access the spreadsheet
+        try:
+            gc = gspread.service_account(filepathjson)
+            sh = gc.open(GSHEET)
+            worksheet = sh.worksheet(TAB_NAME)
+            set_with_dataframe(worksheet=worksheet,dataframe=df,row=first_row,col=first_col)
+            message = "Berhasil write data ke Google Spreadsheet"
+            return "yes",message
+        except Exception as e:
+            message = "Gagal Write data ke Google Spreadsheet\nMessage Error : \n"+str(e)
+            return "no",message
 # my_object = dataframe()
 # [status,value,message] = my_object.get_kode_unit_user_tagsus(chat_id=1029804860)

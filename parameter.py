@@ -54,7 +54,12 @@ class Parameter:
         # reset imei
         self.url_resetimei = "https://ap2t.pln.co.id/acmt/Acmt.html?sessionid=4vfjje45dm11otflmo3wfrfn&page=frmMasterImei&userid=9615040FY"
         # link Update Realisasi TS
-        self.url_tagsus = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getlaporantsgab&report=report/NONREK/rpt_ts_daftar_realisasi_pendapatan_penetapan_ts.xls&unitup=SEMUA&unitap=32AMS&unitupi=32&jenislap=DAFTAR%20REALISASI%20PENDAPATAN%20PENETAPAN%20TAGIHAN%20SUSULAN%20(TUNAI%20DAN%20ANGSURAN)&thbl=202307"
+        self.url_tagsus1 = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getlaporantsgab&report=report/NONREK/rpt_ts_daftar_realisasi_pendapatan_penetapan_ts.xls&unitup=SEMUA&unitap="
+        self.kode_up3 = "32AMS"
+        self.url_tagsus2 = "&unitupi="
+        self.kode_uid = "32"
+        self.url_tagsus3 = "&jenislap=DAFTAR%20REALISASI%20PENDAPATAN%20PENETAPAN%20TAGIHAN%20SUSULAN%20(TUNAI%20DAN%20ANGSURAN)&thbl="
+        self.tahun_bulan = "202307"
         # Default (Di ganti sesuai kebutuhan developer/programmer)
         # Lokasi foto CT
         self.filepathct = 'fotoct\\'
@@ -62,6 +67,9 @@ class Parameter:
         self.files_foto_ct = 'fotoct\\fotoct.png'
         self.files_foto_kct = 'fotoct\\foto_kct.png'
         self.download_dir = 'download\\'
+        #lokasi download tagsus
+        self.download_ts = 'data\\downloads'
+        self.namafiletagsus = "ReportServlet.xls"
         # link ap2t
         self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'
 

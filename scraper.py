@@ -30,6 +30,7 @@ class AP2T:
         self.urlap2t = urlap2t
         self.download_dir = download_dir
         self.filepathct = filepathct
+        self.download_dir_tagsus = pm.download_ts
         chrome_options = webdriver.ChromeOptions()
         # chrome_options.add_experimental_option('prefs',
         #                                        {"user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"})
@@ -1207,6 +1208,30 @@ class AP2T:
             print(message)
             return "no", message
 
+    def buka_web_tagsus(self, kode_unit_user:str, tahun_bulan:str):
+        print(kode_unit_user)
+        print(tahun_bulan)
+        try:
+            link = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getlaporantsgab&report=report/NONREK/rpt_ts_daftar_realisasi_pendapatan_penetapan_ts.xls&unitup=SEMUA&unitap="+\
+                    str(kode_unit_user)+\
+                        "&unitupi=32&jenislap=DAFTAR%20REALISASI%20PENDAPATAN%20PENETAPAN%20TAGIHAN%20SUSULAN%20(TUNAI%20DAN%20ANGSURAN)&thbl="+\
+                            str(tahun_bulan)
+            print("Membuka halaman AP2T")
+            driver = self.driver
+            # Maximize page
+            driver.maximize_window()
+            driver.get(link) #ganti nanti link ini
+            time.sleep(5)
+            message = "Tagsus Berhasil di Download"
+            print(message)
+            return "yes", message
+        except Exception as e:
+            message = "Gagal Donwload Laporan TS\nMessage Error : \n"+str(e)
+            print(message)
+            print("Error message : ", e)
+            time.sleep(3)
+            return "no", message
+        
 
 class ACMT:
     def __init__(self, filepatchromedriver, download_dir, user_options, url_acmt):
@@ -1356,7 +1381,7 @@ class ACMT:
             informasi = "null"
             return "no", informasi, message
 
-    
+
 # Create class for scraping
 
 
@@ -1590,3 +1615,19 @@ class Amicon(webdriver.Chrome):
         print('Selesai mengupdate data')
         self.quit()
         return {'berhasil': berhasil, 'gagal': gagal}
+
+class Helper:
+    def delete_file(folder_path,filename_and_name_extension):
+        file_path = os.path.join(folder_path, filename_and_name_extension)
+        message = ""
+        if os.path.exists(file_path):
+            # Delete the file
+            os.remove(file_path)
+            message = f"The file '{filename_and_name_extension}' Berhasil di hapus."
+            print(message)
+        else:
+            message = f"The file '{filename_and_name_extension}' File tidak ditemukan."
+            print(message)
+        return "yes", message
+    
+#Helper.delete_file(r'data\downloads','ReportServlet.xls')

@@ -292,7 +292,16 @@ class Asmente():
         else:
             message = "Gagal login"
             return "no", message, 0
-
+    def create_lap_tsp2tl(kode_unit_user : str,tahun_bulan :str):
+        #buka web Tagsus
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                    filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        [status,message] = ap2t.buka_web_tagsus(kode_unit_user=kode_unit_user,tahun_bulan=tahun_bulan)
+        #download laporan
+        #baca data excel
+        #kirim Laporan
+        return status,message
+    
 
 class ReplyButton():
 

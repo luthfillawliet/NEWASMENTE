@@ -385,7 +385,17 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
-
+        elif ((update.message.text[:10] == "tagsusp2tl" or update.message.text[:10] == "Tagsusp2tl" or update.message.text[:10] == "TAGSUSP2TL")):
+            df = dataframe()
+            tahun_bulan = "202307"
+            [status,kode_unit_user,message] = df.get_kode_unit_user_tagsus(chat_id=chat_id)
+            if(status == "yes"):
+                [status,message] = Asmente.create_lap_tsp2tl(kode_unit_user = kode_unit_user,tahun_bulan = tahun_bulan)
+                context.bot.send_message(
+                    chat_id=chat_id, text=message)
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text=message)
         else:
             print("command tidak dikenal")
             context.bot.send_message(

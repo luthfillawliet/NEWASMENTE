@@ -112,6 +112,19 @@ class dataframe():
         except Exception as e:
             message = "Gagal mengambil kode unit user\nMessage Error : "+str(e)
             return "no", "null", message
+    def get_kode_unit_user_tagsus(self, chat_id: int):
+        try:
+            df = pd.read_excel(io=pm.filepathlistuser,
+                               sheet_name=pm.sheetname_listuserid)
+            selected_row = df[df["chat_id"] == chat_id]
+            print(selected_row)
+            print("kode unit selected : ", selected_row["up3"].item())
+            message = "Berhasil get kode unit chat id"
+            print(message)
+            return "yes", selected_row["up3"].item(), message
+        except Exception as e:
+            message = "Gagal mengambil kode unit user\nMessage Error : "+str(e)
+            return "no", "null", message
 
     def get_user_acmt(self):
         try:
@@ -201,3 +214,6 @@ class dataframe():
         df = pd.read_excel(io=filepathlistuserid, sheet_name="listuserid")
         # print(df)
         return df["chat_id"]
+
+# my_object = dataframe()
+# [status,value,message] = my_object.get_kode_unit_user_tagsus(chat_id=1029804860)

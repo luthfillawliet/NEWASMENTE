@@ -298,14 +298,18 @@ class Asmente():
         filename_and_extension = "ReportServlet.xls"
         [status,message] = Helper.delete_file(folder_path=folder_path,filename_and_name_extension=filename_and_extension)
         if(status == "yes"):
-            #jika berhasil hapus file, buka web Tagsus
+            #jika berhasil hapus file, buka web Tagsus dan download file
             ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
                         filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
             [status,message] = ap2t.buka_web_tagsus(kode_unit_user=kode_unit_user,tahun_bulan=tahun_bulan)
-            #download laporan
-            #baca data excel
+            if(status == "yes"):
+                #baca data excel ReportServlet
+                [status,message,df] = dataframe.read_reportservlet(skip_rows=8)
+                print(df)
+                return "yes",message
             #kirim Laporan
-            return "yes",message
+            else:
+                return "no",message
         else:
             return "no",message
     

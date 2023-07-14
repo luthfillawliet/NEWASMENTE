@@ -188,6 +188,21 @@ class dataframe():
             print(message)
             return "no", message
 
+    def read_reportservlet(skip_rows :int = 8):
+        pm = Parameter()
+        namafiletagsus =  pm.download_ts+"//"+pm.namafiletagsus
+        try:
+            df = pd.read_excel(io=namafiletagsus,sheet_name="Report1",skiprows=skip_rows)
+            message = "Berhasil baca ReportServlet"
+            print(message)
+            return "yes",message,df
+        except Exception as e:
+            message = "Gagal baca ReportServlet\nMessage Error : \n"+str(e)
+            print(message)
+            return "no", message, "null"
+
+# print(df.loc[:,'2'])
+
     def log_data(self, chat_id: int, activity: str, time: str):
         pm = Parameter()
         try:

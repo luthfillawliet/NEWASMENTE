@@ -1232,6 +1232,37 @@ class AP2T:
             time.sleep(3)
             return "no", message
         
+    def buka_monitoring_ts(self,link_spreadsheet,sheet_name):
+        print("Membuka spreadsheet monitoring TS")
+        try:
+            driver = self.driver
+            # Maximize page
+            driver.maximize_window()
+            driver.get(link_spreadsheet) #ganti nanti link ini
+            time.sleep(3)
+            #coba klik REPORT HARIAN
+            try:
+                print("Mencoba buka TAB REPORT HARIAN")
+                #klik tab
+                tab_report_harian = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[4]/div/div[4]/table/tbody/tr[2]/td[3]/div/div[3]/div/div[3]"))
+                )
+                tab_report_harian.click()
+                time.sleep(5) #bisa di ganti sesuai kebutuhan
+                message = "Berhasil buka tab REPORT HARIAN"
+                return "yes",message
+            except Exception as e:
+                message = "Gagal buka Tab REPORT HARIAN\nMessage Error : \n"+str(e)
+                print(message)
+                return "no",message
+        except Exception as e:
+            message = "Gagal buka Spreadsheet\nMessage Error : \n"+str(e)
+            print(message)
+            return "no",message
+        message = "Berhasil buka spreadsheet"
+        print(message)
+        return "yes",message
 
 class ACMT:
     def __init__(self, filepatchromedriver, download_dir, user_options, url_acmt):

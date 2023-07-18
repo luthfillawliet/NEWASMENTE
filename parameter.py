@@ -7,16 +7,25 @@ class Parameter:
 
         # Setting server baru :
         # index, digunakan untuk server dengan spesifikasi rendah (os windows < 10)
-        # 0 untuk server baru, 1 untuk server lama
+        # 0 untuk server baru, 
         self.index = 0
+        #1 untuk server lama uid
+        #self.index = 1
+
         # nomortabdefault local dan server
+        #nomortab local
         self.nomortabdefaultpengaduan = 1
+        #nomortab server lama uid
+        #self.nomortabdefaultpengaduan = 2
         # filepath executable file chromedriver, sesuaikan dengan versi chrome komputer masing2 server, jangan lupa di ekstrak
         self.filepathchromedriver = r'chromedriver\chromedriver.exe'
         # lokasi file executable AP2T Enkripsi, ada di folder PT PLN. AP2T Enkripsi
         self.filepathenkripsi = r'C:\Program Files (x86)\PT PLN (PERSERO)\AP2T ENKRIPSI\Token.exe'
         # jika mau menggunakan cache bawaan browser, silahkan di aktifkan (uncomment), lokasi atur sesuai lokasi cache
+        #user option pc lokal
         self.user_options = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
+        #user option server lama uid
+        #self.user_options = r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data'
         # file list user
         self.filepathlistuser = r'data\listuser\listuser.xlsx'
         # sheet name list user
@@ -70,6 +79,12 @@ class Parameter:
         #lokasi download tagsus
         self.download_ts = 'data\\downloads'
         self.namafiletagsus = "ReportServlet.xls"
+        self.link_spreadsheet_monitoringts = "https://docs.google.com/spreadsheets/d/1vaPWCj_cdKB2CQg-uKhhp0hkAs7ZCcNAtppz5fu8J_Y/edit#gid=0"
+        self.reporthariantab = "REPORT HARIAN TODAY"
+        self.kiri_atas_layar_x = 57
+        self.kiri_atas_layar_y = 279
+        self.kanan_bawah_layar_x = 1855
+        self.kanan_bawah_layar_y = 925
         # link ap2t
         self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'
         self.filepathjson = R'data\gsheet\monitoringpju-290711-01d17333a9eb.json'

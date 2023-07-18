@@ -1,5 +1,6 @@
 from scraper import AP2T
 from scraper import ACMT, Helper
+from FILEMANAGER import filemanager
 from parameter import Parameter
 from DataFrame import dataframe
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
@@ -295,8 +296,9 @@ class Asmente():
     def create_lap_tsp2tl(kode_unit_user : str,tahun_bulan :str):
         #Hapus file report Servlet yang lama
         folder_path = pm.download_ts
+        DF = dataframe()
         filename_and_extension = "ReportServlet.xls"
-        [status,message] = Helper.delete_file(folder_path=folder_path,filename_and_name_extension=filename_and_extension)
+        [status,message] = filemanager.delete_file(folder_path=folder_path,filename_and_name_extension=filename_and_extension)
         if(status == "yes"):
             #jika berhasil hapus file, buka web Tagsus dan download file
             ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
@@ -307,7 +309,10 @@ class Asmente():
                 [status,message,df] = dataframe.read_reportservlet(skip_rows=8)
                 #print(df)
                 if(status == "yes"):
-                    TAB_NAME = "7.Juli_copy"
+                    #tentukan nama tabnya sesuai bulannya
+                    namatabbulan = dataframe.get_nama_sheet_bulan_sekarang()
+                    #write data ke spreadsheet bulanan
+                    TAB_NAME = namatabbulan #jangan lupa di variabelkan
                     [status,message] = dataframe.write_df_to_google_sheet(pm.filepathjson,GSHEET=pm.filename_googlespreadsheet_tagsus,TAB_NAME=TAB_NAME,df=df,first_row=9,first_col=1)
                     return "yes",message
                 else:
@@ -317,7 +322,19 @@ class Asmente():
                 return "no",message
         else:
             return "no",message
-    
+    def kirim_report_ts():
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                        filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        #buka tabe REPORT HARIAN
+        [status,message] = ap2t.buka_monitoring_ts(pm.link_spreadsheet_monitoringts,pm.reporthariantab)
+        if(status == "yes"):
+            #mengambil screenshoot
+            filemanager.take_screenshoot_pixel(kiri_atas_layar_x=pm.kiri_atas_layar_x,kiri_atas_layar_y=pm.kiri_atas_layar_y,kanan_bawah_layar_x=pm.kanan_bawah_layar_x,kanan_bawah_layar_y=pm.kanan_bawah_layar_y)
+            message = "Berhasil kirim Report"
+            print(message)
+            return "yes",message
+        else:
+            return "no",message
 
 class ReplyButton():
 

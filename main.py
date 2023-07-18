@@ -5,6 +5,7 @@ from DataFrame import dataframe
 from FILEMANAGER import filemanager
 import time
 import datetime
+import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.update import Update
@@ -271,7 +272,7 @@ def read_command(update, context):
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
                          activity="Infoblokir", time=str(datetime.datetime.now()))
-        elif ((update.message.text[:8] == "cetakkct" or update.message.text[:8] == "Cetakkct" or update.message.text[:8] == "CETAKKCT") and len(update.message.text) == 27):
+        elif ((update.message.text[:8] == "cetakkct" or update.message.text[:8] == "Cetakkct" or update.message.text[:8] == "CETAKKCT") and len(update.message.text) > 25):
             context.bot.send_message(
                 chat_id=chat_id, text="Memulai cetak KCT Token dengan nomor agenda : "+update.message.text[9:])
             ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver, filepathenkripsi=pm.filepathenkripsi,
@@ -389,15 +390,54 @@ def read_command(update, context):
             context.bot.send_message(
                     chat_id=chat_id, text="Memulai Pembuatan Laporan Tagihan Susulan Hari ini")
             df = dataframe()
-            tahun_bulan = "202307"
+            tahun_bulan = dataframe.get_tahun_bulan_sekarang() #jangan lupa jadikan variabel
             [status,kode_unit_user,message] = df.get_kode_unit_user_tagsus(chat_id=chat_id)
             if(status == "yes"):
                 [status,message] = Asmente.create_lap_tsp2tl(kode_unit_user = kode_unit_user,tahun_bulan = tahun_bulan)
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
+                if(status == "yes"):
+                    #kirim file ke chat
+                    try:
+                        document = open("data//downloads//ReportServlet.xls","rb")
+                        context.bot.send_document(chat_id,document)
+                        message = "Berhasil kirim File"
+                        print(message)
+                        context.bot.send_message(
+                            chat_id=chat_id, text=message)
+                    except Exception as e:
+                        message = "Gagal kirim file\nMessage Error : \n"+str(e)
+                        context.bot.send_message(
+                            chat_id=chat_id, text="Gagal kirim file\n"+message)
+                else:
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Gagal kirim file\n"+message)
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Gagal ambil kode unit\n"+message)
+        elif((update.message.text[:10] == "kirimlapts" or update.message.text[:10] == "Kirimlapts" or update.message.text[:10] == "KIRIMLAPTS")):
+            context.bot.send_message(
+                chat_id=chat_id, text="Memulai kirim laporan TS Hari ini")
+            [status,message] = Asmente.kirim_report_ts()
+            if(status == "yes"):
+                print(message)
+                context.bot.send_message(
+                    chat_id=chat_id, text="Berhasil mengupdate Laporan TS P2TL pada spreadsheet")
+                try:
+                    document = open("fotoct//screenshot_ts.png","rb")
+                    context.bot.send_document(chat_id,document)
+                    message = "Berhasil kirim Foto"
+                    print(message)
+                    context.bot.send_message(
+                        chat_id=chat_id, text=message)
+                except Exception as e:
+                    message = "Gagal kirim foto\nMessage Error : \n"+str(e)
+                    print(message)
+                    context.bot.send_message(
+                        chat_id=chat_id, text=message)
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text=message)
         else:
             print("command tidak dikenal")
             context.bot.send_message(

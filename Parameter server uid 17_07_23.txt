@@ -1,0 +1,71 @@
+import pandas as pd
+
+
+class Parameter:
+
+    def __init__(self):
+
+        # Setting server baru :
+        # index, digunakan untuk server dengan spesifikasi rendah (os windows < 10)
+        # 0 untuk server baru, 1 untuk server lama
+        self.index = 1
+        # nomortabdefault local dan server
+        self.nomortabdefaultpengaduan = 2
+        # filepath executable file chromedriver, sesuaikan dengan versi chrome komputer masing2 server, jangan lupa di ekstrak
+        self.filepathchromedriver = r'chromedriver\chromedriver.exe'
+        # lokasi file executable AP2T Enkripsi, ada di folder PT PLN. AP2T Enkripsi
+        self.filepathenkripsi = r'C:\Program Files (x86)\PT PLN (PERSERO)\AP2T ENKRIPSI\Token.exe'
+        # jika mau menggunakan cache bawaan browser, silahkan di aktifkan (uncomment), lokasi atur sesuai lokasi cache
+        self.user_options = r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data'
+        # file list user
+        self.filepathlistuser = r'data\listuser\listuser.xlsx'
+        # sheet name list user
+        self.sheetname_listuserid = "listuserid"
+        self.fileexcelkct = r'krn\sudahbaca.xls'
+        # filepath log
+        self.filepathlog = r'data\log\log.xlsx'
+
+        # pengaturan options security SSL
+        self.ignore_ssl_errors = "--ignore-ssl-errors=yes"
+        self.ignore_certificate_errors = "--ignore-certificate-errors"
+
+        # setting bot baru
+        # bot token id, di ganti jika ganti bot
+        self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"
+        # group chat id
+        self.chat_id = -828901164
+        # chat_id admin
+        # chat id luthfil, bisa di ganti disesuaikan dengan admin server
+        self.chat_id_admin = 1029804860
+
+        # Setting jika ada perubahan alamat, link atau domain dari aplikasi korporat
+        # Link By Pass AP2T (Tidak usah di ubah jika tidak ada perubahan domain ap2t dari pusat)
+        # Pengaduan CT
+        self.linkpengaduanct = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user='
+        self.linkpengaduanct_2 = '&page=tranI14&password=mblendez'
+        self.linktindakanpengaduan = 'https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user='
+        self.linktindakanpengaduan_2 = '&page=tranI14Jwb&password=mblendez'
+        self.linkaktivasimeter = "https://ap2t.pln.co.id/ap2t/frm_EntriMeter.aspx"
+        self.link_montok = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=9009026F&password=mblendez&page=formMonitoringPermohonanToken"
+        self.linkaktivasimeter = "https://ap2t.pln.co.id/ap2t/frm_EntriMeter.aspx"
+        self.baselink_kct = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getcetaktokenbynoagenda&report=report/CR_PK_TOKEN_LPB.pdf&noagenda="
+        self.url_acmt = "https://portalapp.iconpln.co.id/acmt/"
+        self.link_info_pelanggan = "https://ap2t.pln.co.id/infopelanggannewap2t-dr/"
+        # reset imei
+        self.url_resetimei = "https://ap2t.pln.co.id/acmt/Acmt.html?sessionid=4vfjje45dm11otflmo3wfrfn&page=frmMasterImei&userid=9615040FY"
+
+        # Default (Di ganti sesuai kebutuhan developer/programmer)
+        # Lokasi foto CT
+        self.filepathct = 'fotoct\\'
+        # lokasi download default
+        self.files_foto_ct = 'fotoct\\fotoct.png'
+        self.files_foto_kct = 'fotoct\\foto_kct.png'
+        self.download_dir = 'download\\'
+        # link ap2t
+        self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'
+
+        # Parameter aplikasi si gadis
+        self.username_amicon = 'pusat\\asdar02'
+        self.password_amicon = '9615040-a28'
+        self.bot_token = self.tokenbot
+        self.user_browser_cache = "user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data"

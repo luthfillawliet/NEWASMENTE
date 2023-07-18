@@ -1,11 +1,8 @@
 import pandas as pd
-import numpy as np
 import openpyxl
 import xlwt
 from parameter import Parameter
-import gspread #untuk akses google spreadsheet
-from gspread_dataframe import set_with_dataframe
-import datetime
+
 pm = Parameter()
 
 
@@ -115,19 +112,6 @@ class dataframe():
         except Exception as e:
             message = "Gagal mengambil kode unit user\nMessage Error : "+str(e)
             return "no", "null", message
-    def get_kode_unit_user_tagsus(self, chat_id: int):
-        try:
-            df = pd.read_excel(io=pm.filepathlistuser,
-                               sheet_name=pm.sheetname_listuserid)
-            selected_row = df[df["chat_id"] == chat_id]
-            print(selected_row)
-            print("kode unit selected : ", selected_row["up3"].item())
-            message = "Berhasil get kode unit chat id"
-            print(message)
-            return "yes", selected_row["up3"].item(), message
-        except Exception as e:
-            message = "Gagal mengambil kode unit user\nMessage Error : "+str(e)
-            return "no", "null", message
 
     def get_user_acmt(self):
         try:
@@ -191,21 +175,6 @@ class dataframe():
             print(message)
             return "no", message
 
-    def read_reportservlet(skip_rows :int = 8):
-        pm = Parameter()
-        namafiletagsus =  pm.download_ts+"//"+pm.namafiletagsus
-        try:
-            df = pd.read_excel(io=namafiletagsus,sheet_name="Report1",skiprows=skip_rows)
-            message = "Berhasil baca ReportServlet"
-            print(message)
-            return "yes",message,df
-        except Exception as e:
-            message = "Gagal baca ReportServlet\nMessage Error : \n"+str(e)
-            print(message)
-            return "no", message, "null"
-
-# print(df.loc[:,'2'])
-
     def log_data(self, chat_id: int, activity: str, time: str):
         pm = Parameter()
         try:
@@ -232,52 +201,3 @@ class dataframe():
         df = pd.read_excel(io=filepathlistuserid, sheet_name="listuserid")
         # print(df)
         return df["chat_id"]
-
-#Write Data to Google Sheet
-    def write_df_to_google_sheet(filepathjson,GSHEET,TAB_NAME,df,first_row,first_col):
-        #access the spreadsheet
-        try:
-            gc = gspread.service_account(filepathjson)
-            sh = gc.open(GSHEET)
-            worksheet = sh.worksheet(TAB_NAME)
-            set_with_dataframe(worksheet=worksheet,dataframe=df,row=first_row,col=first_col)
-            message = "Berhasil write data ke Google Spreadsheet"
-            return "yes",message
-        except Exception as e:
-            message = "Gagal Write data ke Google Spreadsheet\nMessage Error : \n"+str(e)
-            return "no",message
-
-    def get_nama_sheet_bulan_sekarang():
-        # Get the current date and time
-        current_date = datetime.datetime.now()
-        print(str(current_date.day))
-        print(str(current_date.year))
-        # Extract the month from the current date
-        current_month = current_date.month
-        print(str(current_month))
-        #array of sheet names
-        months = np.array(['1.Januari', '2.Februari', '3.Maret', '4.April', '5.Mei', '6.Juni', '7.Juli',
-                   '8.Agustus', '9.September', '10.Oktober', '11.November', '12.Desember'])
-        selected_month = months[current_month - 1]
-        print(selected_month)
-        #return yearnow,monthnow,datenow
-        return selected_month
-    
-    def get_tahun_bulan_sekarang():
-        # Get the current date and time
-        current_date = datetime.datetime.now()
-        # Extract the month from the current date
-        current_month = 0
-        if(current_date.month<10):
-            current_month = "0"+str(current_date.month)
-        else:
-            current_month = str(current_date.month)
-
-        tahun_bulan = str(current_date.year)+current_month
-        print(tahun_bulan)
-        #return yearnow,monthnow,datenow
-        return tahun_bulan
-    #get_nama_sheet_bulan_sekarang()
-    #get_tahun_bulan_sekarang()
-# my_object = dataframe()
-# [status,value,message] = my_object.get_kode_unit_user_tagsus(chat_id=1029804860)

@@ -329,7 +329,7 @@ class Asmente():
         [status,message] = ap2t.buka_monitoring_ts(pm.link_spreadsheet_monitoringts,pm.reporthariantab)
         if(status == "yes"):
             #mengambil screenshoot
-            filemanager.take_screenshoot_pixel(kiri_atas_layar_x=pm.kiri_atas_layar_x,kiri_atas_layar_y=pm.kiri_atas_layar_y,kanan_bawah_layar_x=pm.kanan_bawah_layar_x,kanan_bawah_layar_y=pm.kanan_bawah_layar_y)
+            #filemanager.take_screenshoot_pixel(kiri_atas_layar_x=pm.kiri_atas_layar_x,kiri_atas_layar_y=pm.kiri_atas_layar_y,kanan_bawah_layar_x=pm.kanan_bawah_layar_x,kanan_bawah_layar_y=pm.kanan_bawah_layar_y)
             message = "Berhasil kirim Report"
             print(message)
             return "yes",message

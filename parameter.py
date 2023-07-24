@@ -89,6 +89,8 @@ class Parameter:
         self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'
         self.filepathjson = R'data\gsheet\monitoringpju-290711-01d17333a9eb.json'
         self.filename_googlespreadsheet_tagsus = "Monitoring TS P2TL 2023"
+        self.xpathreportharian = "/html/body/div[4]/div/div[4]/table/tbody/tr[2]/td[3]/div/div[3]/div/div[3]"
+        self.xpathreportharian_today = "/html/body/div[4]/div/div[4]/table/tbody/tr[2]/td[3]/div/div[3]/div/div[12]"
 
         # Parameter aplikasi si gadis
         self.username_amicon = 'pusat\\asdar02'

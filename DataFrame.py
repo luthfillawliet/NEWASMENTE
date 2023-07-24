@@ -101,11 +101,94 @@ class dataframe():
         except Exception as e:
             message = "gagal get level user \nMessage Error : "+str(e)
             return "no", "null", message
+    # Update Data USer
+    def update_user_data(self,filepathlistuser:str,sheetname:str,column_lookup:str,input_value:str,updated_value:str,column_objective:str):
+        import openpyxl
+        try:
+            # Load the existing workbook
+            workbook = openpyxl.load_workbook(filepathlistuser)
+            worksheet = workbook.get_sheet_by_name(sheetname)
+            print("Berhasll")
+            #get specified row of input value
+            [status,message,row] = dataframe.get_specified_row(workbook=workbook,sheet_name="Sheet1",search_value=input_value)
+            if(status == "yes"):
+                print("cari kolom update")
+                dataframe.write_to_excel(workbook=workbook,sheet_name=sheetname,row_number=row,column_name=column_objective,value=updated_value)
+                print("Berhasil update")
+                
+        except Exception as e:
+            message = "Gagal Load File listuserid.xls\nMessage Error : \n"+str(e)
+            print(message)
+    
+    def get_specified_row(workbook,sheet_name,search_value):
+        # Load the existing workbook
+        workbook = workbook
+
+        # Select the desired sheet (e.g., "Sheet1")
+        sheet_name = "Sheet1"
+        sheet = workbook[sheet_name]
+
+        # Specify the value you want to search for
+        search_value = search_value
+
+        # Search for the cell with the given value
+        row_position = None
+        for row_index, row in enumerate(sheet.iter_rows(values_only=True), start=1):
+            for cell_value in row:
+                if cell_value == search_value:
+                    row_position = row_index
+                    break
+
+        # Output the row position if found
+        if row_position is not None:
+            message = f"The value '{search_value}' is found in row {row_position}."
+            print(message)
+            return "yes",message,row_position
+        else:
+            message = f"The value '{search_value}' is not found in the sheet."
+            print(message)
+            return "no",message,None
+
+
+    def find_column_by_header(workbook, sheet_name, header):
+        # Load the Excel workbook
+        workbook = workbook
+
+        # Select the desired sheet
+        sheet = workbook[sheet_name]
+
+        # Search for the header in the first row of the sheet
+        for column in sheet.iter_cols(min_row=1, max_row=1, values_only=True):
+            for index, cell_value in enumerate(column, start=1):
+                if cell_value == header:
+                    # If the header is found, return the column letter
+                    return openpyxl.utils.get_column_letter(index)
+        # If the header is not found, return None
+        return None
+
+        if column_letter:
+            print(f"The header '{header_to_find}' is located in column {column_letter}.")
+        else:
+            print(f"The header '{header_to_find}' was not found in the specified sheet.")
+
+
+    def write_to_excel(workbook, sheet_name, row_number, column_name, value):
+        # Load the Excel workbook
+        workbook = workbook
+
+        # Select the desired sheet
+        sheet = workbook[sheet_name]
+
+        # Write the value to the specified cell
+        sheet[column_name + str(row_number)] = value
+
+        # Save the changes to the Excel file
+        workbook.save(pm.filepathlistuser)  
 
     def get_kode_unit_user(self, chat_id: int):
         try:
             df = pd.read_excel(io=pm.filepathlistuser,
-                               sheet_name=pm.sheetname_listuserid)
+                            sheet_name=pm.sheetname_listuserid)
             selected_row = df[df["chat_id"] == chat_id]
             print(selected_row)
             print("kode unit selected : ", selected_row["kode_unit"].item())
@@ -193,9 +276,9 @@ class dataframe():
 
     def read_reportservlet(skip_rows :int = 8):
         pm = Parameter()
-        namafiletagsus =  pm.download_ts+"//"+pm.namafiletagsus
+        namafiletagsus =  pm.download_ts+"\\"+pm.namafiletagsus
         try:
-            df = pd.read_excel(io=namafiletagsus,sheet_name="Report1",skiprows=skip_rows)
+            df = pd.read_excel(io="data\\downloads\\ReportServlet.xls",sheet_name="Report1",skiprows=skip_rows)
             message = "Berhasil baca ReportServlet"
             print(message)
             return "yes",message,df
@@ -277,7 +360,6 @@ class dataframe():
         print(tahun_bulan)
         #return yearnow,monthnow,datenow
         return tahun_bulan
-    #get_nama_sheet_bulan_sekarang()
-    #get_tahun_bulan_sekarang()
-# my_object = dataframe()
-# [status,value,message] = my_object.get_kode_unit_user_tagsus(chat_id=1029804860)
+
+daf = dataframe()
+daf.update_user_data(filepathlistuser=pm.filepathlistuser,sheetname="Sheet1",column_lookup="NIP",input_value="1234567ZY",updated_value="UPDATE",column_objective="E")

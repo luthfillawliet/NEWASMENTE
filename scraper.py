@@ -1236,6 +1236,8 @@ class AP2T:
         print("Membuka spreadsheet monitoring TS")
         try:
             driver = self.driver
+            #Move tab to the top
+            driver.switch_to.window(driver.current_window_handle)
             # Maximize page
             driver.maximize_window()
             driver.get(link_spreadsheet) #ganti nanti link ini
@@ -1246,12 +1248,19 @@ class AP2T:
                 #klik tab
                 tab_report_harian = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located(
-                        (By.XPATH, "/html/body/div[4]/div/div[4]/table/tbody/tr[2]/td[3]/div/div[3]/div/div[3]"))
+                        (By.XPATH, pm.xpathreportharian_today))
                 )
                 tab_report_harian.click()
                 time.sleep(5) #bisa di ganti sesuai kebutuhan
                 message = "Berhasil buka tab REPORT HARIAN"
-                return "yes",message
+                try:
+                    self.driver.save_screenshot("fotoct//"+"screenshot_ts.png")
+                    message = "Berhasil kirim screenshot"
+                    return "yes", message
+                except Exception as e:
+                    message = "Gagal screenshot"
+                    print("Error Message : ",  e)
+                    return "no", message
             except Exception as e:
                 message = "Gagal buka Tab REPORT HARIAN\nMessage Error : \n"+str(e)
                 print(message)

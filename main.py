@@ -69,13 +69,46 @@ def informasi(update, context):
         context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
 
-
+def updateuser(update,context):
+    chat_id = update.message.chat_id
+    [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
+    if (status == "yes"):
+        #cek level autentikasi User
+        [status, level_user, message] = Asmente.get_level_user(
+                chat_id=chat_id)
+        if (status == "yes" and (level_user == "owner" or level_user == "admin")):
+            context.bot.send_message(
+                chat_id=chat_id, text="update|NIP(Angka dan Huruf Kapital|kode yang akan di update\n"+
+                    "List Kode :\n"+
+                    "1 : Kode unit\n2 : Nama\n3 : Jabatan\n4 : Password AP2T\nContoh jika akan mengupdate Password\n"+
+                    "update|1234567ZY|4")
+            context.bot.send_message(
+                chat_id=chat_id, text="update|94171287ZY|4")
+        else:
+            context.bot.send_message(
+                chat_id=chat_id, text="Mengupdate user hanya untuk role Owner dan Admin, silahkan kontak Luthfil")
+    else:
+        context.bot.send_message(
+            chat_id=chat_id, text=message)
+        # notif ke admin
+        context.bot.send_message(
+            chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
+        context.bot.send_message(
+            chat_id=pm.chat_id_admin, text=str(chat_id))
+        
 def findnth(string, substring, n):
     parts = string.split(substring, n + 1)
     if len(parts) <= n + 1:
         return -1
     return len(string) - len(parts[-1]) - len(substring)
-
+def get_result(value):
+    result_dict = {
+        "1": 'kodeunit',
+        "2": 'nama',
+        "3": 'jabatan',
+        "4": 'password',
+    }
+    return result_dict.get(value, 'Invalid value')
 # List perintah Asmen TE
 
 
@@ -291,6 +324,7 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Gagal cetak token\nError Meesage : "+message)
+        #Fungsi Manajemen User
         elif ((update.message.text[:9] == "broadcast" or update.message.text[:9] == "Broadcast") and update.message.text[9:10] == "|"):
             # cek level user
             [status, level_user, message] = Asmente.get_level_user(
@@ -317,6 +351,29 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Level user tidak memiliki autentikasi")
+        elif((update.message.text[:7] == "update|" or update.message.text[:7] == "Update|" or update.message.text[:7] == "UPDATE|") and len(update.message.text) > 10):
+            #cek level autentikasi User
+            [status, level_user, message] = Asmente.get_level_user(
+                chat_id=chat_id)
+            if (status == "yes" and (level_user == "owner" or level_user == "admin")):
+                separator_2 = findnth(update.message.text, "|", 2)
+                update_value = update.message.text[(separator_2+1):]
+                item_update = get_result(update.message.text[separator_2-1])
+                print(update.message.text[separator_2-1])
+                context.bot.send_message(
+                    chat_id=chat_id, text="Memulai Update "+item_update+" User NIP "+update.message.text[7:separator_2-2])
+                column_objective = "B"
+                if(item_update == "password"):
+                    column_objective = "E"
+                else:
+                    column_objective = "B"
+                daf = dataframe()
+                daf.update_user_data(filepathlistuser=pm.filepathlistuser,sheetname="Sheet1",column_lookup="NIP",input_value="1234567ZY",updated_value=update_value,column_objective=column_objective)
+                
+                
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="Mengupdate user hanya untuk role Owner dan Admin, silahkan kontak Luthfil")
         # fungsi aktivasi meter
         elif ((update.message.text[:9] == "pengaduan" or update.message.text[:9] == "Pengaduan" or update.message.text[:9] == "PENGADUAN") and update.message.text[9:10] == "|"):
             [status, level_user, message] = Asmente.get_level_user(
@@ -522,6 +579,9 @@ def main():
     # Mengecek kesiapan bot
     dispatcher.add_handler(CommandHandler(
         'informasi', informasi, run_async=True))
+    # Mengecek kesiapan bot
+    dispatcher.add_handler(CommandHandler(
+        'updateuser', updateuser, run_async=True))
     # Run Aplikasi si gadis
     dispatcher.add_handler(CommandHandler('start_sigadis', start_sigadis))
     dispatcher.add_handler(CommandHandler('update', update_data))

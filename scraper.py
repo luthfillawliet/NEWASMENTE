@@ -1269,9 +1269,7 @@ class AP2T:
             message = "Gagal buka Spreadsheet\nMessage Error : \n"+str(e)
             print(message)
             return "no",message
-        message = "Berhasil buka spreadsheet"
-        print(message)
-        return "yes",message
+        
 
 class ACMT:
     def __init__(self, filepatchromedriver, download_dir, user_options, url_acmt):

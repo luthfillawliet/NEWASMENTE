@@ -372,7 +372,6 @@ def read_command(update, context):
                 daf = dataframe()
                 daf.update_user_data(filepathlistuser=pm.filepathlistuser,sheetname="Sheet1",column_lookup="NIP",input_value="1234567ZY",updated_value=update_value,column_objective=column_objective)
                 
-                
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Mengupdate user hanya untuk role Owner dan Admin, silahkan kontak Luthfil")
@@ -446,34 +445,41 @@ def read_command(update, context):
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
         elif ((update.message.text[:10] == "tagsusp2tl" or update.message.text[:10] == "Tagsusp2tl" or update.message.text[:10] == "TAGSUSP2TL")):
-            context.bot.send_message(
-                    chat_id=chat_id, text="Memulai Pembuatan Laporan Tagihan Susulan Hari ini")
-            df = dataframe()
-            tahun_bulan = dataframe.get_tahun_bulan_sekarang() #jangan lupa jadikan variabel
-            [status,kode_unit_user,message] = df.get_kode_unit_user_tagsus(chat_id=chat_id)
-            if(status == "yes"):
-                [status,message] = Asmente.create_lap_tsp2tl(kode_unit_user = kode_unit_user,tahun_bulan = tahun_bulan)
+            #cek level autentikasi User
+            [status, level_user, message] = Asmente.get_level_user(
+                chat_id=chat_id)
+            if (status == "yes" and (level_user == "owner" or level_user == "admin")):
                 context.bot.send_message(
-                    chat_id=chat_id, text=message)
+                        chat_id=chat_id, text="Memulai Pembuatan Laporan Tagihan Susulan Hari ini")
+                df = dataframe()
+                tahun_bulan = dataframe.get_tahun_bulan_sekarang() #jangan lupa jadikan variabel
+                [status,kode_unit_user,message] = df.get_kode_unit_user_tagsus(chat_id=chat_id)
                 if(status == "yes"):
-                    #kirim file ke chat
-                    try:
-                        document = open("data//downloads//ReportServlet.xls","rb")
-                        context.bot.send_document(chat_id,document)
-                        message = "Berhasil kirim File"
-                        print(message)
-                        context.bot.send_message(
-                            chat_id=chat_id, text=message)
-                    except Exception as e:
-                        message = "Gagal kirim file\nMessage Error : \n"+str(e)
+                    [status,message] = Asmente.create_lap_tsp2tl(kode_unit_user = kode_unit_user,tahun_bulan = tahun_bulan)
+                    context.bot.send_message(
+                        chat_id=chat_id, text=message)
+                    if(status == "yes"):
+                        #kirim file ke chat
+                        try:
+                            document = open("data//downloads//ReportServlet.xls","rb")
+                            context.bot.send_document(chat_id,document)
+                            message = "Berhasil kirim File"
+                            print(message)
+                            context.bot.send_message(
+                                chat_id=chat_id, text=message)
+                        except Exception as e:
+                            message = "Gagal kirim file\nMessage Error : \n"+str(e)
+                            context.bot.send_message(
+                                chat_id=chat_id, text="Gagal kirim file\n"+message)
+                    else:
                         context.bot.send_message(
                             chat_id=chat_id, text="Gagal kirim file\n"+message)
                 else:
                     context.bot.send_message(
-                        chat_id=chat_id, text="Gagal kirim file\n"+message)
+                        chat_id=chat_id, text="Gagal ambil kode unit\n"+message)
             else:
                 context.bot.send_message(
-                    chat_id=chat_id, text="Gagal ambil kode unit\n"+message)
+                    chat_id=chat_id, text="Update Laporan Harian hanya untuk level Admin atau Owner")
         elif((update.message.text[:10] == "kirimlapts" or update.message.text[:10] == "Kirimlapts" or update.message.text[:10] == "KIRIMLAPTS")):
             context.bot.send_message(
                 chat_id=chat_id, text="Memulai kirim laporan TS Hari ini")

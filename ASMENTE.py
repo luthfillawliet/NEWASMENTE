@@ -81,6 +81,12 @@ class Asmente():
             tipe_pencarian=tipe_pencarian, nomor_id=nomor_id, link_infopelanggan=link_infopelanggan)
         return status, informasi, message
 
+    def cek_pembelian_token(id_pelanggan : str):
+        pm = Parameter()
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                    filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        [status, informasi, message] = ap2t.buka_history_token(id_pelanggan=id_pelanggan)
+        return status, informasi, message
     def info_pelanggan_acmt(id_pelanggan: str):
         pm = Parameter()
         df = dataframe()

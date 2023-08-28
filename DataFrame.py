@@ -361,5 +361,3 @@ class dataframe():
         #return yearnow,monthnow,datenow
         return tahun_bulan
 
-daf = dataframe()
-daf.update_user_data(filepathlistuser=pm.filepathlistuser,sheetname="Sheet1",column_lookup="NIP",input_value="1234567ZY",updated_value="UPDATE",column_objective="E")

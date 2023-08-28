@@ -307,6 +307,27 @@ def read_command(update, context):
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
                          activity="Infoblokir", time=str(datetime.datetime.now()))
+        #cek pembelian token
+        elif (update.message.text[:10] == "infotoken|" or update.message.text[:10] == "Infotoken|" or update.message.text[:10] == "INFOTOKEN|"):
+            #cek digit idpel
+            id_pelanggan = update.message.text[10:]
+            if(len(id_pelanggan) == 12):
+                context.bot.send_message(
+                    chat_id=chat_id, text="Memulai pencarian history pembelian token Idpel "+id_pelanggan+" : ")
+                [status,informasi,message] = Asmente.cek_pembelian_token(id_pelanggan)
+                if(status=="yes"):
+                    context.bot.send_message(
+                        chat_id=chat_id, text=informasi)
+                else:
+                    context.bot.send_message(
+                        chat_id=chat_id, text=message)
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="Periksa idpel dengan benar")
+            # Write log data
+            dat = dataframe()
+            dat.log_data(chat_id=chat_id,
+                            activity="Info Pembelian token", time=str(datetime.datetime.now()))
         elif ((update.message.text[:8] == "cetakkct" or update.message.text[:8] == "Cetakkct" or update.message.text[:8] == "CETAKKCT") and len(update.message.text) > 25):
             context.bot.send_message(
                 chat_id=chat_id, text="Memulai cetak KCT Token dengan nomor agenda : "+update.message.text[9:])
@@ -477,9 +498,14 @@ def read_command(update, context):
                 else:
                     context.bot.send_message(
                         chat_id=chat_id, text="Gagal ambil kode unit\n"+message)
+                # Write log data
+                dat = dataframe()
+                dat.log_data(chat_id=chat_id,
+                                activity="Update Laporan TS Harian", time=str(datetime.datetime.now()))
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Update Laporan Harian hanya untuk level Admin atau Owner")
+            
         elif((update.message.text[:10] == "kirimlapts" or update.message.text[:10] == "Kirimlapts" or update.message.text[:10] == "KIRIMLAPTS")):
             context.bot.send_message(
                 chat_id=chat_id, text="Memulai kirim laporan TS Hari ini")
@@ -503,6 +529,10 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text=message)
+            # Write log data
+            dat = dataframe()
+            dat.log_data(chat_id=chat_id,
+                            activity="Kirim Laporan TS Harian", time=str(datetime.datetime.now()))
         else:
             print("command tidak dikenal")
             context.bot.send_message(

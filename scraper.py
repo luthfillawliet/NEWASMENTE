@@ -1094,6 +1094,60 @@ class AP2T:
                 message = "Kategori gagal di peroleh\nMessage Error : "+str(e)
                 print(message)
                 return "no", message
+    
+    def buka_history_token(self,id_pelanggan: str):
+        try:
+            self.driver.maximize_window()
+            [status, message] = self.just_buka_info_pelanggan()
+            if(status == "yes"):
+                # entry masuk Idpel
+                edit_text = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div/form/fieldset/div/div/div[4]/div/div/div/div[2]/div/div/div/div[1]/input"))
+                )
+                edit_text.send_keys(id_pelanggan)
+                time.sleep(1)
+                #Klik Search
+                btnSearch = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div/div/div/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/em/button"))
+                )
+                btnSearch.click()
+                #Loading time mencari data
+                time.sleep(10)
+                tab_prepaid = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[1]/div[1]/ul/li[8]"))
+                )
+                tab_prepaid.click()
+                time.sleep(1)
+                tab_transaksi_token = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[1]/div[1]/ul/li[4]"))
+                )
+                tab_transaksi_token.click()
+                #
+                time.sleep(5)
+                try:
+                    #find dulu parent elementnya
+                    rows_got = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div"))
+                    )
+                    #Hitung jumlah Child ELementnya yang berkelas dengan nama x-grid-row
+                    child_elements = rows_got.find_elements(By.CLASS_NAME, "x-grid3-row")
+                    num_child_elements = len(child_elements)
+                    print(f"Number of child elements: {num_child_elements}")
+                    print("Jumlah rows : ", str(len(rows_got)))
+                    return "yes", "Informasi", "Berhasil"
+                except:
+                    return "no","null","Gagal"
+            else:
+                message = "Gagal Buka Info Pelanggan"
+                return "no","null", message
+        except Exception as e:
+            message = "Gagal buka history permohonan token\nMessage Error : \n"+str(e)
+            return "no", "null", message
 
     def buka_montok(self, url_montok: str):
         try:

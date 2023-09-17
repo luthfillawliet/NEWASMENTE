@@ -1128,6 +1128,7 @@ class AP2T:
                 tab_transaksi_token.click()
                 #
                 time.sleep(5)
+                informasi = "History Permohonan token idpel : "+id_pelanggan+"\n"
                 try:
                     #find dulu parent elementnya
                     rows_got = WebDriverWait(self.driver, 10).until(
@@ -1138,8 +1139,23 @@ class AP2T:
                     child_elements = rows_got.find_elements(By.CLASS_NAME, "x-grid3-row")
                     num_child_elements = len(child_elements)
                     print(f"Number of child elements: {num_child_elements}")
-                    print("Jumlah rows : ", str(len(rows_got)))
-                    return "yes", "Informasi", "Berhasil"
+                    #Looping untuk mengakses child rows
+                    for i in range(num_child_elements):
+                        #get nomor meter
+                        nometer = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[1]/div"))                     
+                        )
+                        pemk_kwh = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[3]/div"))                     
+                        )
+                        tanggal = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/form/div/div[2]/div/div[2]/div/div/table/tbody/tr/td/div/div/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[1]/div/div/div/div/div[1]/div[2]/div/div["+str(i+1)+"]/table/tbody/tr/td[6]/div"))                     
+                        )
+                        informasi = informasi+"NoMeter : "+nometer.text+"||Pemkwh : "+pemk_kwh.text+"||Tanggal : "+tanggal.text+"\n"
+                    return "yes", informasi, "Berhasil"
                 except:
                     return "no","null","Gagal"
             else:

@@ -57,9 +57,10 @@ def informasi(update, context):
         text6 = "6. Untuk menambah user baru (Hanya bisa di akses untuk role admin), ketik 'Add|chat_id|kode unit|Nama User|Nomor Telfon|level user'\nContoh : 'Add|817654873|32131|Fulan bin fulan|081321765487|user\n"
         text7 = "7. Untuk reset Imei HP ACMT petugas Cater, ketik 'Resetimei|Kode unit|user petugas (tanpa kode uni)' , Contoh : Resetimei|32131|sitaba\n"
         text8 = "8. Untuk Cek monitoring permohonan token berdasarkan Idpelnomor meter (kode 0 untuk idpel, 1 untuk nomor emter), 'ketik Montok|kode pencarian (0 / 1)|id pelanggan/nomor meter (sesuai dengan kategori)', contoh Montok|0|321500xxxxxx , atau Montok|1|14456787659\n"
-        text9 = "9. Untuk cetak KCT dari Nomor Agenda, bisa ketik 'Cetakkct|18 digit Nomor Agenda' ,contoh : Cetakkct|321310054567857456"
+        text9 = "9. Untuk cetak KCT dari Nomor Agenda, bisa ketik 'Cetakkct|18 digit Nomor Agenda' ,contoh : Cetakkct|321310054567857456\n"
+        text10 = "10. Untuk cek History pembelian token Prabayar, ketik 'Infotoken|12 digit Idpel', contoh : Infotoken|321114598716"
         text_penutup = "Info lebih lanjut silahkan hubungi Luthfil, TE UP3 Makassar selatan"
-        merge_text = text1+text2+text3+text4+text5+text6+text7+text8+text9+text_penutup
+        merge_text = text1+text2+text3+text4+text5+text6+text7+text8+text9+text10+text_penutup
         context.bot.send_message(
             chat_id=chat_id, text="Informasi cara pemakaian : "+"\n"+merge_text)
     else:

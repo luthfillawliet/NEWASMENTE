@@ -7,6 +7,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
+import datetime
+import easyocr
 
 # Library sigadis
 import time
@@ -21,6 +23,9 @@ from DataFrame import dataframe
 from parameter import Parameter
 pm = Parameter()
 
+import requests
+# Mengarahkan pesan CUDA ke stdout yang kosong
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class AP2T:
     def __init__(self, filepathchromedriver, filepathenkripsi, urlap2t, download_dir, filepathct, user_options):
@@ -1489,6 +1494,81 @@ class ACMT:
             informasi = "null"
             return "no", informasi, message
 
+    def scraping_foto_rumah(self,idpelanggan:str):
+
+        try:
+            linkfoto = pm.linkPart1_fotorumah+idpelanggan+pm.linkPart2_fotorumah
+            # Download the image using requests
+            response = requests.get(linkfoto)
+            # Check if the request was successful (status code 200)
+            if response.status_code == 200:
+                # Save the image to a local file
+                with open(pm.files_foto_rumah, 'wb') as file:
+                    file.write(response.content)
+                print("Image downloaded successfully.")
+                return "yes","Berhasil Download"
+            else:
+                print("Failed to download image.")
+                return "no","Gagal download, Koneksi ke ACMT Gagal"
+        except Exception as e:
+            print("An error occurred:", str(e))
+            return "no","Gagal download, Periksa idpel\nMessage Error : "+str(e)
+    def scraping_foto_1(self,idpelanggan:str):
+        # Get the current date and time
+        current_date = datetime.datetime.now()
+
+        # Extract the year and month from the current date
+        year = current_date.year
+        month = current_date.month
+
+        # Convert the year and month to a string in the format 'YYYYMM'
+        formatted_date = f"{year}{month:02d}"
+        try:
+            linkfoto = "https://portalapp.iconpln.co.id/acmt/DisplayBlobServlet1?idpel="+idpelanggan+pm.linkPart2_fotorumah+formatted_date
+            # Download the image using requests
+            response = requests.get(linkfoto)
+            # Check if the request was successful (status code 200)
+            if response.status_code == 200:
+                # Save the image to a local file
+                with open(pm.files_foto_1, 'wb') as file:
+                    file.write(response.content)
+                print("Image downloaded successfully.")
+                return "yes","Berhasil Download"
+            else:
+                print("Failed to download image.")
+                return "no","Gagal download, Koneksi ke ACMT Gagal"
+        except Exception as e:
+            print("An error occurred:", str(e))
+            return "no","Gagal download, Periksa idpel\nMessage Error : "+str(e)
+    def scraping_foto_2(self,idpelanggan:str):
+        # Get the current date and time
+        current_date = datetime.datetime.now()
+
+        # Extract the year and month from the current date
+        year = current_date.year
+        month = current_date.month
+
+        # Convert the year and month to a string in the format 'YYYYMM'
+        formatted_date = f"{year}{month:02d}"
+        try:
+            linkfoto = "https://portalapp.iconpln.co.id/acmt/DisplayBlobServlet2?idpel="+idpelanggan+pm.linkPart2_fotorumah+formatted_date
+            # Download the image using requests
+            response = requests.get(linkfoto)
+            # Check if the request was successful (status code 200)
+            if response.status_code == 200:
+                # Save the image to a local file
+                with open(pm.files_foto_2, 'wb') as file:
+                    file.write(response.content)
+                print("Image downloaded successfully.")
+                return "yes","Berhasil Download"
+            else:
+                print("Failed to download image.")
+                return "no","Gagal download, Koneksi ke ACMT Gagal"
+        except Exception as e:
+            print("An error occurred:", str(e))
+            return "no","Gagal download, Periksa idpel\nMessage Error : "+str(e)
+    
+        
 
 # Create class for scraping
 
@@ -1514,6 +1594,7 @@ class Amicon(webdriver.Chrome):
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-extensions")
         options.add_argument("--dns-prefetch-disable")
+        options.add_argument(f"--download.default_directory={self.download_dir}")  # Set the download directory
         # Passing SSL Security
         options.add_argument("--ignore-ssl-errors=yes")
         options.add_argument("--ignore-certificate-errors")
@@ -1556,7 +1637,7 @@ class Amicon(webdriver.Chrome):
 
     def cek_login(self):
         # cek apakah amicon sudah dalam posisi terlogin atau belum
-        time.sleep(5)
+        time.sleep(3)
         try:
             btn_search = WebDriverWait(self, 10).until(EC.presence_of_element_located(
                 (By.XPATH, "/html/body/app-dashboard/div/main/div/app-monitoring/div/div[1]/div/div/dx-form/div/div/div/div/div/div[2]/div/div/div/dxi-item/dx-button")))
@@ -1611,6 +1692,55 @@ class Amicon(webdriver.Chrome):
             By.CSS_SELECTOR, 'a[href="#/monitoring/loadprofile"]').click()
         time.sleep(1)
 
+    def click_comissioning(self):
+        self.find_element(By.XPATH,"/html/body/app-dashboard/div/div/nav/ul/li[4]/a").click()
+        time.sleep(1)
+    
+    def click_search_idpel_comissioning(self,idpel):
+        self.find_element(
+            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/dx-form/div/div/div/div/div/div/div/div/div/div/div/div/div[1]/div/div[2]/div/div/div/dxi-item/dx-button").click()
+        self.find_element(
+            By.XPATH,"/html/body/div[3]/div/div[2]/div/div/div/dx-data-grid/div/div[5]/div[2]/table/tbody/tr[2]/td[2]/div/div/div/div/input"
+        ).send_keys(idpel)
+        self.find_element(
+            By.XPATH,"/html/body/div[3]/div/div[2]/div/div/div/dx-data-grid/div/div[6]/div[2]/table/tbody/tr[1]/td[1]/div/div/i"
+        ).click()
+        self.find_element(
+            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/dx-button[2]"
+        ).click()
+
+    def click_verify_test(self):
+        #Klik Verify Test
+        self.find_element(
+            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/div[5]/dx-button[1]"
+        ).click()
+        time.sleep(1)
+        #Klik Pop Up Verify
+        self.find_element(
+            By.XPATH,"/html/body/div[3]/div/div[2]/div/div/dx-button[2]"
+        ).click()
+        time.sleep(1)
+        #Confirm Activate
+        self.find_element(
+            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/dx-button"
+        ).click()
+        #Confirm Pop Up Activate
+        time.sleep(1)
+        self.find_element(
+            By.XPATH,"/html/body/div[3]/div/div[2]/div/div/dx-button[2]"
+        ).click()
+    
+    def click_download_pdf_comissioning(self):
+        self.find_element(
+            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div[1]/dx-button[2]"
+        ).click()
+        time.sleep(1)
+        #Klik Finish
+        self.find_element(
+            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div[1]/dx-button[1]"
+        ).click()
+        print("Selesai Comissioning")
+        
     def click_search(self):
         time.sleep(3)
         # click search
@@ -1738,6 +1868,7 @@ class Helper:
             message = f"The file '{filename_and_name_extension}' File tidak ditemukan."
             print(message)
             return "no",message
-        
+
+
+
     
-#Helper.delete_file(r'data\downloads','ReportServlet.xls')

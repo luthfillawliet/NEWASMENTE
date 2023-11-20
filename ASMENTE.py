@@ -342,6 +342,15 @@ class Asmente():
         else:
             return "no",message
 
+    #acmt
+    def get_foto_rumah(idpelanggan:str):
+        acmt = ACMT(filepatchromedriver=pm.filepathchromedriver,
+                    download_dir=pm.download_dir, user_options=pm.user_options, url_acmt=pm.url_acmt)
+        status1,message = acmt.scraping_foto_1(idpelanggan=idpelanggan)
+        status2,message = acmt.scraping_foto_2(idpelanggan=idpelanggan)
+        statusrumah,message = acmt.scraping_foto_rumah(idpelanggan=idpelanggan)
+        return status1,status2,statusrumah
+
 class ReplyButton():
 
     @staticmethod

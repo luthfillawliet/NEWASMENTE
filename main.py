@@ -1,11 +1,13 @@
 from ASMENTE import Asmente
 from ASMENTE import ReplyButton
+from AMICONBOT import AmiconBot
 from parameter import Parameter
 from DataFrame import dataframe
 from FILEMANAGER import filemanager
 import time
 import datetime
 import telegram
+from telegram import ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.update import Update
@@ -44,6 +46,11 @@ def start(update, context):
         context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
 
+def start_amicon(update,context):
+    chat_id = update.message.chat_id
+    reply_markup = AmiconBot.start()
+    context.bot.send_message(
+            chat_id=chat_id, text="Silahkan pilih salah satu", reply_markup=reply_markup)
 
 def informasi(update, context):
     chat_id = update.message.chat_id
@@ -59,8 +66,9 @@ def informasi(update, context):
         text8 = "8. Untuk Cek monitoring permohonan token berdasarkan Idpelnomor meter (kode 0 untuk idpel, 1 untuk nomor emter), 'ketik Montok|kode pencarian (0 / 1)|id pelanggan/nomor meter (sesuai dengan kategori)', contoh Montok|0|321500xxxxxx , atau Montok|1|14456787659\n"
         text9 = "9. Untuk cetak KCT dari Nomor Agenda, bisa ketik 'Cetakkct|18 digit Nomor Agenda' ,contoh : Cetakkct|321310054567857456\n"
         text10 = "10. Untuk cek History pembelian token Prabayar, ketik 'Infotoken|12 digit Idpel', contoh : Infotoken|321114598716"
-        text_penutup = "Info lebih lanjut silahkan hubungi Luthfil, TE UP3 Makassar selatan"
-        merge_text = text1+text2+text3+text4+text5+text6+text7+text8+text9+text10+text_penutup
+        text11 = "11. Untuk cek Foto 1 (Stand), foto 2, dan foto rumah di ACMT, ketik 'fotoacmt|12 digit idpel', contoh : fotoacmt|321114598716"
+        text_penutup = "Info lebih lanjut silahkan hubungi Luthfil, TL DALSUT UP3 Makassar selatan"
+        merge_text = text1+text2+text3+text4+text5+text6+text7+text8+text9+text10+text11+text_penutup
         context.bot.send_message(
             chat_id=chat_id, text="Informasi cara pemakaian : "+"\n"+merge_text)
     else:
@@ -506,6 +514,40 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Update Laporan Harian hanya untuk level Admin atau Owner")
+        elif((update.message.text[:8] == "fotoacmt" or update.message.text[:8] == "Fotoacmt" or update.message.text[:8] == "FOTOACMT") and len(update.message.text) == 21):
+            idpel = update.message.text[9:]
+            context.bot.send_message(
+                chat_id=chat_id, text="Memulai kirim foto ACMT Idpel "+idpel)
+            status1,status2,statusrumah = Asmente.get_foto_rumah(idpelanggan=idpel)
+            if(statusrumah == "yes"):
+                resp = requests.post(
+                            "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_rumah))
+                context.bot.send_message(
+                    chat_id=chat_id, text="Foto Rumah Berhasil di kirim")
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="Gagal get foto rumah")
+            if(status1 == "yes"):
+                resp = requests.post(
+                            "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_1))
+                context.bot.send_message(
+                    chat_id=chat_id, text="Foto 1 Berhasil di kirim")
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="Gagal kirim foto 1")
+            if(status2 == "yes"):
+                resp = requests.post(
+                            "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_2))
+                context.bot.send_message(
+                    chat_id=chat_id, text="Foto 2 Berhasil di kirim")
+            else:
+                context.bot.send_message(
+                    chat_id=chat_id, text="Gagal kirim foto rumah")
+            
+            # Write log data
+            dat = dataframe()
+            dat.log_data(chat_id=chat_id,
+                            activity="Foto ACMT idpel : "+idpel, time=str(datetime.datetime.now()))
             
         elif((update.message.text[:10] == "kirimlapts" or update.message.text[:10] == "Kirimlapts" or update.message.text[:10] == "KIRIMLAPTS")):
             context.bot.send_message(
@@ -534,6 +576,101 @@ def read_command(update, context):
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
                             activity="Kirim Laporan TS Harian", time=str(datetime.datetime.now()))
+        
+        #Fungsi Bot AMICON Register Asset dan Comissioning
+        #Asset
+        elif((update.message.text[:] == "ASSET")):
+            message = update.message.text[:]
+            bot = AmiconBot()
+            bot.get_first_choice(message=message)
+            context.bot.send_message(
+                chat_id=chat_id, text="Silahkan Pilih Tipe Aset : ", reply_markup=bot.set_asset_choice())
+        elif((update.message.text[:] == "METER")):
+            message = update.message.text[:]
+            bot = AmiconBot()
+            bot.get_selected_asset(selected_aset=message)
+            context.bot.send_message(
+                chat_id=chat_id, text="Silahkan Pilih Tipe Merk : ", reply_markup=bot.set_meter_brand())
+        elif(update.message.text[:] == "EDMI"):
+            message = update.message.text[:]
+            bot = AmiconBot()
+            bot.get_selected_brand(selected_brand=message)
+            context.bot.send_message(
+                chat_id=chat_id, text="Silahkan Pilih Tipe Merk : ", reply_markup=bot.set_brand_type(selected_brand=message))
+        elif(update.message.text[:] == "ITRON"):
+            message = update.message.text[:]
+            bot = AmiconBot()
+            bot.get_selected_brand(selected_brand=message)
+            context.bot.send_message(
+                chat_id=chat_id, text="Silahkan Pilih Tipe Merk : ", reply_markup=bot.set_brand_type(selected_brand=message))
+        #Comissioning
+        elif(update.message.text[:] == "COMMISSIONING"):
+            message = "COMMISSIONING|32XXXXXXXXXX"
+            context.bot.send_message(
+                chat_id=chat_id, text=message)
+        elif(update.message.text[:13] == "COMMISSIONING" and len(update.message.text)== 26):
+            idpel = update.message.text[14:]
+            context.bot.send_message(
+                chat_id=chat_id, text="Memulai Comissioning Pelanggan ID : "+idpel)
+            amicon = Amicon(username=pm.username_amicon,password=pm.password_amicon)
+            amicon.first_page()
+            status_login,message = amicon.cek_login()
+            if(status_login == "no"):
+                print(message)
+                amicon.login()
+                amicon.click_comissioning()
+                amicon.click_search_idpel_comissioning(idpel=idpel)
+                #try click verify
+                condition = True
+                while condition:
+                    try:
+                        print("Berhasi Verify")
+                        amicon.click_verify_test()
+                        condition = False
+                    except Exception as e:
+                        print("Gagal click verify")
+                        time.sleep(5)
+                        condition = True
+                #Proses Download PDF dan Finish Comissioning
+                condition = True
+                while condition:
+                    try:
+                        print("Klik Download PDF")
+                        amicon.click_download_pdf_comissioning()
+                        condition = False
+                    except Exception as e:
+                        print("Gagal click Download PDF")
+                        time.sleep(5)
+                        condition = True
+                
+            else:
+                print(message)
+                amicon.click_comissioning()
+                amicon.click_search_idpel_comissioning(idpel=idpel)
+                #try click verify
+                condition = True
+                while condition:
+                    try:
+                        print("Berhasi Verify")
+                        amicon.click_verify_test()
+                        condition = False
+                    except Exception as e:
+                        print("Gagal click verify")
+                        time.sleep(5)
+                        condition = True
+                #Proses Download PDF dan Finish Comissioning
+                condition = True
+                while condition:
+                    try:
+                        print("Klik Download PDF")
+                        amicon.click_download_pdf_comissioning()
+                        condition = False
+                    except Exception as e:
+                        print("Gagal click Download PDF")
+                        time.sleep(5)
+                        condition = True
+            time.sleep(5)
+            
         else:
             print("command tidak dikenal")
             context.bot.send_message(
@@ -624,6 +761,8 @@ def main():
     # Run Aplikasi si gadis
     dispatcher.add_handler(CommandHandler('start_sigadis', start_sigadis))
     dispatcher.add_handler(CommandHandler('update', update_data))
+    # Run Aplikasi si Amicon
+    dispatcher.add_handler(CommandHandler('start_amicon', start_amicon))
     # Run daily basis
     # Membuat scheduler untuk update saldo tunggakan
     j = updater.job_queue

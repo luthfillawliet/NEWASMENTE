@@ -92,9 +92,17 @@ class Parameter:
         self.xpathreportharian =       "/html/body/div[4]/div/div[4]/table/tbody/tr[2]/td[3]/div/div[3]/div/div[3]"
         self.xpathreportharian_today = "/html/body/div[4]/div/div[4]/table/tbody/tr[2]/td[3]/div/div[3]/div/div[5]"
         
-
         # Parameter aplikasi si gadis
+        #self.username_amicon = 'pusat\\firmansyah051'
+        #self.password_amicon = '8206051F@30'
         self.username_amicon = 'pusat\\asdar02'
-        self.password_amicon = '9615040-a28'
+        self.password_amicon = '9615040-a39'
         self.bot_token = self.tokenbot
-        self.user_browser_cache = "user-data-dir=C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"
+        self.user_browser_cache = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
+
+        #Parameter link foto rumah ACMT
+        self.linkPart1_fotorumah = "https://portalapp.iconpln.co.id/acmt/DisplayBlobServlet7?idpel="
+        self.linkPart2_fotorumah = "&blth="
+        self.files_foto_rumah = 'fotoct\\fotorumah.jpg'
+        self.files_foto_1 = 'fotoct\\foto1.jpg'
+        self.files_foto_2 = 'fotoct\\foto2.jpg'

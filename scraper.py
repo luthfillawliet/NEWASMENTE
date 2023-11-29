@@ -1634,6 +1634,7 @@ class Amicon(webdriver.Chrome):
         login_btn = self.find_element(
             By.CSS_SELECTOR, 'button[class="btn login_btn"]')
         login_btn.click()
+        print("Tombol klik di tekan")
 
     def cek_login(self):
         # cek apakah amicon sudah dalam posisi terlogin atau belum
@@ -1693,8 +1694,12 @@ class Amicon(webdriver.Chrome):
         time.sleep(1)
 
     def click_comissioning(self):
-        self.find_element(By.XPATH,"/html/body/app-dashboard/div/div/nav/ul/li[4]/a").click()
-        time.sleep(1)
+        try:
+            self.find_element(By.XPATH,"/html/body/app-dashboard/div/div/nav/ul/li[4]/a").click()
+            time.sleep(1)
+            return False,"Berhasil Klik Comissioning menu"
+        except Exception as e:
+            return True,"Gagal masuk ke menu comissioning\n"+str(e)
     
     def click_search_idpel_comissioning(self,idpel):
         self.find_element(
@@ -1710,25 +1715,49 @@ class Amicon(webdriver.Chrome):
         ).click()
 
     def click_verify_test(self):
-        #Klik Verify Test
-        self.find_element(
-            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/div[5]/dx-button[1]"
-        ).click()
-        time.sleep(1)
-        #Klik Pop Up Verify
-        self.find_element(
-            By.XPATH,"/html/body/div[3]/div/div[2]/div/div/dx-button[2]"
-        ).click()
-        time.sleep(1)
-        #Confirm Activate
-        self.find_element(
-            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/dx-button"
-        ).click()
-        #Confirm Pop Up Activate
-        time.sleep(1)
-        self.find_element(
-            By.XPATH,"/html/body/div[3]/div/div[2]/div/div/dx-button[2]"
-        ).click()
+        try:   
+            #Klik Verify Test
+            self.find_element(
+                By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/div[5]/dx-button[1]"
+            ).click()
+            time.sleep(1)
+            return False
+        except Exception as e:
+            print("Gagal klik verify test")
+            return True
+    def click_popup_verify(self):
+        try:
+            #Klik Pop Up Verify
+            self.find_element(
+                By.XPATH,"/html/body/div[3]/div/div[2]/div/div/dx-button[2]"
+            ).click()
+            time.sleep(1)
+            return False
+        except:
+            print("Gagal klik Popup verify")
+            return True
+    def click_confirm_activate(self):
+        try:
+            #Confirm Activate
+            self.find_element(
+                By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/dx-button"
+            ).click()
+            time.sleep(1)
+            return False
+        except:
+            print("Gagal klik Confirm")
+            return True
+    def click_confirm_popup_activate(self):
+        try:
+            #Confirm Pop Up Activate
+            self.find_element(
+                By.XPATH,"/html/body/div[3]/div/div[2]/div/div/dx-button[2]"
+            ).click()
+            return False
+        except:
+            print("Gagal klik Pop up Confirm")
+            return True
+        
     
     def click_download_pdf_comissioning(self):
         self.find_element(

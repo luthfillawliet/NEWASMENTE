@@ -96,7 +96,7 @@ class Parameter:
         #self.username_amicon = 'pusat\\firmansyah051'
         #self.password_amicon = '8206051F@30'
         self.username_amicon = 'pusat\\asdar02'
-        self.password_amicon = '9615040-a39'
+        self.password_amicon = '9615040-a40'
         self.bot_token = self.tokenbot
         self.user_browser_cache = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
 

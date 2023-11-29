@@ -617,60 +617,17 @@ def read_command(update, context):
             status_login,message = amicon.cek_login()
             if(status_login == "no"):
                 print(message)
-                amicon.login()
-                amicon.click_comissioning()
-                amicon.click_search_idpel_comissioning(idpel=idpel)
-                #try click verify
-                condition = True
-                while condition:
-                    try:
-                        print("Berhasi Verify")
-                        amicon.click_verify_test()
-                        condition = False
-                    except Exception as e:
-                        print("Gagal click verify")
-                        time.sleep(5)
-                        condition = True
-                #Proses Download PDF dan Finish Comissioning
-                condition = True
-                while condition:
-                    try:
-                        print("Klik Download PDF")
-                        amicon.click_download_pdf_comissioning()
-                        condition = False
-                    except Exception as e:
-                        print("Gagal click Download PDF")
-                        time.sleep(5)
-                        condition = True
+                Asmente.execute_amicon_not_login_state(idpel=idpel,amicon=amicon)
                 
             else:
                 print(message)
-                amicon.click_comissioning()
-                amicon.click_search_idpel_comissioning(idpel=idpel)
-                #try click verify
-                condition = True
-                while condition:
-                    try:
-                        print("Berhasi Verify")
-                        amicon.click_verify_test()
-                        condition = False
-                    except Exception as e:
-                        print("Gagal click verify")
-                        time.sleep(5)
-                        condition = True
-                #Proses Download PDF dan Finish Comissioning
-                condition = True
-                while condition:
-                    try:
-                        print("Klik Download PDF")
-                        amicon.click_download_pdf_comissioning()
-                        condition = False
-                    except Exception as e:
-                        print("Gagal click Download PDF")
-                        time.sleep(5)
-                        condition = True
+                Asmente.execute_amicon_login_state(idpel=idpel,amicon=amicon)
             time.sleep(5)
             
+            # Write log data
+            dat = dataframe()
+            dat.log_data(chat_id=chat_id,
+                            activity="Comissioning : "+idpel, time=str(datetime.datetime.now()))
         else:
             print("command tidak dikenal")
             context.bot.send_message(

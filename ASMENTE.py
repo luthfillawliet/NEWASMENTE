@@ -7,6 +7,8 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import time
 pm = Parameter()
 df = dataframe()
+# Import Amicon object
+from scraper import Amicon
 
 
 class Asmente():
@@ -350,6 +352,94 @@ class Asmente():
         status2,message = acmt.scraping_foto_2(idpelanggan=idpelanggan)
         statusrumah,message = acmt.scraping_foto_rumah(idpelanggan=idpelanggan)
         return status1,status2,statusrumah
+
+    #AMICON
+    def execute_amicon_not_login_state(idpel:str,amicon):
+        amicon.login()
+        #cek status menu comissioning
+        status_menu_comiss = True
+        while status_menu_comiss:
+            [status_menu_comiss,message] = amicon.click_comissioning()
+            print(message)
+            time.sleep(5)
+        amicon.click_search_idpel_comissioning(idpel=idpel)
+        #try click verify
+        condition = True
+        counter = 0
+        while condition:
+            try:
+                print("Berhasi Verify")
+                amicon.click_verify_test()
+                condition = False
+            except Exception as e:
+                print("Gagal click verify")
+                time.sleep(5)
+                condition = True
+                counter = counter + 1
+                if(counter > 9):
+                    break
+        #klik pop up verify
+        amicon.click_popup_verify()
+        amicon.click_confirm_activate()
+        amicon.click_confirm_popup_activate()
+        #Proses Download PDF dan Finish Comissioning
+        condition = True
+        loop_value = 0
+        while condition:
+            try:
+                print("Klik Download PDF")
+                amicon.click_download_pdf_comissioning()
+                condition = False
+            except Exception as e:
+                print("Gagal click Download PDF")
+                time.sleep(5)
+                condition = True
+                loop_value = loop_value + 1
+                if(loop_value > 19):
+                    break
+
+    def execute_amicon_login_state(idpel:str,amicon):
+        #cek status menu comissioning
+        status_menu_comiss = True
+        while status_menu_comiss:
+            [status_menu_comiss,message] = amicon.click_comissioning()
+            print(message)
+            time.sleep(5)
+        amicon.click_search_idpel_comissioning(idpel=idpel)
+        #try click verify
+        condition = True
+        counter = 0
+        while condition:
+            try:
+                print("Berhasi Verify")
+                amicon.click_verify_test()
+                condition = False
+            except Exception as e:
+                print("Gagal click verify")
+                time.sleep(5)
+                condition = True
+                counter = counter + 1
+                if(counter > 9):
+                    break
+        #klik pop up verify
+        amicon.click_popup_verify()
+        amicon.click_confirm_activate()
+        amicon.click_confirm_popup_activate()
+        #Proses Download PDF dan Finish Comissioning
+        condition = True
+        loop_value = 0
+        while condition:
+            try:
+                print("Klik Download PDF")
+                amicon.click_download_pdf_comissioning()
+                condition = False
+            except Exception as e:
+                print("Gagal click Download PDF")
+                time.sleep(5)
+                condition = True
+                loop_value = loop_value + 1
+                if(loop_value > 19):
+                    break
 
 class ReplyButton():
 

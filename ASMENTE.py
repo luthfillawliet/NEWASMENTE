@@ -355,133 +355,140 @@ class Asmente():
 
     #AMICON
     def execute_amicon_not_login_state(idpel:str,amicon):
-        amicon.login()
-        #cek status menu comissioning
-        status_menu_comiss = True
-        counter = 0
-        while status_menu_comiss:
-            [status_menu_comiss,message] = amicon.click_comissioning()
-            print(message)
-            time.sleep(5)
-            counter = counter+1
-            if(counter > 15):
-                break
-        amicon.click_search_idpel_comissioning(idpel=idpel)
-        #try click verify
-        condition = True
-        counter = 0
-        while condition:
-            condition = amicon.click_verify_test()
-            time.sleep(5)
-            counter = counter + 1
-            if(counter > 50):
-                break
-        #klik pop up verify
-        condition = True
-        counter = 0
-        while condition:
-            condition = amicon.click_popup_verify()
-            time.sleep(5)
-            counter = counter + 1
-            if(counter > 50):
-                break
-        #Confirm activate
-        condition = True
-        counter = 0
-        while condition:
-            condition = amicon.click_confirm_activate()
-            time.sleep(5)
-            counter = counter + 1
-            if(counter > 50):
-                break
-        #Pop Up Confirm activate
-        condition = True
-        counter = 0
-        while condition:
-            condition = amicon.click_confirm_popup_activate()
-            time.sleep(5)
-            counter = counter + 1
-            if(counter > 50):
-                break
-        #Proses Download PDF dan Finish Comissioning
-        condition = True
-        loop_value = 0
-        while condition:
-            try:
-                print("Klik Download PDF")
-                amicon.click_download_pdf_comissioning()
-                condition = False
-            except Exception as e:
-                print("Gagal click Download PDF")
+        try:
+            amicon.login()
+            #cek status menu comissioning
+            status_menu_comiss = True
+            counter = 0
+            while status_menu_comiss:
+                [status_menu_comiss,message] = amicon.click_comissioning()
+                print(message)
                 time.sleep(5)
-                condition = True
-                loop_value = loop_value + 1
-                if(loop_value > 50):
+                counter = counter+1
+                if(counter > 15):
                     break
-
+            amicon.click_search_idpel_comissioning(idpel=idpel)
+            #try click verify
+            condition = True
+            counter = 0
+            while condition:
+                condition = amicon.click_verify_test()
+                time.sleep(5)
+                counter = counter + 1
+                if(counter > 50):
+                    break
+            #klik pop up verify
+            condition = True
+            counter = 0
+            while condition:
+                condition = amicon.click_popup_verify()
+                time.sleep(5)
+                counter = counter + 1
+                if(counter > 50):
+                    break
+            #Confirm activate
+            condition = True
+            counter = 0
+            while condition:
+                condition = amicon.click_confirm_activate()
+                time.sleep(5)
+                counter = counter + 1
+                if(counter > 50):
+                    break
+            #Pop Up Confirm activate
+            condition = True
+            counter = 0
+            while condition:
+                condition = amicon.click_confirm_popup_activate()
+                time.sleep(5)
+                counter = counter + 1
+                if(counter > 50):
+                    break
+            #Proses Download PDF dan Finish Comissioning
+            condition = True
+            loop_value = 0
+            while condition:
+                try:
+                    print("Klik Download PDF")
+                    amicon.click_download_pdf_comissioning()
+                    condition = False
+                except Exception as e:
+                    print("Gagal click Download PDF")
+                    time.sleep(5)
+                    condition = True
+                    loop_value = loop_value + 1
+                    if(loop_value > 50):
+                        break
+            return "success"
+        except Exception as e:
+            return "failed"
     def execute_amicon_login_state(idpel:str,amicon):
-        #cek status menu comissioning
-        status_menu_comiss = True
-        counter = 0
-        while status_menu_comiss:
-            [status_menu_comiss,message] = amicon.click_comissioning()
-            print(message)
-            time.sleep(5)
-            counter = counter+1
-            if(counter > 15):
-                break
-        amicon.click_search_idpel_comissioning(idpel=idpel)
-        #try click verify
-        condition = True
-        counter = 0
-        while condition:
-            condition = amicon.click_verify_test()
-            time.sleep(5)
-            counter = counter + 1
-            if(counter > 50):
-                break
-        #klik pop up verify
-        condition = True
-        counter = 0
-        while condition:
-            condition = amicon.click_popup_verify()
-            time.sleep(5)
-            counter = counter + 1
-            if(counter > 50):
-                break
-        #Confirm activate
-        condition = True
-        counter = 0
-        while condition:
-            condition = amicon.click_confirm_activate()
-            time.sleep(5)
-            counter = counter + 1
-            if(counter > 50):
-                break
-        #Pop Up Confirm activate
-        condition = True
-        counter = 0
-        while condition:
-            condition = amicon.click_confirm_popup_activate()
-            time.sleep(5)
-            counter = counter + 1
-            if(counter > 50):
-                break
-        #Proses Download PDF dan Finish Comissioning
-        condition = True
-        loop_value = 0
-        while condition:
-            try:
-                print("Klik Download PDF")
-                amicon.click_download_pdf_comissioning()
-                condition = False
-            except Exception as e:
-                print("Gagal click Download PDF")
+        try:
+            #cek status menu comissioning
+            status_menu_comiss = True
+            counter = 0
+            while status_menu_comiss:
+                [status_menu_comiss,message] = amicon.click_comissioning()
+                print(message)
                 time.sleep(5)
-                condition = True
-                loop_value = loop_value + 1
-                if(loop_value > 50):
+                counter = counter+1
+                if(counter > 15):
                     break
+            amicon.click_search_idpel_comissioning(idpel=idpel)
+            #try click verify
+            condition = True
+            counter = 0
+            while condition:
+                condition = amicon.click_verify_test()
+                time.sleep(5)
+                counter = counter + 1
+                if(counter > 50):
+                    break
+            #klik pop up verify
+            condition = True
+            counter = 0
+            while condition:
+                condition = amicon.click_popup_verify()
+                time.sleep(5)
+                counter = counter + 1
+                if(counter > 50):
+                    break
+            #Confirm activate
+            condition = True
+            counter = 0
+            while condition:
+                condition = amicon.click_confirm_activate()
+                time.sleep(5)
+                counter = counter + 1
+                if(counter > 50):
+                    break
+            #Pop Up Confirm activate
+            condition = True
+            counter = 0
+            while condition:
+                condition = amicon.click_confirm_popup_activate()
+                time.sleep(5)
+                counter = counter + 1
+                if(counter > 50):
+                    break
+            #Proses Download PDF dan Finish Comissioning
+            condition = True
+            loop_value = 0
+            while condition:
+                try:
+                    print("Klik Download PDF")
+                    amicon.click_download_pdf_comissioning()
+                    condition = False
+                except Exception as e:
+                    print("Gagal click Download PDF")
+                    time.sleep(5)
+                    condition = True
+                    loop_value = loop_value + 1
+                    if(loop_value > 50):
+                        break
+            return "success"
+        except Exception as e:
+            return "failed"
 
 class ReplyButton():
 

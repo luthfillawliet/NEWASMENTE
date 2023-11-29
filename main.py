@@ -547,8 +547,7 @@ def read_command(update, context):
             # Write log data
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
-                            activity="Foto ACMT idpel : "+idpel, time=str(datetime.datetime.now()))
-            
+                            activity="Foto ACMT idpel : "+idpel, time=str(datetime.datetime.now()))          
         elif((update.message.text[:10] == "kirimlapts" or update.message.text[:10] == "Kirimlapts" or update.message.text[:10] == "KIRIMLAPTS")):
             context.bot.send_message(
                 chat_id=chat_id, text="Memulai kirim laporan TS Hari ini")
@@ -615,15 +614,30 @@ def read_command(update, context):
             amicon = Amicon(username=pm.username_amicon,password=pm.password_amicon)
             amicon.first_page()
             status_login,message = amicon.cek_login()
+            result = ""
             if(status_login == "no"):
                 print(message)
-                Asmente.execute_amicon_not_login_state(idpel=idpel,amicon=amicon)
-                
+                result = Asmente.execute_amicon_not_login_state(idpel=idpel,amicon=amicon)     
             else:
                 print(message)
-                Asmente.execute_amicon_login_state(idpel=idpel,amicon=amicon)
-            time.sleep(5)
-            
+                result = Asmente.execute_amicon_login_state(idpel=idpel,amicon=amicon)
+            time.sleep(1)
+            if(result == "success"):
+                context.bot.send_message(
+                chat_id=chat_id, text="Berhasil melakukan Comissioning Idpel : "+idpel)
+                path = "data//downloads"
+                status,most_recent_files = filemanager.select_last_modified_files(path=path)
+                try:
+                    document = open(path+"//"+most_recent_files,"rb")
+                    context.bot.send_document(chat_id,document)
+                    message = "Berhasil kirim File"
+                    print(message)
+                    context.bot.send_message(
+                        chat_id=chat_id, text=message)
+                except Exception as e:
+                    message = "Gagal kirim file\nMessage Error : \n"+str(e)
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Gagal kirim file\n"+message)
             # Write log data
             dat = dataframe()
             dat.log_data(chat_id=chat_id,

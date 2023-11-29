@@ -35,5 +35,24 @@ class filemanager():
             print(message)
             return "yes",message
 
+    @staticmethod
+    def select_last_modified_files(path:str):
+        # Path to the directory
+        folder_path = path
+
+        # Get a list of files in the directory with their modification time
+        files = [(file, os.path.getmtime(os.path.join(folder_path, file))) for file in os.listdir(folder_path)]
+
+        # Sort the files based on modification time (last modified will be at index 0)
+        files.sort(key=lambda x: x[1], reverse=True)
+
+        # Check if any files are present in the folder
+        if files:
+            most_recent_file = files[0][0]
+            print(f"The most recently modified file is: {most_recent_file}")
+            return "yes",most_recent_file
+        else:
+            print("No files found in the directory.")
+            return "no",most_recent_file
 #pm = Parameter()
 #filemanager.take_screenshoot_pixel(kiri_atas_layar_x=pm.kiri_atas_layar_x,kiri_atas_layar_y=pm.kiri_atas_layar_y,kanan_bawah_layar_x=pm.kanan_bawah_layar_x,kanan_bawah_layar_y=pm.kanan_bawah_layar_y)

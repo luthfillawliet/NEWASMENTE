@@ -617,11 +617,12 @@ def read_command(update, context):
             result = ""
             if(status_login == "no"):
                 print(message)
-                result = Asmente.execute_amicon_not_login_state(idpel=idpel,amicon=amicon)     
+                result,message = Asmente.execute_amicon_not_login_state(idpel=idpel,amicon=amicon)     
             else:
                 print(message)
-                result = Asmente.execute_amicon_login_state(idpel=idpel,amicon=amicon)
-            time.sleep(1)
+                result,message = Asmente.execute_amicon_login_state(idpel=idpel,amicon=amicon)
+            #Menunggu proses download
+            time.sleep(10)
             if(result == "success"):
                 context.bot.send_message(
                 chat_id=chat_id, text="Berhasil melakukan Comissioning Idpel : "+idpel)
@@ -638,6 +639,9 @@ def read_command(update, context):
                     message = "Gagal kirim file\nMessage Error : \n"+str(e)
                     context.bot.send_message(
                         chat_id=chat_id, text="Gagal kirim file\n"+message)
+            else:
+                context.bot.send_message(
+                        chat_id=chat_id, text="Gagal Comissioning"+message)
             # Write log data
             dat = dataframe()
             dat.log_data(chat_id=chat_id,

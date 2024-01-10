@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import Select
 from pywinauto.application import Application
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -36,14 +37,19 @@ class AP2T:
         self.download_dir = download_dir
         self.filepathct = filepathct
         self.download_dir_tagsus = pm.download_ts
-        chrome_options = webdriver.ChromeOptions()
-        # chrome_options.add_experimental_option('prefs',
-        #                                        {"user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"})
-        chrome_options.add_argument(
+        # chrome_options = webdriver.ChromeOptions()
+        # # chrome_options.add_experimental_option('prefs',
+        # #                                        {"user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"})
+        # chrome_options.add_argument(
+        #     user_options)
+        # self.driver = webdriver.Chrome(
+        #     executable_path = filepathchromedriver, options=chrome_options)
+        options = webdriver.ChromeOptions()
+        options.add_argument(
             user_options)
+        service=Service(executable_path=filepathchromedriver)
         self.driver = webdriver.Chrome(
-            executable_path=filepathchromedriver, options=chrome_options)
-
+            service = service, options=options)
     # Method buka AP2T
     def open_ap2t(self):
         print("Membuka halaman AP2T")

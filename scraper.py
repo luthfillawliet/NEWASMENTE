@@ -48,8 +48,7 @@ class AP2T:
         options.add_argument(
             user_options)
         service=Service(executable_path=filepathchromedriver)
-        self.driver = webdriver.Chrome(
-            service = service, options=options)
+        self.driver = webdriver.Chrome(service=service, options=options)
     # Method buka AP2T
     def open_ap2t(self):
         print("Membuka halaman AP2T")
@@ -1362,7 +1361,8 @@ class ACMT:
         chrome_options.add_argument(pm.ignore_ssl_errors)
         chrome_options.add_argument(pm.ignore_certificate_errors)
         self.url_acmt = url_acmt
-        self.driver = webdriver.Chrome(self.filepathchromedriver)
+        service=Service(executable_path=pm.filepathchromedriver)
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
         self.tipe = "ACMT"
 
     def open_acmt(self):

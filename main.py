@@ -37,6 +37,7 @@ def start(update, context):
     if (status == "yes"):
         context.bot.send_message(
             chat_id=chat_id, text="Bot Standby...")
+        # start_menu(update, context)
     else:
         context.bot.send_message(
             chat_id=chat_id, text=message)
@@ -45,7 +46,7 @@ def start(update, context):
             chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
         context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
-
+    
 def start_amicon(update,context):
     chat_id = update.message.chat_id
     reply_markup = AmiconBot.start()
@@ -115,9 +116,8 @@ def findnth(string, substring, n):
 def get_result(value):
     result_dict = {
         "1": 'kodeunit',
-        "2": 'nama',
-        "3": 'jabatan',
-        "4": 'password',
+        "2": 'jabatan',
+        "3": 'password',
     }
     return result_dict.get(value, 'Invalid value')
 # List perintah Asmen TE
@@ -389,19 +389,23 @@ def read_command(update, context):
                 chat_id=chat_id)
             if (status == "yes" and (level_user == "owner" or level_user == "admin")):
                 separator_2 = findnth(update.message.text, "|", 2)
+                input_value = str(update.message.text[7:separator_2-2])#baru tambah
                 update_value = update.message.text[(separator_2+1):]
                 item_update = get_result(update.message.text[separator_2-1])
                 print(update.message.text[separator_2-1])
                 context.bot.send_message(
-                    chat_id=chat_id, text="Memulai Update "+item_update+" User NIP "+update.message.text[7:separator_2-2])
+                    chat_id=chat_id, text="Memulai Update "+item_update+" User NIP "+input_value)
                 column_objective = "B"
-                if(item_update == "password"):
+                if(item_update == "jabatan"):
+                    column_objective = "D"
+                elif(item_update == "password"):
                     column_objective = "E"
                 else:
                     column_objective = "B"
                 daf = dataframe()
-                daf.update_user_data(filepathlistuser=pm.filepathlistuser,sheetname="Sheet1",column_lookup="NIP",input_value="1234567ZY",updated_value=update_value,column_objective=column_objective)
-                
+                [status, message]=daf.update_user_data(filepathlistuser=pm.filepathlistuser,sheetname="Sheet1",column_lookup="NIP",input_value=input_value,updated_value=update_value,column_objective=column_objective)#ubah nilai dari param input_value dengan nilai variabel input_value
+                context.bot.send_message(
+                    chat_id=pm.chat_id_admin, text=message)
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Mengupdate user hanya untuk role Owner dan Admin, silahkan kontak Luthfil")
@@ -753,7 +757,6 @@ def main():
     updater.start_polling()
     # Stop
     updater.idle()
-
 
 if __name__ == '__main__':
     main()

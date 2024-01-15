@@ -113,8 +113,18 @@ class dataframe():
             [status,message,row] = dataframe.get_specified_row(workbook=workbook,sheet_name="Sheet1",search_value=input_value)
             if(status == "yes"):
                 print("cari kolom update")
-                dataframe.write_to_excel(workbook=workbook,sheet_name=sheetname,row_number=row,column_name=column_objective,value=updated_value)
-                print("Berhasil update")
+                # dataframe.write_to_excel(workbook=workbook,sheet_name=sheetname,row_number=row,column_name=column_objective,value=updated_value)
+                # message = "Berhasil update"
+                # print(message)
+                try:
+                    dataframe.write_to_excel(workbook=workbook,sheet_name=sheetname,row_number=row,column_name=column_objective,value=updated_value)
+                    message = "Berhasil update"
+                    print(message)
+                    return "yes", message
+                except Exception as e:
+                    message = "Gagal update user\nMessage Error : "+str(e)
+                    print(message)
+                    return "no", message
                 
         except Exception as e:
             message = "Gagal Load File listuserid.xls\nMessage Error : \n"+str(e)

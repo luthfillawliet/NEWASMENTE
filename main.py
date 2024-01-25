@@ -406,6 +406,8 @@ def read_command(update, context):
                 [status, message]=daf.update_user_data(filepathlistuser=pm.filepathlistuser,sheetname="Sheet1",column_lookup="NIP",input_value=input_value,updated_value=update_value,column_objective=column_objective)#ubah nilai dari param input_value dengan nilai variabel input_value
                 context.bot.send_message(
                     chat_id=pm.chat_id_admin, text=message)
+                daf.log_data(chat_id=chat_id,
+                             activity="Update "+ item_update + " User dengan NIP "+ input_value, time=str(datetime.datetime.now()))
             else:
                 context.bot.send_message(
                     chat_id=chat_id, text="Mengupdate user hanya untuk role Owner dan Admin, silahkan kontak Luthfil")

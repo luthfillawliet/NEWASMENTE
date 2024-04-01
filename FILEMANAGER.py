@@ -34,7 +34,16 @@ class filemanager():
             message = f"The file '{filename_and_name_extension}' File tidak ditemukan."
             print(message)
             return "yes",message
-
+    def check_file(folder_path,filename_and_name_extension):
+        file_path = os.path.join(folder_path, filename_and_name_extension)
+        if os.path.exists(file_path):
+            message = "File ditemukan"
+            print(message)
+            return True,message
+        else:
+            message = "File Tidak Ditemukan"
+            print(message)
+            return False, message
     @staticmethod
     def select_last_modified_files(path:str):
         # Path to the directory

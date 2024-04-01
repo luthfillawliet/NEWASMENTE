@@ -23,7 +23,8 @@ class Parameter:
         self.filepathenkripsi = r'C:\Program Files (x86)\PT PLN (PERSERO)\AP2T ENKRIPSI\Token.exe'
         # jika mau menggunakan cache bawaan browser, silahkan di aktifkan (uncomment), lokasi atur sesuai lokasi cache
         #user option pc lokal
-        self.user_options = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
+        # self.user_options = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
+        self.user_options = "user-data-dir=C:\\Users\\CORE i7\\AppData\\Local\\Google\\Chrome\\User Data"
         #user option server lama uid
         #self.user_options = r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data'
         # file list user
@@ -42,11 +43,13 @@ class Parameter:
         # bot token id, di ganti jika ganti bot
         # self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"  # new_asmente_bot
         self.tokenbot = "5081663366:AAF9XrOVwtlD6gFTf7fh7qTbQXMixpe_XSI"  # ulpsgm_bot
+        #self.tokenbot = "6811746544:AAFcvWpQhO65IDpKYRnQZFfujrkBEIkShHo"
         # group chat id
         self.chat_id = -828901164
         # chat_id admin
         # chat id luthfil, bisa di ganti disesuaikan dengan admin server
-        self.chat_id_admin = 1029804860
+        # self.chat_id_admin = 1029804860
+        self.chat_id_admin = 1150570046
 
         # Setting jika ada perubahan alamat, link atau domain dari aplikasi korporat
         # Link By Pass AP2T (Tidak usah di ubah jika tidak ada perubahan domain ap2t dari pusat)
@@ -79,7 +82,7 @@ class Parameter:
         #lokasi download tagsus
         self.download_ts = 'data\\downloads'
         self.namafiletagsus = "ReportServlet.xls"
-        self.link_spreadsheet_monitoringts = "https://docs.google.com/spreadsheets/d/1vaPWCj_cdKB2CQg-uKhhp0hkAs7ZCcNAtppz5fu8J_Y/edit#gid=0"
+        self.link_spreadsheet_monitoringts = "https://docs.google.com/spreadsheets/d/1MNaFkKPb-RAmRvZZdMdVLK-AMPfG2PpMEysT8NnHEpg/edit#gid=1613659109"
         self.reporthariantab = "REPORT HARIAN TODAY"
         self.kiri_atas_layar_x = 57
         self.kiri_atas_layar_y = 279
@@ -88,9 +91,9 @@ class Parameter:
         # link ap2t
         self.urlap2t = 'https://ap2t.pln.co.id/ap2t/Login.aspx'
         self.filepathjson = R'data\gsheet\monitoringpju-290711-01d17333a9eb.json'
-        self.filename_googlespreadsheet_tagsus = "Monitoring TS P2TL 2023"
+        self.filename_googlespreadsheet_tagsus = "Monitoring TS P2TL 2024"
         self.xpathreportharian =       "/html/body/div[4]/div/div[4]/table/tbody/tr[2]/td[3]/div/div[3]/div/div[3]"
-        self.xpathreportharian_today = "/html/body/div[4]/div/div[4]/table/tbody/tr[2]/td[3]/div/div[3]/div/div[5]"
+        self.xpathreportharian_today = "/html/body/div[4]/div/div[4]/table/tbody/tr[2]/td[3]/div/div[3]/div/div[4]"
         
         # Parameter aplikasi si gadis
         #self.username_amicon = 'pusat\\firmansyah051'
@@ -98,7 +101,7 @@ class Parameter:
         self.username_amicon = 'pusat\\asdar02'
         self.password_amicon = '9615040-a40'
         self.bot_token = self.tokenbot
-        self.user_browser_cache = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
+        self.user_browser_cache = "user-data-dir=C:\\Users\\CORE i7\\AppData\\Local\\Google\\Chrome\\User Data"
 
         #Parameter link foto rumah ACMT
         self.linkPart1_fotorumah = "https://portalapp.iconpln.co.id/acmt/DisplayBlobServlet7?idpel="

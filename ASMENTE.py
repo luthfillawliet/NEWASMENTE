@@ -306,8 +306,34 @@ class Asmente():
         folder_path = pm.download_ts
         DF = dataframe()
         filename_and_extension = "ReportServlet.xls"
-        [status,message] = filemanager.delete_file(folder_path=folder_path,filename_and_name_extension=filename_and_extension)
-        if(status == "yes"):
+        #lakukan pengecekan file
+        [status,message] = filemanager.check_file(folder_path=folder_path,filename_and_name_extension=filename_and_extension)
+        if(status == True): #Jika file ditemukan, hapus
+            [status,message] = filemanager.delete_file(folder_path=folder_path,filename_and_name_extension=filename_and_extension)
+            if(status == "yes"):
+                #jika berhasil hapus file, buka web Tagsus dan download file
+                ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                            filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+                [status,message] = ap2t.buka_web_tagsus(kode_unit_user=kode_unit_user,tahun_bulan=tahun_bulan)
+                if(status == "yes"):
+                    #baca data excel ReportServlet
+                    [status,message,df] = dataframe.read_reportservlet(skip_rows=8)
+                    #print(df)
+                    if(status == "yes"):
+                        #tentukan nama tabnya sesuai bulannya
+                        namatabbulan = dataframe.get_nama_sheet_bulan_sekarang()
+                        #write data ke spreadsheet bulanan
+                        TAB_NAME = namatabbulan #jangan lupa di variabelkan
+                        [status,message] = dataframe.write_df_to_google_sheet(pm.filepathjson,GSHEET=pm.filename_googlespreadsheet_tagsus,TAB_NAME=TAB_NAME,df=df,first_row=9,first_col=1)
+                        return "yes",message
+                    else:
+                        return "no", message
+                #kirim Laporan
+                else:
+                    return "no",message
+            else:
+                return "no",message
+        else:
             #jika berhasil hapus file, buka web Tagsus dan download file
             ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
                         filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
@@ -328,8 +354,7 @@ class Asmente():
             #kirim Laporan
             else:
                 return "no",message
-        else:
-            return "no",message
+
     def kirim_report_ts():
         ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
                         filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)

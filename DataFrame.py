@@ -222,6 +222,24 @@ class dataframe():
             message = "Gagal mengambil kode unit user\nMessage Error : "+str(e)
             return "no", "null", message
 
+    def get_convert_kdunit_to_nama_unit(self,kdunit_selected):
+        try:
+            df = pd.read_excel(io="data\\listuser\\listkodeunit.xlsx", sheet_name="kdunit")
+            selected_row = df[df["kodeunit"] == kdunit_selected]
+            print("Nama unit selected : ", selected_row["namaunit"].item())
+            print(selected_row)
+            message = "Berhasil get nama unit"
+            return "yes",selected_row["namaunit"].item(),message
+        except Exception as e:
+            message = "Gagal menemukan nama unit dari kode unit"
+            print(message)
+            return "no","null",message
+    def get_monthname_from_number(self,number_code:str):
+        months = np.array(['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+                   'Agustus', 'September', 'Oktober', 'November', 'Desember'])
+        selected_month = months[int(number_code) - 1]
+        return selected_month
+
     def get_user_acmt(self):
         try:
             df = pd.read_excel(io=pm.filepathlistuser, sheet_name="Sheet1")

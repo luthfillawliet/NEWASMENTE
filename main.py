@@ -581,7 +581,13 @@ def read_command(update, context):
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
                             activity="Kirim Laporan TS Harian", time=str(datetime.datetime.now()))
-        
+        elif((update.message.text[:6] == "tul309" or update.message.text[:6] == "Tul309" or update.message.text[:6] == "TUL309")):
+            context.bot.send_message(
+                chat_id=chat_id, text="Memulai download TUL 309 kode unit - tahun - bulan - jenis lap -")
+            Asmente.open_tul309(link_TUL309="any",kdunit="Any",tahun="Any",bulan="Any",jenislaporan="Any")
+            context.bot.send_message(
+                chat_id=chat_id, text="Berhasil buka TUL 309")
+
         #Fungsi Bot AMICON Register Asset dan Comissioning
         #Asset
         elif((update.message.text[:] == "ASSET")):

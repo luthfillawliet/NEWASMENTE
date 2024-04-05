@@ -3,7 +3,6 @@ from selenium.webdriver.support.ui import Select
 from pywinauto.application import Application
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -37,18 +36,14 @@ class AP2T:
         self.download_dir = download_dir
         self.filepathct = filepathct
         self.download_dir_tagsus = pm.download_ts
-        # chrome_options = webdriver.ChromeOptions()
-        # # chrome_options.add_experimental_option('prefs',
-        # #                                        {"user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"})
-        # chrome_options.add_argument(
-        #     user_options)
-        # self.driver = webdriver.Chrome(
-        #     executable_path = filepathchromedriver, options=chrome_options)
-        options = webdriver.ChromeOptions()
-        options.add_argument(
+        chrome_options = webdriver.ChromeOptions()
+        # chrome_options.add_experimental_option('prefs',
+        #                                        {"user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"})
+        chrome_options.add_argument(
             user_options)
-        service=Service(executable_path=filepathchromedriver)
-        self.driver = webdriver.Chrome(service=service, options=options)
+        self.driver = webdriver.Chrome(
+            executable_path=filepathchromedriver, options=chrome_options)
+
     # Method buka AP2T
     def open_ap2t(self):
         print("Membuka halaman AP2T")
@@ -1333,6 +1328,7 @@ class AP2T:
                 tab_report_harian.click()
                 time.sleep(5) #bisa di ganti sesuai kebutuhan
                 message = "Berhasil buka tab REPORT HARIAN"
+                #Untuk mengatur tanggalnya dilakukan di sisi spreadsheetnya dengan menggunakan =Day(Today())
                 try:
                     self.driver.save_screenshot("fotoct//"+"screenshot_ts.png")
                     message = "Berhasil kirim screenshot"
@@ -1349,7 +1345,97 @@ class AP2T:
             message = "Gagal buka Spreadsheet\nMessage Error : \n"+str(e)
             print(message)
             return "no",message
-        
+
+    def open_tul309(self,link_TUL309,kdunit,tahun,bulan,jenislaporan):
+        print("Membuka Halaman TUL 309")
+        driver = self.driver
+        #Maximize page
+        driver.maximize_window()
+        driver.get("https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=94171287ZY&password=CMS&page=formtul309") #ganti nanti link ini
+        time.sleep(1)
+        #Klik Tombol dropdown unit
+        dropdown_unit = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[1]/td/fieldset/div/div/div[3]/div[1]/div/img"))
+        )
+        dropdown_unit.click()
+        time.sleep(1)
+        print("Berhasil klik dropdown unit")
+        # get semua child element nama unit dulu
+        parentCategories = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located(
+                (By.CLASS_NAME, "x-combo-list-item"))
+        )
+        print("Panjang Array : "+str(len(parentCategories)))
+        print(str(len(parentCategories)))
+        for items in parentCategories:
+                if (items.text == "PANAKKUKANG"): # Jangan lupa di ganti unitnya
+                    items.click()
+                    break
+                else:
+                    print("Nama Unit tidak ditemukan")
+        #Pilih Bulan
+        dropdown_bulan = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[2]/td/fieldset/div/div/div[1]/div/div/div/div[1]/div/div/div/div[1]/div/img"))
+        )
+        dropdown_bulan.click()
+        time.sleep(1)
+        parentCategories = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located(
+                (By.CLASS_NAME, "x-combo-list-item"))
+        )
+        print("Panjang Array : "+str(len(parentCategories)))
+        print(str(len(parentCategories)))
+        for items in parentCategories:
+                if (items.text == "Maret"): # Jangan lupa di ganti Bulannya
+                    items.click()
+                    break
+                else:
+                    print("Nama Bulan tidak ditemukan")
+        #Pilih Tahun
+        dropdown_tahun = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[2]/td/fieldset/div/div/div[1]/div/div/div/div[2]/div/div/div/div[1]/div/img"))
+        )
+        dropdown_tahun.click()
+        time.sleep(1)
+        parentCategories = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located(
+                (By.CLASS_NAME, "x-combo-list-item"))
+        )
+        print("Panjang Array : "+str(len(parentCategories)))
+        print(str(len(parentCategories)))
+        for items in parentCategories:
+                if (items.text == "2024"): # Jangan lupa di ganti Tahunnya
+                    items.click()
+                    break
+                else:
+                    print("Tahun tidak ditemukan")
+        #Pilih Jenis Laporan
+        dropdown_jenis_lap = WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[2]/td/fieldset/div/div/div[2]/div[1]/div/img"))
+        )
+        dropdown_jenis_lap.click()
+        time.sleep(1)
+        parentCategories = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located(
+                (By.CLASS_NAME, "x-combo-list-item"))
+        )
+        print("Panjang Array : "+str(len(parentCategories)))
+        print(str(len(parentCategories)))
+        for items in parentCategories:
+                if (items.text == "TOTAL"): # Jangan lupa di ganti Jenis Laporannya
+                    items.click()
+                    print("Jenis Laporan ditemukan")
+                    break
+                else:
+                    print("Jenis Laporan tidak ditemukan")
+        time.sleep(5)
+        message = "Berhasil buka Web TUL 309"
+        print(message)
+
 
 class ACMT:
     def __init__(self, filepatchromedriver, download_dir, user_options, url_acmt):
@@ -1361,8 +1447,7 @@ class ACMT:
         chrome_options.add_argument(pm.ignore_ssl_errors)
         chrome_options.add_argument(pm.ignore_certificate_errors)
         self.url_acmt = url_acmt
-        service=Service(executable_path=pm.filepathchromedriver)
-        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+        self.driver = webdriver.Chrome(self.filepathchromedriver)
         self.tipe = "ACMT"
 
     def open_acmt(self):
@@ -1767,8 +1852,6 @@ class Amicon(webdriver.Chrome):
         except:
             print("Gagal klik Pop up Confirm")
             return True
-        
-    
     def click_download_pdf_comissioning(self):
         self.find_element(
             By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div[1]/dx-button[2]"

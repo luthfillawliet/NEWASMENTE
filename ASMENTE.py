@@ -358,7 +358,7 @@ class Asmente():
     def kirim_report_ts():
         ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
                         filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
-        #buka tabe REPORT HARIAN
+        #buka tab REPORT HARIAN
         [status,message] = ap2t.buka_monitoring_ts(pm.link_spreadsheet_monitoringts,pm.reporthariantab)
         if(status == "yes"):
             #mengambil screenshoot
@@ -369,6 +369,10 @@ class Asmente():
         else:
             return "no",message
 
+    def open_tul309(link_TUL309,kdunit,tahun,bulan,jenislaporan):
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                        filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        ap2t.open_tul309(link_TUL309=link_TUL309,kdunit=kdunit,tahun=tahun,bulan=bulan,jenislaporan=jenislaporan)
     #acmt
     def get_foto_rumah(idpelanggan:str):
         acmt = ACMT(filepatchromedriver=pm.filepathchromedriver,

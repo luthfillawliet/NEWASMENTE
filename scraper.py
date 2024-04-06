@@ -9,6 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 import datetime
 import easyocr
+import numpy as np
 
 # Library sigadis
 import time
@@ -1347,103 +1348,128 @@ class AP2T:
             print(message)
             return "no",message
 
-    def open_tul309(self,link_TUL309,kdunit_selected,tahun,bulan,jenislaporan):
-        print("Membuka Halaman TUL 309")
-        driver = self.driver
-        #Maximize page
-        driver.maximize_window()
-        driver.get("https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=94171287ZY&password=CMS&page=formtul309") #ganti nanti link ini
-        time.sleep(1)
-        #Tentukan nama Unit :
-        daf = dataframe()
-        [status,nama_unit_selected,message] = daf.get_convert_kdunit_to_nama_unit(kdunit_selected=kdunit_selected)
-        if(status=="yes"):
-            #Klik Tombol dropdown unit
-            dropdown_unit = WebDriverWait(self.driver, 10).until(
-                                EC.presence_of_element_located(
-                                    (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[1]/td/fieldset/div/div/div[3]/div[1]/div/img"))
-            )
-            dropdown_unit.click()
+    def open_tul309(self,link_TUL309,kdunit_selected,tahun,bulan,jenislaporan,tipelaporan):
+        #Buka Halaman TUL 309
+        try :
+            print("Membuka Halaman TUL 309")
+            driver = self.driver
+            #Maximize page
+            driver.maximize_window()
+            driver.get("https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/redirect.jsp?user=94171287ZY&password=CMS&page=formtul309") #ganti nanti link ini
             time.sleep(1)
-            print("Berhasil klik dropdown unit")
-            # get semua child element nama unit dulu
-            parentCategories = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_all_elements_located(
-                    (By.CLASS_NAME, "x-combo-list-item"))
-            )
-            print("Panjang Array : "+str(len(parentCategories)))
-            print(str(len(parentCategories)))
-            for items in parentCategories:
-                    if (items.text == nama_unit_selected):
-                        items.click()
-                        break
-                    else:
-                        print("Nama Unit tidak ditemukan")
-            #Pilih Bulan
-            #Cari dulu bulan sekarang
-            selected_month_name = daf.get_monthname_from_number(number_code=bulan)
-            dropdown_bulan = WebDriverWait(self.driver, 10).until(
-                                EC.presence_of_element_located(
-                                    (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[2]/td/fieldset/div/div/div[1]/div/div/div/div[1]/div/div/div/div[1]/div/img"))
-            )
-            dropdown_bulan.click()
-            time.sleep(1)
-            parentCategories = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_all_elements_located(
-                    (By.CLASS_NAME, "x-combo-list-item"))
-            )
-            print("Panjang Array : "+str(len(parentCategories)))
-            print(str(len(parentCategories)))
-            for items in parentCategories:
-                    if (items.text == selected_month_name):
-                        items.click()
-                        break
-                    else:
-                        print("Nama Bulan tidak ditemukan")
-            #Pilih Tahun
-            dropdown_tahun = WebDriverWait(self.driver, 10).until(
-                                EC.presence_of_element_located(
-                                    (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[2]/td/fieldset/div/div/div[1]/div/div/div/div[2]/div/div/div/div[1]/div/img"))
-            )
-            dropdown_tahun.click()
-            time.sleep(1)
-            parentCategories = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_all_elements_located(
-                    (By.CLASS_NAME, "x-combo-list-item"))
-            )
-            print("Panjang Array : "+str(len(parentCategories)))
-            print(str(len(parentCategories)))
-            for items in parentCategories:
-                    if (items.text == "2024"): # Jangan lupa di ganti Tahunnya
-                        items.click()
-                        break
-                    else:
-                        print("Tahun tidak ditemukan")
-            #Pilih Jenis Laporan
-            dropdown_jenis_lap = WebDriverWait(self.driver, 10).until(
-                                EC.presence_of_element_located(
-                                    (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[2]/td/fieldset/div/div/div[2]/div[1]/div/img"))
-            )
-            dropdown_jenis_lap.click()
-            time.sleep(1)
-            parentCategories = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_all_elements_located(
-                    (By.CLASS_NAME, "x-combo-list-item"))
-            )
-            print("Panjang Array : "+str(len(parentCategories)))
-            print(str(len(parentCategories)))
-            for items in parentCategories:
-                    if (items.text == "TOTAL"): # Jangan lupa di ganti Jenis Laporannya
-                        items.click()
-                        print("Jenis Laporan ditemukan")
-                        break
-                    else:
-                        print("Jenis Laporan tidak ditemukan")
-            time.sleep(5)
-            message = "Berhasil buka Web TUL 309"
-            print(message)
-        else:
-            print(message)
+            #Tentukan nama Unit :
+            daf = dataframe()
+            [status,nama_unit_selected,message] = daf.get_convert_kdunit_to_nama_unit(kdunit_selected=kdunit_selected)
+            #Jika Berhasil menemukan kode unit dan mengkonversi
+            if(status=="yes"):
+                #Klik Tombol dropdown unit
+                dropdown_unit = WebDriverWait(self.driver, 10).until(
+                                    EC.presence_of_element_located(
+                                        (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[1]/td/fieldset/div/div/div[3]/div[1]/div/img"))
+                )
+                dropdown_unit.click()
+                time.sleep(1)
+                print("Berhasil klik dropdown unit")
+                # get semua child element nama unit dulu
+                parentCategories = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located(
+                        (By.CLASS_NAME, "x-combo-list-item"))
+                )
+                print("Panjang Array : "+str(len(parentCategories)))
+                print(str(len(parentCategories)))
+                for items in parentCategories:
+                        if (items.text == nama_unit_selected):
+                            items.click()
+                            break
+                        else:
+                            print("Nama Unit tidak ditemukan")
+                #Pilih Bulan
+                #Cari dulu bulan sekarang
+                selected_month_name = daf.get_monthname_from_number(number_code=bulan)
+                dropdown_bulan = WebDriverWait(self.driver, 10).until(
+                                    EC.presence_of_element_located(
+                                        (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[2]/td/fieldset/div/div/div[1]/div/div/div/div[1]/div/div/div/div[1]/div/img"))
+                )
+                dropdown_bulan.click()
+                time.sleep(1)
+                parentCategories = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located(
+                        (By.CLASS_NAME, "x-combo-list-item"))
+                )
+                print("Panjang Array : "+str(len(parentCategories)))
+                print(str(len(parentCategories)))
+                for items in parentCategories:
+                        if (items.text == selected_month_name):
+                            items.click()
+                            break
+                        else:
+                            print("Nama Bulan tidak ditemukan")
+                #Pilih Tahun
+                dropdown_tahun = WebDriverWait(self.driver, 10).until(
+                                    EC.presence_of_element_located(
+                                        (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[2]/td/fieldset/div/div/div[1]/div/div/div/div[2]/div/div/div/div[1]/div/img"))
+                )
+                dropdown_tahun.click()
+                time.sleep(2)
+                parentCategories = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located(
+                        (By.CLASS_NAME, "x-combo-list-item"))
+                )
+                print("Panjang Array : "+str(len(parentCategories)))
+                print(str(len(parentCategories)))
+                for items in parentCategories:
+                        if (items.text == tahun):
+                            items.click()
+                            break
+                        else:
+                            print("Tahun tidak ditemukan")
+                #Pilih Jenis Laporan
+                dropdown_jenis_lap = WebDriverWait(self.driver, 10).until(
+                                    EC.presence_of_element_located(
+                                        (By.XPATH, "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/form/table/tbody/tr[2]/td/fieldset/div/div/div[2]/div[1]/div/img"))
+                )
+                dropdown_jenis_lap.click()
+                time.sleep(1)
+                parentCategories = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located(
+                        (By.CLASS_NAME, "x-combo-list-item"))
+                )
+                print("Panjang Array : "+str(len(parentCategories)))
+                print(str(len(parentCategories)))
+                #Definisi pilihan Array
+                pilihan_laporan = np.array(['NORMAL', 'LPB', 'TOTAL'])
+                laporan_selected = pilihan_laporan[int(jenislaporan) - 1]
+                for items in parentCategories:
+                        if (items.text == laporan_selected):
+                            items.click()
+                            print("Jenis Laporan ditemukan")
+                            break
+                        else:
+                            print("Jenis Laporan tidak ditemukan")
+                time.sleep(1)
+                #Klik Tombol Laporan 1 atau 2
+                path_tombol = ""
+                if(tipelaporan == "bulanan"):
+                    path_tombol = "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[1]/div/table/tbody/tr/td[3]/table/tbody/tr/td[2]/em/button"
+                elif(tipelaporan == "kumulatif"):
+                    path_tombol = "/html/body/div[1]/div[2]/div/div/div[2]/div[1]/div/div/div[1]/div/table/tbody/tr/td[5]/table/tbody/tr/td[2]/em/button"
+
+                tombol_lap = dropdown_jenis_lap = WebDriverWait(self.driver, 10).until(
+                                    EC.presence_of_element_located(
+                                        (By.XPATH, path_tombol))
+                )
+                tombol_lap.click()
+                time.sleep(5)
+                message = "Berhasil buka Web TUL 309 dan Request"
+                print(message)
+                return "yes",message
+            #Jika gagal menemukan kode unit dan mengkonversi
+            else:
+                print(message)
+                return "no", "Gagal mengkonversi kode unit\n"+message
+        except Exception as e:
+            message = "Gagal Buka Halaman TUL 309\n"+str(e)
+            return "no", message
 
 class ACMT:
     def __init__(self, filepatchromedriver, download_dir, user_options, url_acmt):

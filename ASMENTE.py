@@ -369,10 +369,10 @@ class Asmente():
         else:
             return "no",message
 
-    def open_tul309(link_TUL309,kdunit,tahun,bulan,jenislaporan):
+    def open_tul309(link_TUL309,kdunit,tahun,bulan,jenislaporan,tipelaporan):
         ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
                         filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
-        ap2t.open_tul309(link_TUL309=link_TUL309,kdunit_selected=32111,tahun=tahun,bulan="3",jenislaporan=jenislaporan) #JANGAN LUPA UBAH KODE UNITNYA
+        [status,message] = ap2t.open_tul309(link_TUL309=link_TUL309,kdunit_selected=kdunit,tahun=tahun,bulan=bulan,jenislaporan=jenislaporan,tipelaporan=tipelaporan) #JANGAN LUPA UBAH KODE UNITNYA
     #acmt 
     def get_foto_rumah(idpelanggan:str):
         acmt = ACMT(filepatchromedriver=pm.filepathchromedriver,

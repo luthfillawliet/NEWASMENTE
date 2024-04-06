@@ -584,7 +584,7 @@ def read_command(update, context):
         elif((update.message.text[:6] == "tul309" or update.message.text[:6] == "Tul309" or update.message.text[:6] == "TUL309")):
             context.bot.send_message(
                 chat_id=chat_id, text="Memulai download TUL 309 kode unit - tahun - bulan - jenis lap -")
-            Asmente.open_tul309(link_TUL309="any",kdunit="Any",tahun="Any",bulan="Any",jenislaporan="Any")
+            Asmente.open_tul309(link_TUL309="any",kdunit=32121,tahun="2023",bulan="2",jenislaporan="3",tipelaporan="bulanan")
             context.bot.send_message(
                 chat_id=chat_id, text="Berhasil buka TUL 309")
 

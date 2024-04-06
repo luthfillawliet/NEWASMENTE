@@ -584,9 +584,26 @@ def read_command(update, context):
         elif((update.message.text[:6] == "tul309" or update.message.text[:6] == "Tul309" or update.message.text[:6] == "TUL309")):
             context.bot.send_message(
                 chat_id=chat_id, text="Memulai download TUL 309 kode unit - tahun - bulan - jenis lap -")
-            Asmente.open_tul309(link_TUL309="any",kdunit=32121,tahun="2023",bulan="2",jenislaporan="3",tipelaporan="bulanan")
-            context.bot.send_message(
-                chat_id=chat_id, text="Berhasil buka TUL 309")
+            [status,message] = Asmente.kirim_tul309(link_TUL309="any",kdunit=32121,tahun="2023",bulan="2",jenislaporan="3",tipelaporan="bulanan")
+            if(status == "yes"):
+                path = "data//downloads"
+                status,most_recent_files = filemanager.select_last_modified_files(path=path)
+                try:
+                    document = open(path+"//"+most_recent_files,"rb")
+                    context.bot.send_document(chat_id,document)
+                    message = "Berhasil kirim File"
+                    print(message)
+                    context.bot.send_message(
+                        chat_id=chat_id, text=message)
+                except Exception as e:
+                    message = "Gagal kirim file\nMessage Error : \n"+str(e)
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Gagal kirim file\n"+message)
+            # Write log data
+            dat = dataframe()
+            dat.log_data(chat_id=chat_id,
+                            activity="Mendowload Laporan TUL 309", time=str(datetime.datetime.now()))
+            
 
         #Fungsi Bot AMICON Register Asset dan Comissioning
         #Asset

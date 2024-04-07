@@ -582,9 +582,20 @@ def read_command(update, context):
             dat.log_data(chat_id=chat_id,
                             activity="Kirim Laporan TS Harian", time=str(datetime.datetime.now()))
         elif((update.message.text[:6] == "tul309" or update.message.text[:6] == "Tul309" or update.message.text[:6] == "TUL309")):
+            #Definisikan posisi separator
+            separator_1 = findnth(update.message.text, "|",0)
+            separator_2 = findnth(update.message.text,"|",1)
+            separator_3 = findnth(update.message.text,"|",2)
+            separator_4 = findnth(update.message.text,"|",3)
+            separator_5 = findnth(update.message.text,"|",4)
+            kdunit = update.message.text[separator_1+1:separator_2]
+            tahun = update.message.text[separator_2+1:separator_3]
+            bulan = update.message.text[separator_3+1:separator_4]
+            jenislaporan = update.message.text[separator_4+1:separator_5]
             context.bot.send_message(
-                chat_id=chat_id, text="Memulai download TUL 309 kode unit - tahun - bulan - jenis lap -")
-            [status,message] = Asmente.kirim_tul309(link_TUL309="any",kdunit=32121,tahun="2023",bulan="2",jenislaporan="3",tipelaporan="bulanan")
+                chat_id=chat_id, text="Memulai download TUL 309 kode unit - "+kdunit+" tahun - "+tahun+" bulan - "+bulan+" jenis lap -"+jenislaporan)
+            
+            [status,message] = Asmente.kirim_tul309(link_TUL309="any",kdunit=int(kdunit),tahun=tahun,bulan=bulan,jenislaporan=jenislaporan,tipelaporan="bulanan")
             if(status == "yes"):
                 path = "data//downloads"
                 status,most_recent_files = filemanager.select_last_modified_files(path=path)
@@ -599,12 +610,14 @@ def read_command(update, context):
                     message = "Gagal kirim file\nMessage Error : \n"+str(e)
                     context.bot.send_message(
                         chat_id=chat_id, text="Gagal kirim file\n"+message)
-            # Write log data
-            dat = dataframe()
-            dat.log_data(chat_id=chat_id,
-                            activity="Mendowload Laporan TUL 309", time=str(datetime.datetime.now()))
+                # Write log data
+                dat = dataframe()
+                dat.log_data(chat_id=chat_id,
+                                activity="Mendowload Laporan TUL 309", time=str(datetime.datetime.now()))
+            else:
+                context.bot.send_message(
+                        chat_id=chat_id, text="Gagal kirim file\n"+message)
             
-
         #Fungsi Bot AMICON Register Asset dan Comissioning
         #Asset
         elif((update.message.text[:] == "ASSET")):

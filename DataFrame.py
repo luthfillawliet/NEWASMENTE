@@ -231,9 +231,9 @@ class dataframe():
             message = "Berhasil get nama unit"
             return "yes",selected_row["namaunit"].item(),message
         except Exception as e:
-            message = "Gagal menemukan nama unit dari kode unit"
-            print(message)
-            return "no","null",message
+            message = "Gagal menemukan nama unit dari kode unit\nError Message : "
+            print(message,str(e))
+            return "no","null",message+str(e)
     def get_monthname_from_number(self,number_code:str):
         months = np.array(['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
                    'Agustus', 'September', 'Oktober', 'November', 'Desember'])

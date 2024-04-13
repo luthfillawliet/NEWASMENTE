@@ -598,9 +598,24 @@ def read_command(update, context):
             [status,message] = Asmente.kirim_tul309(link_TUL309="any",kdunit=int(kdunit),tahun=tahun,bulan=bulan,jenislaporan=jenislaporan,tipelaporan="bulanan")
             if(status == "yes"):
                 path = "data//downloads"
+                #Set jenis laporan to string
+                if(jenislaporan == "1"):
+                    nama_jenislaporan = "NORMAL"
+                elif(jenislaporan == "2"):
+                    nama_jenislaporan = "LPB"
+                else:
+                    nama_jenislaporan = "TOTAL"
+
+
                 status,most_recent_files = filemanager.select_last_modified_files(path=path)
                 #Try to rename the most recent downloaded file
-                new_filename_with_extension = f"TUL 309 ULP {kdunit} Bulan {bulan} Tahun {tahun} {jenislaporan}.xls" #prepare for the new name file extension
+                new_filename_with_extension = f"TUL 309 ULP {kdunit} Bulan {bulan} Tahun {tahun} {nama_jenislaporan}.xls" #prepare for the new name file extension
+                #Delete the same file if it was existed
+                [status,message] = filemanager.delete_file(folder_path=path,filename_and_name_extension=new_filename_with_extension)
+                if(status == "yes"):
+                    print("File lama berhasil di hapus")
+                else:
+                    print("File yang sama tidak ditemukan")
                 try:
                     #Rename the file
                     status,most_recent_files,message = filemanager.rename_most_recent_file(path=path,most_recent_file=most_recent_files,new_file_name_with_extension=new_filename_with_extension)

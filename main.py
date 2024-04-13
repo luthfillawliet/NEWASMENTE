@@ -599,17 +599,30 @@ def read_command(update, context):
             if(status == "yes"):
                 path = "data//downloads"
                 status,most_recent_files = filemanager.select_last_modified_files(path=path)
+                #Try to rename the most recent downloaded file
+                new_filename_with_extension = f"TUL 309 ULP {kdunit} Bulan {bulan} Tahun {tahun} {jenislaporan}.xls" #prepare for the new name file extension
                 try:
-                    document = open(path+"//"+most_recent_files,"rb")
-                    context.bot.send_document(chat_id,document)
-                    message = "Berhasil kirim File"
-                    print(message)
-                    context.bot.send_message(
-                        chat_id=chat_id, text=message)
+                    #Rename the file
+                    status,most_recent_files,message = filemanager.rename_most_recent_file(path=path,most_recent_file=most_recent_files,new_file_name_with_extension=new_filename_with_extension)
+                    if(status == "yes"):
+                        try:
+                            #Try to send the file
+                            status,most_recent_files = filemanager.select_last_modified_files(path=path)
+                            document = open(path+"//"+most_recent_files,"rb")
+                            context.bot.send_document(chat_id,document)
+                            message = "Berhasil kirim File"
+                            print(message)
+                            context.bot.send_message(
+                                chat_id=chat_id, text=message)
+                        except Exception as e:
+                            message = "Gagal kirim file\n"+message+"\nMessage Error : \n"+str(e)
+                            context.bot.send_message(
+                                chat_id=chat_id, text="Gagal kirim file\n"+message)
+                    else:
+                        context.bot.send_message(
+                                chat_id=chat_id, text="Gagal Rename file\n"+message)
                 except Exception as e:
-                    message = "Gagal kirim file\nMessage Error : \n"+str(e)
-                    context.bot.send_message(
-                        chat_id=chat_id, text="Gagal kirim file\n"+message)
+                    message = "Gagal rename FIle\nMessage Error : \n"+str(e)
                 # Write log data
                 dat = dataframe()
                 dat.log_data(chat_id=chat_id,

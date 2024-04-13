@@ -72,16 +72,16 @@ class filemanager():
             os.rename(downloaded_file_path, new_file_path)
             message = "Success Renaming Filename"
             print(message)
-            return "yes",message
+            return "yes",new_file_path,message
         except Exception as e:
             error_message = str(e)
             message = "Error modified filename\n Error Message : "+str(e)
             print(f"Error message : {error_message}")
-            return "no",message
+            return "no","null",message
         
         
 #pm = Parameter()
 #filemanager.take_screenshoot_pixel(kiri_atas_layar_x=pm.kiri_atas_layar_x,kiri_atas_layar_y=pm.kiri_atas_layar_y,kanan_bawah_layar_x=pm.kanan_bawah_layar_x,kanan_bawah_layar_y=pm.kanan_bawah_layar_y)
 path = "data//downloads"
 [s,f] = filemanager.select_last_modified_files(path=path)
-[s,m] = filemanager.rename_most_recent_file(path=path,most_recent_file=f,new_file_name_with_extension="TUL 309 Lap 1.xls")
+#[s,m] = filemanager.rename_most_recent_file(path=path,most_recent_file=f,new_file_name_with_extension="TUL 309 Lap 1.xls")

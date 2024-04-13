@@ -592,24 +592,25 @@ def read_command(update, context):
             tahun = update.message.text[separator_2+1:separator_3]
             bulan = update.message.text[separator_3+1:separator_4]
             jenislaporan = update.message.text[separator_4+1:separator_5]
+            tipelaporan = update.message.text[separator_5+1:]
+            nama_jenislaporan = ""
+            #Set jenis laporan to string
+            if(jenislaporan == "1"):
+                nama_jenislaporan = "NORMAL"
+            elif(jenislaporan == "2"):
+                nama_jenislaporan = "LPB"
+            else:
+                nama_jenislaporan = "TOTAL"
             context.bot.send_message(
-                chat_id=chat_id, text="Memulai download TUL 309 kode unit - "+kdunit+" tahun - "+tahun+" bulan - "+bulan+" jenis lap -"+jenislaporan)
+                chat_id=chat_id, text=f"Memulai download Laporan TUL 309 Kode Unit :{kdunit}\nBulan : {bulan} \nTahun : {tahun} \nJenis Laporan : {jenislaporan} {nama_jenislaporan}")
             
-            [status,message] = Asmente.kirim_tul309(link_TUL309="any",kdunit=int(kdunit),tahun=tahun,bulan=bulan,jenislaporan=jenislaporan,tipelaporan="bulanan")
+            [status,message] = Asmente.kirim_tul309(link_TUL309="any",kdunit=int(kdunit),tahun=tahun,bulan=bulan,jenislaporan=jenislaporan,tipelaporan=tipelaporan)
             if(status == "yes"):
                 path = "data//downloads"
-                #Set jenis laporan to string
-                if(jenislaporan == "1"):
-                    nama_jenislaporan = "NORMAL"
-                elif(jenislaporan == "2"):
-                    nama_jenislaporan = "LPB"
-                else:
-                    nama_jenislaporan = "TOTAL"
-
-
+                
                 status,most_recent_files = filemanager.select_last_modified_files(path=path)
                 #Try to rename the most recent downloaded file
-                new_filename_with_extension = f"TUL 309 ULP {kdunit} Bulan {bulan} Tahun {tahun} {nama_jenislaporan}.xls" #prepare for the new name file extension
+                new_filename_with_extension = f"TUL 309 ULP {kdunit} Bulan {bulan} Tahun {tahun} {nama_jenislaporan} {tipelaporan}.xls" #prepare for the new name file extension
                 #Delete the same file if it was existed
                 [status,message] = filemanager.delete_file(folder_path=path,filename_and_name_extension=new_filename_with_extension)
                 if(status == "yes"):

@@ -695,31 +695,127 @@ def read_command(update, context):
             result = ""
             if(status_login == "no"):
                 print(message)
-                result,message = Asmente.execute_amicon_not_login_state(idpel=idpel,amicon=amicon)     
-            else:
+                context.bot.send_message(
+                chat_id=chat_id, text="Memulai Login")
+                #Login
+                amicon.login()
+                [status,message] = amicon.cek_login()
+                #Cek apakah berhasil login
+                if(status == "no"):
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Gagal Login ke AMICON, periksa username dan password/Captcha")
+            #Berhasil login, lanjut buka Menu COmissioning
+            context.bot.send_message(
+                        chat_id=chat_id, text="Berhasil Login")
+            status_menu_comiss = True
+            counter = 0
+            #Lakukan 5x percobaan untuk click menu comissioning
+            while status_menu_comiss:
+                [status_menu_comiss,message] = amicon.click_comissioning()
                 print(message)
-                result,message = Asmente.execute_amicon_login_state(idpel=idpel,amicon=amicon)
-            #Menunggu proses download
-            time.sleep(10)
-            if(result == "success"):
+                time.sleep(5)
+                counter = counter+1
+                if(counter > 15):
+                    break
+            if(status_menu_comiss == False):
                 context.bot.send_message(
-                chat_id=chat_id, text="Berhasil melakukan Comissioning Idpel : "+idpel)
-                path = "data//downloads"
-                status,most_recent_files = filemanager.select_last_modified_files(path=path)
-                try:
-                    document = open(path+"//"+most_recent_files,"rb")
-                    context.bot.send_document(chat_id,document)
-                    message = "Berhasil kirim File"
-                    print(message)
+                        chat_id=chat_id, text="Berhasil masuk ke menu comissioning")
+                status = amicon.click_search_idpel_comissioning(idpel=idpel)
+                #Pelanggan di temukan dan dilakukan comissioning
+                context.bot.send_message(
+                    chat_id=chat_id, text="Pelanggan ditemukan dan dilakukan comissioning")
+                if(status):       
+                    #try click verify
+                    condition = True
+                    counter = 0
+                    #Klik verify test jika comissionng telah selesai sampai semua step OK
+                    while condition:
+                        condition = amicon.click_verify_test()
+                        time.sleep(5)
+                        counter = counter + 1
+                        if(counter > 50):
+                            break
+                    if(condition == False):
+                        context.bot.send_message(
+                            chat_id=chat_id, text="Berhasil comissioning, semua status OK, lanjut verifiy test")
+                        #klik pop up verify
+                        condition = True
+                        counter = 0
+                        while condition:
+                            condition = amicon.click_popup_verify()
+                            time.sleep(5)
+                            counter = counter + 1
+                            if(counter > 50):
+                                break
+                        #Jika Berhasil klik pop up verify
+                        if(condition == False):
+                            context.bot.send_message(
+                                chat_id=chat_id, text="Berhasil klik Pop Up Verify")
+                            #Confirm activate
+                            condition = True
+                            counter = 0
+                            while condition:
+                                condition = amicon.click_confirm_activate()
+                                time.sleep(5)
+                                counter = counter + 1
+                                if(counter > 50):
+                                    break
+                            if(condition == False):
+                                context.bot.send_message(
+                                    chat_id=chat_id, text="Berhasil klik Convirm Activate")
+                                #Pop Up Confirm activate
+                                condition = True
+                                counter = 0
+                                while condition:
+                                    condition = amicon.click_confirm_popup_activate()
+                                    time.sleep(5)
+                                    counter = counter + 1
+                                    if(counter > 50):
+                                        break
+                                if(condition == False):
+                                    context.bot.send_message(
+                                        chat_id=chat_id, text="Berhasil klik Convirm pop Uo Activate")
+                                else:
+                                    context.bot.send_message(
+                                        chat_id=chat_id, text="Comissioning sukses")
+                            else:
+                                context.bot.send_message(
+                                    chat_id=chat_id, text="Gagal klik konfirm pop up verify")
+                        else:
+                            context.bot.send_message(
+                                chat_id=chat_id, text="Gagal pilih pop up verify")
+                    else:
+                        context.bot.send_message(
+                            chat_id=chat_id, text="Gagal comissioning, tidak dapat menyelesaikan semua step")
+                else:
                     context.bot.send_message(
-                        chat_id=chat_id, text=message)
-                except Exception as e:
-                    message = "Gagal kirim file\nMessage Error : \n"+str(e)
-                    context.bot.send_message(
-                        chat_id=chat_id, text="Gagal kirim file\n"+message)
+                        chat_id=chat_id, text="Comissioning gagal dimulai, pastikan idpel yang di input benar")
             else:
                 context.bot.send_message(
-                        chat_id=chat_id, text="Gagal Comissioning"+message)
+                        chat_id=chat_id, text=message)
+            time.sleep(10)
+            
+            # #Menunggu proses download
+            # time.sleep(10)
+            # if(result == "success"):
+            #     context.bot.send_message(
+            #     chat_id=chat_id, text="Berhasil melakukan Comissioning Idpel : "+idpel)
+            #     path = "data//downloads"
+            #     status,most_recent_files = filemanager.select_last_modified_files(path=path)
+            #     try:
+            #         document = open(path+"//"+most_recent_files,"rb")
+            #         context.bot.send_document(chat_id,document)
+            #         message = "Berhasil kirim File"
+            #         print(message)
+            #         context.bot.send_message(
+            #             chat_id=chat_id, text=message)
+            #     except Exception as e:
+            #         message = "Gagal kirim file\nMessage Error : \n"+str(e)
+            #         context.bot.send_message(
+            #             chat_id=chat_id, text="Gagal kirim file\n"+message)
+            # else:
+            #     context.bot.send_message(
+            #             chat_id=chat_id, text="Gagal Comissioning"+message)
             # Write log data
             dat = dataframe()
             dat.log_data(chat_id=chat_id,

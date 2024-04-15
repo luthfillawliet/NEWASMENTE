@@ -1780,7 +1780,7 @@ class Amicon(webdriver.Chrome):
     def first_page(self):
         self.get(self.url)
         self.maximize_window()
-
+    
     def login(self):
         time.sleep(5)
         user_elm = self.find_element(
@@ -1804,8 +1804,8 @@ class Amicon(webdriver.Chrome):
             By.CSS_SELECTOR, 'button[class="btn login_btn"]')
         login_btn.click()
         print("Tombol klik di tekan")
-
-    def cek_login(self):
+    
+    def cek_login(self)->tuple[str,str]:
         # cek apakah amicon sudah dalam posisi terlogin atau belum
         time.sleep(3)
         try:
@@ -1861,8 +1861,8 @@ class Amicon(webdriver.Chrome):
         self.find_element(
             By.CSS_SELECTOR, 'a[href="#/monitoring/loadprofile"]').click()
         time.sleep(1)
-
-    def click_comissioning(self):
+    
+    def click_comissioning(self)->tuple[bool,str]:
         try:
             self.find_element(By.XPATH,"/html/body/app-dashboard/div/div/nav/ul/li[4]/a").click()
             time.sleep(1)
@@ -1870,7 +1870,7 @@ class Amicon(webdriver.Chrome):
         except Exception as e:
             return True,"Gagal masuk ke menu comissioning\n"+str(e)
     
-    def click_search_idpel_comissioning(self,idpel):
+    def click_search_idpel_comissioning(self,idpel:str)->bool:
         try:
             #Klik Location
             self.find_element(
@@ -1893,9 +1893,9 @@ class Amicon(webdriver.Chrome):
         except:
             return False
 
-    def click_verify_test(self):
+    def click_verify_test(self)->bool:
         try:   
-            #Klik Verify Test
+            #Klik Verify Test jika comissioning telah selesai sampai semua step OK
             self.find_element(
                 By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/div[5]/dx-button[1]"
             ).click()
@@ -1904,7 +1904,7 @@ class Amicon(webdriver.Chrome):
         except Exception as e:
             print("Gagal klik verify test")
             return True
-    def click_popup_verify(self):
+    def click_popup_verify(self)->bool:
         try:
             #Klik Pop Up Verify
             self.find_element(

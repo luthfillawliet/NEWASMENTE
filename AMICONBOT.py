@@ -58,7 +58,7 @@ class AmiconBot():
         # Define the custom keyboard
         keyboard = [
             [KeyboardButton("ASSET")],
-            [KeyboardButton("COMMISSIONING")]
+            [KeyboardButton("COMISSIONING")]
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
         return reply_markup

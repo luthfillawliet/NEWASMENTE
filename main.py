@@ -681,12 +681,12 @@ def read_command(update, context):
             context.bot.send_message(
                 chat_id=chat_id, text="Silahkan Pilih Tipe Merk : ", reply_markup=bot.set_brand_type(selected_brand=message))
         #Comissioning
-        elif(update.message.text[:] == "COMMISSIONING"):
+        elif(update.message.text[:] == "COMISSIONING"):
             message = "COMMISSIONING|32XXXXXXXXXX"
             context.bot.send_message(
                 chat_id=chat_id, text=message)
-        elif(update.message.text[:13] == "COMMISSIONING" and len(update.message.text)== 26):
-            idpel = update.message.text[14:]
+        elif(update.message.text[:12] == "COMISSIONING" and len(update.message.text)> 20):
+            idpel = update.message.text[13:]
             context.bot.send_message(
                 chat_id=chat_id, text="Memulai Comissioning Pelanggan ID : "+idpel)
             amicon = Amicon(username=pm.username_amicon,password=pm.password_amicon)
@@ -723,8 +723,10 @@ def read_command(update, context):
                 status = amicon.click_search_idpel_comissioning(idpel=idpel)
                 #Pelanggan di temukan dan dilakukan comissioning
                 context.bot.send_message(
-                    chat_id=chat_id, text="Pelanggan ditemukan dan dilakukan comissioning")
-                if(status):       
+                    chat_id=chat_id, text="Pelanggan ditemukan dan dilakukan comissioning, silahkan ditunggu hingga proses comissioning berhasil")
+                if(status):
+                    context.bot.send_message(
+                        chat_id=chat_id, text="Berhasil comissioning, semua status OK, lanjut verifiy test")      
                     #try click verify
                     condition = True
                     counter = 0
@@ -737,7 +739,7 @@ def read_command(update, context):
                             break
                     if(condition == False):
                         context.bot.send_message(
-                            chat_id=chat_id, text="Berhasil comissioning, semua status OK, lanjut verifiy test")
+                            chat_id=chat_id, text="Berhasil Verify Test")
                         #klik pop up verify
                         condition = True
                         counter = 0
@@ -750,7 +752,7 @@ def read_command(update, context):
                         #Jika Berhasil klik pop up verify
                         if(condition == False):
                             context.bot.send_message(
-                                chat_id=chat_id, text="Berhasil klik Pop Up Verify")
+                                chat_id=chat_id, text="Berhasil klik Pop Up Verify,lanjut Activation")
                             #Confirm activate
                             condition = True
                             counter = 0
@@ -762,7 +764,7 @@ def read_command(update, context):
                                     break
                             if(condition == False):
                                 context.bot.send_message(
-                                    chat_id=chat_id, text="Berhasil klik Convirm Activate")
+                                    chat_id=chat_id, text="Berhasil klik Confirm Activate")
                                 #Pop Up Confirm activate
                                 condition = True
                                 counter = 0
@@ -774,10 +776,55 @@ def read_command(update, context):
                                         break
                                 if(condition == False):
                                     context.bot.send_message(
-                                        chat_id=chat_id, text="Berhasil klik Convirm pop Uo Activate")
+                                        chat_id=chat_id, text="Berhasil klik Confirm pop Up Activate\nSIlahkan tunggu sampai selesai Activate dan donwload ComissioningResult")
+                                    condition = True
+                                    loop_value = 0
+                                    while condition:
+                                        print("Klik Download PDF")
+                                        condition = amicon.click_download_pdf_comissioning()
+                                        time.sleep(5)
+                                        loop_value = loop_value + 1
+                                        if(loop_value > 50):
+                                            break
+                                    if(condition == False):
+                                        #Jika download berhasil, lanjut mengirim FIle ComissioningResult
+                                        context.bot.send_message(
+                                            chat_id=chat_id, text="Berhasil download ComissioningResult, Mengirim File\nSIlahkan Tunggu")
+                                        path = "data//downloads"
+                                        status,most_recent_files = filemanager.select_last_modified_files(path=path)
+                                        try:
+                                            document = open(path+"//"+most_recent_files,"rb")
+                                            context.bot.send_document(chat_id,document)
+                                            message = "Berhasil kirim File"
+                                            print(message)
+                                            context.bot.send_message(
+                                                chat_id=chat_id, text=message)
+                                            #Klik Finish jika sudah kirim FIle
+                                            condition = True
+                                            loop_value = 0
+                                            while condition:
+                                                print("Klik Download PDF")
+                                                condition = amicon.click_finish_comissioning()
+                                                time.sleep(5)
+                                                loop_value = loop_value + 1
+                                                if(loop_value > 5):
+                                                    break
+                                            if(condition == False):
+                                                context.bot.send_message(
+                                                    chat_id=chat_id, text="Berhasil Click Finish\nProses Comissioning Selesai")
+                                            else:
+                                                context.bot.send_message(
+                                                    chat_id=chat_id, text="Gagal klik Finish")
+                                        except Exception as e:
+                                            message = "Gagal kirim file\nMessage Error : \n"+str(e)
+                                            context.bot.send_message(
+                                                chat_id=chat_id, text="Gagal kirim file\n"+message)
+                                    else:
+                                        context.bot.send_message(
+                                            chat_id=chat_id, text="Gagal Download Comissioning result")
                                 else:
                                     context.bot.send_message(
-                                        chat_id=chat_id, text="Comissioning sukses")
+                                        chat_id=chat_id, text="Gagal klik pop up COnfirm Activate")
                             else:
                                 context.bot.send_message(
                                     chat_id=chat_id, text="Gagal klik konfirm pop up verify")
@@ -793,7 +840,6 @@ def read_command(update, context):
             else:
                 context.bot.send_message(
                         chat_id=chat_id, text=message)
-            time.sleep(10)
             
             # #Menunggu proses download
             # time.sleep(10)

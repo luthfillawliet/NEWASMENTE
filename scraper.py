@@ -1937,16 +1937,29 @@ class Amicon(webdriver.Chrome):
             print("Gagal klik Pop up Confirm")
             return True
     def click_download_pdf_comissioning(self):
-        self.find_element(
-            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div[1]/dx-button[2]"
-        ).click()
-        time.sleep(1)
-        #Klik Finish
-        self.find_element(
-            By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div[1]/dx-button[1]"
-        ).click()
-        print("Selesai Comissioning")
-        
+        try:
+            self.find_element(
+                By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div[1]/dx-button[2]"
+            ).click()
+            time.sleep(1)
+            return False
+        except Exception as e:
+            print("Gagal download file "+str(e))
+            return True
+    
+    def click_finish_comissioning(self):
+        try:
+            #Klik Finish
+            self.find_element(
+                By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div[1]/dx-button[1]"
+            ).click()
+            time.sleep(1)
+            print("Selesai Comissioning")
+            return False
+        except Exception as e:
+            print("Gagal click Finish")
+            return True
+    
     def click_search(self):
         time.sleep(3)
         # click search

@@ -1872,14 +1872,20 @@ class Amicon(webdriver.Chrome):
     
     def click_search_idpel_comissioning(self,idpel):
         try:
+            #Klik Location
             self.find_element(
-                By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/dx-form/div/div/div/div/div/div/div/div/div/div/div/div/div[1]/div/div[2]/div/div/div/dxi-item/dx-button").click()
+                By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/dx-form/div/div/div/div/div/div/div/div/div/div/div/div/div[1]/div/div[2]/div/div/div/dxi-item/dx-button"
+                ).click()
+            #Masukkan Location Code
             self.find_element(
                 By.XPATH,"/html/body/div[3]/div/div[2]/div/div/div/dx-data-grid/div/div[5]/div[2]/table/tbody/tr[2]/td[2]/div/div/div/div/input"
             ).send_keys(idpel)
+            time.sleep(1)
+            #Klik Logo pin yang muncul ketika location code ditemukan
             self.find_element(
                 By.XPATH,"/html/body/div[3]/div/div[2]/div/div/div/dx-data-grid/div/div[6]/div[2]/table/tbody/tr[1]/td[1]/div/div/i"
             ).click()
+            time.sleep(1)
             self.find_element(
                 By.XPATH,"/html/body/app-dashboard/div/main/div/app-editing-v3/div[1]/div/div[2]/div/div[1]/dx-button[2]"
             ).click()

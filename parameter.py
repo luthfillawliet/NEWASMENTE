@@ -98,8 +98,8 @@ class Parameter:
         # Parameter aplikasi si gadis
         #self.username_amicon = 'pusat\\firmansyah051'
         #self.password_amicon = '8206051F@30'
-        self.username_amicon = 'pusat\\asdar02'
-        self.password_amicon = '9615040-a40'
+        self.username_amicon = 'pusat\\firmansyah051'
+        self.password_amicon = '8206051F@36'
         self.bot_token = self.tokenbot
         #self.user_browser_cache = "user-data-dir=C:\\Users\\CORE i7\\AppData\\Local\\Google\\Chrome\\User Data"
         self.user_browser_cache = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"

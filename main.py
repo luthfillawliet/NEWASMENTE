@@ -57,21 +57,28 @@ def informasi(update, context):
     chat_id = update.message.chat_id
     [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
     if (status == "yes"):
-        text1 = "1. Untuk mengakses info pelanggan dengan idpel, silahkan ketik :\n'Info|0|12 digit idpel , contoh Info|0|32131xxxxxxx'\nPencarian denga nomor meter 'Info|1|nomor meter' , contoh Info|1|450xxxxxxxx\n"
-        text2 = "2. Untuk mengakses info pelanggan via ACMT dengan idpel. silahkan ketik 'Infoacmt|12 digit idpel' , contoh : Infoacmt 32111xxxxxxx\n"
-        text3 = "3. Untuk mengakses Info blocking token dari AP2T dengan idpel, silahkan ketik : Infoblokir|12 digit Idpel , contoh : Infoblokir|32121xxxxxxx\n"
-        text4 = "4. Untuk mengakses token KCT Upgrade KRN dengan idpel, silahkan ketik : Infokct idpel, contoh : Infokct 32131xxxxxxx\n"
-        text5 = "5. Untuk pembbuatan CT, ketik 'Ct|12 Digit Idpel|kode unit|Keterangan (Penyebab periksa, petugas dan keterangan lainnya)'\ncontoh : Ct|32131xxxxxxx|32131|ganti mcb, petugas fulan\n"
-        text6 = "6. Untuk menambah user baru (Hanya bisa di akses untuk role admin), ketik 'Add|chat_id|kode unit|Nama User|Nomor Telfon|level user'\nContoh : 'Add|817654873|32131|Fulan bin fulan|081321765487|user\n"
-        text7 = "7. Untuk reset Imei HP ACMT petugas Cater, ketik 'Resetimei|Kode unit|user petugas (tanpa kode uni)' , Contoh : Resetimei|32131|sitaba\n"
-        text8 = "8. Untuk Cek monitoring permohonan token berdasarkan Idpelnomor meter (kode 0 untuk idpel, 1 untuk nomor emter), 'ketik Montok|kode pencarian (0 / 1)|id pelanggan/nomor meter (sesuai dengan kategori)', contoh Montok|0|321500xxxxxx , atau Montok|1|14456787659\n"
-        text9 = "9. Untuk cetak KCT dari Nomor Agenda, bisa ketik 'Cetakkct|18 digit Nomor Agenda' ,contoh : Cetakkct|321310054567857456\n"
-        text10 = "10. Untuk cek History pembelian token Prabayar, ketik 'Infotoken|12 digit Idpel', contoh : Infotoken|321114598716"
-        text11 = "11. Untuk cek Foto 1 (Stand), foto 2, dan foto rumah di ACMT, ketik 'fotoacmt|12 digit idpel', contoh : fotoacmt|321114598716"
-        text_penutup = "Info lebih lanjut silahkan hubungi Luthfil, TL DALSUT UP3 Makassar selatan"
-        merge_text = text1+text2+text3+text4+text5+text6+text7+text8+text9+text10+text11+text_penutup
-        context.bot.send_message(
-            chat_id=chat_id, text="Informasi cara pemakaian : "+"\n"+merge_text)
+        text1 = "1. Untuk mengakses *INFO PELANGGAN dengan idpel*, silahkan ketik :\n'Info|0|12 digit idpel , contoh Info|0|32131xxxxxxx'\nPencarian denga nomor meter 'Info|1|nomor meter' , contoh Info|1|450xxxxxxxx\n"
+        text2 = "2. Untuk mengakses *INFO PELANGGAN via ACMT* dengan idpel. silahkan ketik 'Infoacmt|12 digit idpel' , contoh : Infoacmt 32111xxxxxxx\n"
+        text3 = "3. Untuk mengakses *IINFO BLOCKING TOKEN dari AP2T* dengan idpel, silahkan ketik : Infoblokir|12 digit Idpel , contoh : Infoblokir|32121xxxxxxx\n"
+        text4 = "4. Untuk mengakses *TOKEN KCT UPGRADE KRN* dengan idpel, silahkan ketik : Infokct idpel, contoh : Infokct 32131xxxxxxx\n"
+        text5 = "5. Untuk *PEMBUATAN CT*, ketik 'Ct|12 Digit Idpel|kode unit|Keterangan (Penyebab periksa, petugas dan keterangan lainnya)'\ncontoh : Ct|32131xxxxxxx|32131|ganti mcb, petugas fulan\n"
+        text6 = "6. Untuk *MENAMBAH USER BARU* (Hanya bisa di akses untuk role admin), ketik Add|chat id|kode unit|Nama User|Nomor Telfon|level user\nContoh : Add|817654873|32131|Fulan bin fulan|081321765487|user\n"
+        text7 = "7. Untuk *REST IMEI HP ACMT petugas* Cater, ketik 'Resetimei|Kode unit|user petugas (tanpa kode uni)' , Contoh : Resetimei|32131|sitaba\n"
+        text8 = "8. Untuk Cek *MONITORING PERMOHONAN TOKEN* berdasarkan Idpelnomor meter (kode 0 untuk idpel, 1 untuk nomor emter), 'ketik Montok|kode pencarian (0 / 1)|id pelanggan/nomor meter (sesuai dengan kategori)', contoh Montok|0|321500xxxxxx , atau Montok|1|14456787659\n"
+        text9 = "9. Untuk cetak *KCT dari Nomor Agenda*, bisa ketik 'Cetakkct|18 digit Nomor Agenda' ,contoh : Cetakkct|321310054567857456\n"
+        text10 = "10. Untuk cek *HISTORY PEMBELIAN PRABAYAR*, ketik 'Infotoken|12 digit Idpel', contoh : Infotoken|321114598716"
+        text11 = "11. Untuk *CEK FOTO ACMT*foto 1 (Stand), foto 2, dan foto rumah di ACMT, ketik 'fotoacmt|12 digit idpel', contoh : fotoacmt|321114598716"
+        text12 = "12. Untuk *DOWNLOAD LAP TS HARIAN* Harian, ketik 'tagsusp2tl' dan bot akan mendownlaod laporan TS hari tersebut realtime"
+        text13 = "13. Untuk *MENGIRIM REPORT SERVLET* yang sudah di download pada fungsi 'tagsusp2tl', ketik 'kirimlapts'"
+        text14 = "14. Untuk *DOWNLOAD LAPORAN TUL 309*, ketik 'Tul309|<kodeunit>|<tahun>|<bulan>|<jenis laporan (1. Untk Normal, 2.LPB, 3. TOTAL)>|<periode (bulanan/kumulatif)>\nContoh : Tul309|32151|2024|3|3|bulanan"
+        text15 = "15. Untuk *UPDATE DATA USER* pada listuser, ketik update|<NIP>|<Kolom (1 Nama, 2 Jabatan,3 Password)> Contoh untk update password: Update|9009002F|3|Apr-24"
+        text_penutup = "_*Info lebih lanjut silahkan hubungi Luthfil, TL DALSUT UP3 Makassar selatan*_"
+        #merge_text = "Informasi cara pemakaian : \n"+text1+text2+text3+text4+text5+text6+text7+text8+text9+text10+text11+text12+text13+text_penutup
+        text_merged = [text1,text2,text3,text4,text5,text6,text7,text8,text9,text10,text11,text12,text13,text14,text15,text_penutup]
+        for i in range(len(text_merged)):
+            print(f"Loop iteration: {i}")
+            context.bot.send_message(
+                chat_id=chat_id, text=text_merged[i],parse_mode="Markdown")
     else:
         context.bot.send_message(
             chat_id=chat_id, text=message)

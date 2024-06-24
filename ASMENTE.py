@@ -1,4 +1,4 @@
-from scraper import AP2T
+from scraper import AP2T,EIS
 from scraper import ACMT, Helper
 from FILEMANAGER import filemanager
 from parameter import Parameter
@@ -382,6 +382,15 @@ class Asmente():
         else:
             return "no",message
 
+    def update_data_pd():
+        username_eis = "94171287ZY"
+        password_eis = "Panjang@1025"
+        pm = Parameter()
+        eis = EIS(filepathchromedriver=pm.filepathchromedriver,download_dir=pm.download_dir,user_options=pm.user_options,username_eis=username_eis,password_eis=password_eis)
+        eis.open_eis()
+        eis.login_eis()
+        eis.masuk_menu_layanan()
+        eis.pilih_tambah_daya()
     #acmt 
     def get_foto_rumah(idpelanggan:str):
         acmt = ACMT(filepatchromedriver=pm.filepathchromedriver,
@@ -593,3 +602,5 @@ class ReplyButton():
             return text_helper
         else:
             return "Kesalahan pada kode"
+
+Asmente.update_data_pd()

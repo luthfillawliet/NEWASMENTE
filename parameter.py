@@ -25,7 +25,7 @@ class Parameter:
         #user option pc lokal
         #self.user_options = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
         #self.user_options = "user-data-dir=C:\\Users\\CORE i7\\AppData\\Local\\Google\\Chrome\\User Data"
-        self.user_options = "user-data-dir=C:\\Users\\lenovo\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 12"
+        self.user_options = "user-data-dir=C:\\Users\\lenovo\\AppData\\Local\\Google\\Chrome\\User Data"
         #user option server lama uid
         #self.user_options = r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data'
         # file list user

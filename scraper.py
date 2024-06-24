@@ -42,8 +42,11 @@ class AP2T:
         chrome_options = webdriver.ChromeOptions()
         # chrome_options.add_experimental_option('prefs',
         #                                        {"user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"})
+        chrome_options.add_argument("--allow-running-insecure-content")
+        chrome_options.add_argument("--disable-web-security")
         chrome_options.add_argument(
             user_options)
+        #chrome_options.add_argument("--profile-directory=Profile 12") #JIKA USER PROFILE PADA CHROME LEBIH DARI SATU
         service = Service(executable_path=filepathchromedriver)
         self.driver = webdriver.Chrome(
             service=service, options=chrome_options)
@@ -1738,10 +1741,114 @@ class ACMT:
         except Exception as e:
             print("An error occurred:", str(e))
             return "no","Gagal download, Periksa idpel\nMessage Error : "+str(e)
-    
+
+class EIS:
+    # Create class for scraping EIS
+    def __init__(self, filepathchromedriver, download_dir, user_options,username_eis,password_eis):
+        self.filepatchromedriver = filepathchromedriver
+        self.download_dir = download_dir
+        self.user_options = user_options
+        self.username_eis = username_eis
+        self.password_eis = password_eis
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--allow-running-insecure-content")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument(user_options)
+        chrome_options.add_argument("--profile-directory=Profile 12")
+        service = Service(executable_path=filepathchromedriver)
+        self.driver = webdriver.Chrome(
+            service=service, options=chrome_options)
         
 
-# Create class for scraping
+    def open_eis(self):
+        print("Membuka halaman EIS")
+        driver = self.driver
+        # Maximize page 
+        driver.maximize_window()
+        # go to EIS url
+        try:
+            driver.get("http://eis.ap2t.pln.co.id/eis/login.aspx")
+            time.sleep(2)
+            print("AP2T Berhasil di buka")
+            return "yes"
+        except Exception as e:
+            message = "Gagal membuka AP2T"
+            print(message)
+            print("Error message : ", e)
+            return "no"
+
+    def login_eis(self):
+        driver = self.driver
+        try:
+            user_id_box = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.ID, 'txtUserid'))
+            )
+            password_box = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.ID, 'TxtPWDx'))
+            )
+            user_id_box.clear()
+            password_box.clear()
+            user_id_box.send_keys(self.username_eis)
+            password_box.send_keys(self.password_eis)
+            login_button = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.ID,"ext-gen24"))
+            )
+            login_button.click()
+            #Check tombol logout ada atau tidak, jika tidak ada, berarti gagal login
+            logout_button = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.ID, 'ext-gen58'))
+            )
+            print("Berhasil login")
+            time.sleep(1)
+        except Exception as e:
+            print("Gagal mencoba login")
+            print(str(e))
+    def masuk_menu_layanan(self):
+        driver = self.driver
+        try:
+            layanan_button = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'ext-gen28')))
+            layanan_button.click()
+
+            detil_button = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'ext-gen165')))
+            detil_button.click()
+
+            #Switch to iframe
+            iframe = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'mondetil_IFrame')))
+            driver.switch_to.frame(iframe)
+            print("Switched to iframe successfully")
+            time.sleep(1)
+        except Exception as e:
+            print("Gagal masuk ke menu layanan")
+            print(str(e))
+    def pilih_tambah_daya(self):
+        driver = self.driver
+        try:
+            div_element = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, '//div[@id="ext-gen49" and .//input[@id="cboJenis_Value" and @value="SEMUA"]]'))
+            )
+            if div_element.is_displayed() and div_element.is_enabled():
+                div_element.click()
+                print("Clicked to open dropdown PS/PD/PB")
+
+                pd_options = driver.find_elements(By.XPATH, '//div[contains(@class, "x-combo-list-item")]')
+                for option in pd_options:
+                    print(option.text)
+                    if option.text.strip() == 'PD':
+                        option.click()
+                        print("Clicked on PD option")
+                        break
+
+                loadData_button = WebDriverWait(driver, 90).until(EC.presence_of_element_located((By.ID, 'ext-gen62')))
+                loadData_button.click()
+                print("Clicked Load Data button")
+
+                loadExcel_button = WebDriverWait(driver, 90).until(EC.presence_of_element_located((By.ID, 'ext-gen107')))
+                loadExcel_button.click()
+                print("Clicked Excel button")
+                time.sleep(5)
+        except Exception as e:
+            print("Gagal download excel tambah daya")
 
 
 class Amicon(webdriver.Chrome):

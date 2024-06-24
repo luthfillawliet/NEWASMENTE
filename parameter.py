@@ -23,8 +23,9 @@ class Parameter:
         self.filepathenkripsi = r'C:\Program Files (x86)\PT PLN (PERSERO)\AP2T ENKRIPSI\Token.exe'
         # jika mau menggunakan cache bawaan browser, silahkan di aktifkan (uncomment), lokasi atur sesuai lokasi cache
         #user option pc lokal
-        self.user_options = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
+        #self.user_options = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
         #self.user_options = "user-data-dir=C:\\Users\\CORE i7\\AppData\\Local\\Google\\Chrome\\User Data"
+        self.user_options = "user-data-dir=C:\\Users\\lenovo\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 12"
         #user option server lama uid
         #self.user_options = r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data'
         # file list user
@@ -42,8 +43,9 @@ class Parameter:
         # setting bot baru
         # bot token id, di ganti jika ganti bot
         # self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"  # new_asmente_bot
-        self.tokenbot = "5081663366:AAF9XrOVwtlD6gFTf7fh7qTbQXMixpe_XSI"  # ulpsgm_bot
+        #self.tokenbot = "5081663366:AAF9XrOVwtlD6gFTf7fh7qTbQXMixpe_XSI"  # ulpsgm_bot
         #self.tokenbot = "6811746544:AAFcvWpQhO65IDpKYRnQZFfujrkBEIkShHo"
+        self.tokenbot = "7389606593:AAGTPGLXb_AAzUalaaxDWo8Wwgq5DF1akXE"
         # group chat id
         self.chat_id = -828901164
         # chat_id admin

@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 import datetime
 import easyocr
 import numpy as np
@@ -43,8 +44,9 @@ class AP2T:
         #                                        {"user-data-dir": "C:\\Users\\LENOVO\\AppData\\Local\\Google\\Chrome\\User Data"})
         chrome_options.add_argument(
             user_options)
+        service = Service(executable_path=filepathchromedriver)
         self.driver = webdriver.Chrome(
-            executable_path=filepathchromedriver, options=chrome_options)
+            service=service, options=chrome_options)
 
     # Method buka AP2T
     def open_ap2t(self):

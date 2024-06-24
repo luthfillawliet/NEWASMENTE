@@ -1,5 +1,5 @@
-from telegram import ReplyKeyboardMarkup, KeyboardButton,replykeyboardmarkup
-from telegram.ext import ConversationHandler, MessageHandler, Filters
+from telegram import ReplyKeyboardMarkup, KeyboardButton
+from telegram.ext import ConversationHandler, MessageHandler
 
 brand_type_mapping = {
     "EDMI": ["MK6N", "MK6E", "MK10E", "MK7B", "MK7C", "MK10", "MK6", "MK7MI", "MK11"],

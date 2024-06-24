@@ -8,10 +8,10 @@ import time
 import datetime
 import telegram
 from telegram import ReplyKeyboardMarkup, KeyboardButton
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, JobQueue, CallbackQueryHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, filters, JobQueue, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.update import Update
-from telegram.ext.callbackcontext import CallbackContext
+from telegram import Update # type: ignore
+from telegram.ext import CallbackContext, Application # type: ignore
 import requests
 # Import Amicon object
 from scraper import Amicon
@@ -30,16 +30,16 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def start(update, context):
+async def start(update, context):
     chat_id = update.message.chat_id
     query = update.callback_query
     [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
     if (status == "yes"):
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=chat_id, text="Bot Standby...")
         # start_menu(update, context)
     else:
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=chat_id, text=message)
         # notif ke admin
         context.bot.send_message(
@@ -53,7 +53,7 @@ def start_amicon(update,context):
     context.bot.send_message(
             chat_id=chat_id, text="Silahkan pilih salah satu", reply_markup=reply_markup)
 
-def informasi(update, context):
+async def informasi(update, context):
     chat_id = update.message.chat_id
     [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
     if (status == "yes"):
@@ -77,15 +77,15 @@ def informasi(update, context):
         text_merged = [text1,text2,text3,text4,text5,text6,text7,text8,text9,text10,text11,text12,text13,text14,text15,text_penutup]
         for i in range(len(text_merged)):
             print(f"Loop iteration: {i}")
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text=text_merged[i],parse_mode="Markdown")
     else:
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=chat_id, text=message)
         # notif ke admin
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
 
 def updateuser(update,context):
@@ -141,7 +141,7 @@ def button(update, context):
         chat_id=query.message.chat_id, text=message)
 
 
-def read_command(update, context):
+async def read_command(update, context):
     # chat_id = pm.chat_id
     chat_id = update.message.chat_id
     print(update.message.chat_id)
@@ -178,11 +178,11 @@ def read_command(update, context):
                     chat_id=chat_id, text=message_kdunit)
         elif ((update.message.text[:4] == "info" and update.message.text[4:5] == "|") or (update.message.text[:4] == "Info" and update.message.text[4:5] == "|") or (update.message.text[:4] == "INFO" and update.message.text[4:5] == "|")):
             if (update.message.text[5:6] == "0"):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Memulai Pencarian Informasi Idpel : \n"+update.message.text[7:])
                 [status, informasi, message] = Asmente.cek_infopelanggan(
                     tipe_pencarian="Id Pelanggan", nomor_id=update.message.text[7:], link_infopelanggan=pm.link_info_pelanggan)
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Info Pelanggan berdasarkan Id Pelanggan :\n"+informasi)
                 # Write log data
                 dat = dataframe()
@@ -941,38 +941,40 @@ def update_data_otomatis(context: CallbackContext):
 def main():
     # bot Telegram
     # Create updater and pass in Bot's auth key.
-    updater = Updater(token=pm.tokenbot, use_context=True)
+    #updater = Updater(token=pm.tokenbot, use_context=True)
+    application = Application.builder().token(pm.bot_token).build()
     # Get dispatcher to register handlers
-    dispatcher = updater.dispatcher
+    #dispatcher = updater.dispatcher
     # Mengecek kesiapan bot
-    dispatcher.add_handler(CommandHandler(
-        'start', start, run_async=True))
+    application.add_handler(CommandHandler(
+        'start', start))
     # Mengecek kesiapan bot
-    dispatcher.add_handler(CommandHandler(
-        'informasi', informasi, run_async=True))
+    application.add_handler(CommandHandler(
+        'informasi', informasi))
     # Mengecek kesiapan bot
-    dispatcher.add_handler(CommandHandler(
-        'updateuser', updateuser, run_async=True))
+    application.add_handler(CommandHandler(
+        'updateuser', updateuser))
     # Run Aplikasi si gadis
-    dispatcher.add_handler(CommandHandler('start_sigadis', start_sigadis))
-    dispatcher.add_handler(CommandHandler('update', update_data))
+    application.add_handler(CommandHandler('start_sigadis', start_sigadis))
+    application.add_handler(CommandHandler('update', update_data))
     # Run Aplikasi si Amicon
-    dispatcher.add_handler(CommandHandler('start_amicon', start_amicon))
+    application.add_handler(CommandHandler('start_amicon', start_amicon))
     # Run daily basis
     # Membuat scheduler untuk update saldo tunggakan
-    j = updater.job_queue
+    j = application.job_queue
     # Jam 3.30 setiap hari
     # j.run_daily(
     #     update_data_otomatis,
     #     days=(0, 1, 2, 3, 4, 5, 6), time=datetime.time(hour=10, minute=39, second=00)
     # )
     # Message Handler harus d pasang paling terakhir
-    dispatcher.add_handler(MessageHandler(Filters.text, read_command))
-    dispatcher.add_handler(CallbackQueryHandler(button))
+    application.add_handler(MessageHandler(filters.TEXT, read_command))
+    application.add_handler(CallbackQueryHandler(button))
     # Start polling
-    updater.start_polling()
-    # Stop
-    updater.idle()
+    # updater.start_polling()
+    # # Stop
+    # updater.idle()
+    application.run_polling()
 
 if __name__ == '__main__':
     main()

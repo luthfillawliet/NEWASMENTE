@@ -653,7 +653,23 @@ async def read_command(update, context):
             else:
                 context.bot.send_message(
                         chat_id=chat_id, text="Gagal kirim file\n"+message)
-            
+        #KIRIM LAPORAN EXCEL TAMBAH DAYA
+        elif((update.message.text[:9] == "laporanpd")):
+            await context.bot.send_message(chat_id=chat_id,text="Memulai mengupdate laporan PD dari EIS")
+            message_update = Asmente.update_data_pd()
+            await context.bot.send_message(chat_id=chat_id,text=message_update)
+               #kirim file ke chat
+            try:
+                #document = open("data//downloads//EIS//GV.xls","rb")
+                #wait context.bot.send_document(chat_id,document)
+                message = "Berhasil kirim File"
+                print(message)
+                await context.bot.send_message(
+                    chat_id=chat_id, text=message)
+            except Exception as e:
+                message = "Gagal kirim file\nMessage Error : \n"+str(e)
+                await context.bot.send_message(
+                    chat_id=chat_id, text="Gagal kirim file\n"+message)
         #Fungsi Bot AMICON Register Asset dan Comissioning
         #Asset
         elif((update.message.text[:] == "ASSET")):

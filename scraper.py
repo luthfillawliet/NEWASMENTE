@@ -11,6 +11,7 @@ from selenium.webdriver.chrome.service import Service
 import datetime
 import easyocr
 import numpy as np
+import subprocess
 
 # Library sigadis
 import time
@@ -23,7 +24,9 @@ from post_api import post_data
 
 from DataFrame import dataframe
 from parameter import Parameter
+
 pm = Parameter()
+
 
 
 import requests
@@ -1756,6 +1759,7 @@ class EIS:
         chrome_options.add_argument(user_options)
         chrome_options.add_argument("--profile-directory=Profile 12")
         service = Service(executable_path=filepathchromedriver)
+        #Setting parameter service untuk versi yang baru
         self.driver = webdriver.Chrome(
             service=service, options=chrome_options)
         
@@ -1849,6 +1853,37 @@ class EIS:
                 time.sleep(5)
         except Exception as e:
             print("Gagal download excel tambah daya")
+    def download_tambah_daya(self):
+        driver = self.driver
+        #setting path image untuk download
+        keep_button_image_path = r"data\downloads\EIS\download_btn.png"
+        keep_anyway_image_path = r"data\downloads\EIS\keep_btn.png"
+        #Mencoba download file
+        try:
+            keep_button_location = pyautogui.locateCenterOnScreen(keep_button_image_path, confidence=0.8)
+            if keep_button_location:
+                pyautogui.click(keep_button_location)
+                print("Clicked on button using download.png")
+                time.sleep(30)
+                keep_anyway_location = pyautogui.locateCenterOnScreen(keep_anyway_image_path, confidence=0.8)
+                if keep_anyway_location:
+                    pyautogui.click(keep_anyway_location)
+                    print("Clicked on button using keep.png")
+                else:
+                    print("Not found using keep.png")
+            else:
+                print("Not found using download.png")
+        except Exception as e:
+            print(f"An error occurred while trying to click the Keep button: {e}")
+    def read_tambah_daya(self):
+        driver = self.driver
+        try:
+            # Langsung ke proses membuka file Excel dan menyalin isinya ke clipboard
+            excel_file_path = os.path.join(self.download_dir, "GV.xls")
+            subprocess.Popen(['start', 'excel', excel_file_path], shell=True)
+            print("Berhasil read file")
+        except Exception as e:
+            print("Gagal read file GV")
 
 
 class Amicon(webdriver.Chrome):
@@ -1869,7 +1904,7 @@ class Amicon(webdriver.Chrome):
         options.add_argument(user_options)
         options.add_argument('--disable-gpu')
         options.add_argument("enable-automation")
-        options.add_argument("--no-sandbox")
+        options.add_argument("--no-sandbox") 
         options.add_argument("--disable-extensions")
         options.add_argument("--dns-prefetch-disable")
         options.add_argument(f"--download.default_directory={self.download_dir}")  # Set the download directory
@@ -1877,7 +1912,10 @@ class Amicon(webdriver.Chrome):
         options.add_argument("--ignore-ssl-errors=yes")
         options.add_argument("--ignore-certificate-errors")
 
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        options.add_experimental_option('excludeSwitches', ['enable-logging'],
+                                        {"download.prompt_for_download": False,
+                                        "download.directory_upgrade": True,
+                                        "safebrowsing.enabled": True})
 
         super(Amicon, self).__init__(
             # executable_path=os.path.join(self._driver_path, 'chromedriver.exe'),

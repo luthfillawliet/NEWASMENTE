@@ -314,7 +314,17 @@ class dataframe():
             message = "Gagal baca ReportServlet\nMessage Error : \n"+str(e)
             print(message)
             return "no", message, "null"
-
+    def read_laporan_pd():
+        namafile =  'data\\downloads\\EIS\\GV.xls'
+        try:
+            df = pd.read_excel(io=namafile,sheet_name="Sheet",skiprows=0)
+            message = "Berhasil baca ReportServlet"
+            print(message)
+            return "yes",message,df
+        except Exception as e:
+            message = "Gagal baca ReportServlet\nMessage Error : \n"+str(e)
+            print(message)
+            return "no", message, "null"
 # print(df.loc[:,'2'])
 
     def log_data(self, chat_id: int, activity: str, time: str):

@@ -7,6 +7,8 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import time
 pm = Parameter()
 df = dataframe()
+from FILEMANAGER import filemanager
+
 # Import Amicon object
 from scraper import Amicon
 
@@ -386,12 +388,41 @@ class Asmente():
         username_eis = "94171287ZY"
         password_eis = "Panjang@1025"
         pm = Parameter()
+        #Hapus file yang sebelumnya
+        [status,message] = filemanager.delete_file("data\\downloads\\EIS","GV.xls")
+        print(status)
+        print(message)
         eis = EIS(filepathchromedriver=pm.filepathchromedriver,download_dir=pm.download_dir,user_options=pm.user_options,username_eis=username_eis,password_eis=password_eis)
         eis.open_eis()
         eis.login_eis()
         eis.masuk_menu_layanan()
         eis.pilih_tambah_daya()
-    #acmt 
+        time.sleep(30)
+        eis.download_tambah_daya()
+        time.sleep(60)
+        eis.read_tambah_daya()
+        #read xls GV dan simpan data dalam bentuk dataframe (df)
+        [status,messagge,df] = dataframe.read_laporan_pd()
+        message1 = message
+        print(df)
+        if(status == "yes"):
+            print("Memulai write ke google sheet")
+            link = "https://docs.google.com/spreadsheets/d/1RZqRzACG8IVWVvScjNQ0KdMPVlXw0xpLseCUfjvbvpc/edit?usp=sharing"
+            namagsheet = "NEW Monitoring Tindak Lanjut JN Max UP3 MS 2024"
+            tabname = "EIS"
+            [status,messagge] = dataframe.write_df_to_google_sheet(filepathjson=pm.filepathjson,GSHEET=namagsheet,TAB_NAME=tabname,df=df,first_row=1,first_col=1)
+            print(messagge)
+            message2 = message
+            message = message1 + message2
+            return message
+        else:
+            print("gagal write ke google sheet")
+            print(messagge)
+            message = message1 + message2
+            return message
+        
+    
+    
     def get_foto_rumah(idpelanggan:str):
         acmt = ACMT(filepatchromedriver=pm.filepathchromedriver,
                     download_dir=pm.download_dir, user_options=pm.user_options, url_acmt=pm.url_acmt)
@@ -603,4 +634,4 @@ class ReplyButton():
         else:
             return "Kesalahan pada kode"
 
-Asmente.update_data_pd()
+#Asmente.update_data_pd()

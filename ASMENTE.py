@@ -1,5 +1,6 @@
 from scraper import AP2T,EIS
 from scraper import ACMT, Helper
+from WAScraper import WA
 from FILEMANAGER import filemanager
 from parameter import Parameter
 from DataFrame import dataframe
@@ -420,8 +421,13 @@ class Asmente():
             print(messagge)
             message = message1 + message2
             return message
-        
     
+    def wa_sendMessage(message : str):
+        print(message)
+        wa = WA(filepathchromedriver=pm.filepathchromedriver,download_dir=pm.download_dir,user_options=pm.user_options,message="Halo WA",contact="Contact")
+        wa.open_wa()
+        time.sleep(10)
+        return message
     
     def get_foto_rumah(idpelanggan:str):
         acmt = ACMT(filepatchromedriver=pm.filepathchromedriver,
@@ -635,3 +641,5 @@ class ReplyButton():
             return "Kesalahan pada kode"
 
 #Asmente.update_data_pd()
+message = Asmente.wa_sendMessage("Hello")
+print(message)

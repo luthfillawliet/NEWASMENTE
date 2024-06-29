@@ -426,6 +426,11 @@ class Asmente():
         print(message)
         wa = WA(filepathchromedriver=pm.filepathchromedriver,download_dir=pm.download_dir,user_options=pm.user_options,message="Halo WA",contact="Contact")
         wa.open_wa()
+        time.sleep(3)
+        [status,message] = wa.search_contact("Fiesca")
+        time.sleep(2)
+        print(message)
+        [status,message] = wa.send_wa_messages("HELLO WORLD")
         time.sleep(10)
         return message
     
@@ -641,5 +646,4 @@ class ReplyButton():
             return "Kesalahan pada kode"
 
 #Asmente.update_data_pd()
-message = Asmente.wa_sendMessage("Hello")
-print(message)
+#message = Asmente.wa_sendMessage("Hello")

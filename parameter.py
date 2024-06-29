@@ -24,8 +24,8 @@ class Parameter:
         # jika mau menggunakan cache bawaan browser, silahkan di aktifkan (uncomment), lokasi atur sesuai lokasi cache
         #user option pc lokal
         #self.user_options = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
-        #self.user_options = "user-data-dir=C:\\Users\\CORE i7\\AppData\\Local\\Google\\Chrome\\User Data"
-        self.user_options = "user-data-dir=C:\\Users\\lenovo\\AppData\\Local\\Google\\Chrome\\User Data"
+        self.user_options = "user-data-dir=C:\\Users\\CORE i7\\AppData\\Local\\Google\\Chrome\\User Data"
+        #self.user_options = "user-data-dir=C:\\Users\\lenovo\\AppData\\Local\\Google\\Chrome\\User Data"
         #user option server lama uid
         #self.user_options = r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data'
         # file list user
@@ -43,9 +43,9 @@ class Parameter:
         # setting bot baru
         # bot token id, di ganti jika ganti bot
         # self.tokenbot = "5686919975:AAH2BfsMAOsWrnbTbFCFAFcZsj8oADtMMtg"  # new_asmente_bot
-        #self.tokenbot = "5081663366:AAF9XrOVwtlD6gFTf7fh7qTbQXMixpe_XSI"  # ulpsgm_bot
+        self.tokenbot = "5081663366:AAF9XrOVwtlD6gFTf7fh7qTbQXMixpe_XSI"  # ulpsgm_bot
         #self.tokenbot = "6811746544:AAFcvWpQhO65IDpKYRnQZFfujrkBEIkShHo"
-        self.tokenbot = "7389606593:AAGTPGLXb_AAzUalaaxDWo8Wwgq5DF1akXE"
+        #self.tokenbot = "7389606593:AAGTPGLXb_AAzUalaaxDWo8Wwgq5DF1akXE" #Dalsutmsbot
         # group chat id
         self.chat_id = -828901164
         # chat_id admin
@@ -103,8 +103,8 @@ class Parameter:
         self.username_amicon = 'pusat\\firmansyah051'
         self.password_amicon = '8206051F@36'
         self.bot_token = self.tokenbot
-        #self.user_browser_cache = "user-data-dir=C:\\Users\\CORE i7\\AppData\\Local\\Google\\Chrome\\User Data"
-        self.user_browser_cache = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
+        self.user_browser_cache = "user-data-dir=C:\\Users\\CORE i7\\AppData\\Local\\Google\\Chrome\\User Data"
+        #self.user_browser_cache = "user-data-dir=C:\\Users\\HP\\AppData\\Local\\Google\\Chrome\\User Data"
 
         #Parameter link foto rumah ACMT
         self.linkPart1_fotorumah = "https://portalapp.iconpln.co.id/acmt/DisplayBlobServlet7?idpel="

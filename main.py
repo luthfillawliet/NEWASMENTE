@@ -42,15 +42,15 @@ async def start(update, context):
         await context.bot.send_message(
             chat_id=chat_id, text=message)
         # notif ke admin
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
     
-def start_amicon(update,context):
+async def start_amicon(update,context):
     chat_id = update.message.chat_id
     reply_markup = AmiconBot.start()
-    context.bot.send_message(
+    await context.bot.send_message(
             chat_id=chat_id, text="Silahkan pilih salah satu", reply_markup=reply_markup)
 
 async def informasi(update, context):
@@ -88,7 +88,7 @@ async def informasi(update, context):
         await context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
 
-def updateuser(update,context):
+async def updateuser(update,context):
     chat_id = update.message.chat_id
     [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
     if (status == "yes"):
@@ -96,23 +96,23 @@ def updateuser(update,context):
         [status, level_user, message] = Asmente.get_level_user(
                 chat_id=chat_id)
         if (status == "yes" and (level_user == "owner" or level_user == "admin")):
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="update|NIP(Angka dan Huruf Kapital|kode yang akan di update\n"+
                     "List Kode :\n"+
                     "1 : Kode unit\n2 : Nama\n3 : Jabatan\n4 : Password AP2T\nContoh jika akan mengupdate Password\n"+
                     "update|1234567ZY|4")
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="update|94171287ZY|4")
         else:
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Mengupdate user hanya untuk role Owner dan Admin, silahkan kontak Luthfil")
     else:
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=chat_id, text=message)
         # notif ke admin
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
         
 def findnth(string, substring, n):
@@ -130,14 +130,14 @@ def get_result(value):
 # List perintah Asmen TE
 
 
-def button(update, context):
+async def button(update, context):
     query = update.callback_query
-    context.bot.send_message(text="Yang dipilih : %s" %
+    await context.bot.send_message(text="Yang dipilih : %s" %
                              query.data, chat_id=query.message.chat_id)
     message = ReplyButton.execute_button(
         data=query.data, kode_unit="32131")
     # Coba kirim respon
-    context.bot.send_message(
+    await context.bot.send_message(
         chat_id=query.message.chat_id, text=message)
 
 
@@ -153,16 +153,16 @@ async def read_command(update, context):
                 chat_id=chat_id, kode_unit=update.message.text[16:21])
             if (status_kdunit == "yes"):
                 # Eksekusi buat CT
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Memulai pembuatan CT Idpel : \n"+update.message.text[3:15]+"\nKode Unit : "+update.message.text[16:21]+"\nKeterangan : "+update.message.text[22:])
                 status, jumlahct, message = Asmente.buatCT(
                     id_pelanggan=update.message.text[3:15], kodeunit=update.message.text[16:21], keteranganCT=update.message.text[22:])
                 if (status == "yes"):
                     print("STATUS MAIN : ", message)
                     # Kirim jumlah permintaan CT
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Jumlah Permintaan CT : "+str(jumlahct))
-                    context.bot.send_message(chat_id=chat_id, text=message)
+                    await context.bot.send_message(chat_id=chat_id, text=message)
                     time.sleep(2)
                     resp = requests.post(
                         "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_ct))
@@ -172,9 +172,9 @@ async def read_command(update, context):
                                  activity="clear tamper idpel :"+update.message.text[3:15], time=str(datetime.datetime.now()))
                 else:
                     print("STATUS MAIN : ", message)
-                    context.bot.send_message(chat_id=chat_id, text=message)
+                    await context.bot.send_message(chat_id=chat_id, text=message)
             elif (status_kdunit == "no"):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text=message_kdunit)
         elif ((update.message.text[:4] == "info" and update.message.text[4:5] == "|") or (update.message.text[:4] == "Info" and update.message.text[4:5] == "|") or (update.message.text[:4] == "INFO" and update.message.text[4:5] == "|")):
             if (update.message.text[5:6] == "0"):
@@ -189,27 +189,27 @@ async def read_command(update, context):
                 dat.log_data(chat_id=chat_id,
                              activity="Info Pelanggan", time=str(datetime.datetime.now()))
             elif (update.message.text[5:6] == "1"):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Memulai Pencarian Informasi Nomor Meter :\n"+update.message.text[7:])
                 [status, informasi, message] = Asmente.cek_infopelanggan(
                     tipe_pencarian="Nomor Meter", nomor_id=update.message.text[7:], link_infopelanggan=pm.link_info_pelanggan)
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Info Pelanggan berdasarkan Nomor Meter \n:"+informasi)
                 # Write log data
                 dat = dataframe()
                 dat.log_data(chat_id=chat_id,
                              activity="Info Pelanggan", time=str(datetime.datetime.now()))
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Tipe Pencarian tidak ditemukan")
         elif (update.message.text[:8] == "infoacmt" and update.message.text[8:9] == "|" or update.message.text[:8] == "Infoacmt" and update.message.text[8:9] == "|" or update.message.text[:8] == "INFOACMT" and update.message.text[8:9] == "|"):
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Memulai pengecekan Info pelanggan ACMT idpel : "+update.message.text[9:])
             [status, informasi, message] = Asmente.info_pelanggan_acmt(
                 id_pelanggan=update.message.text[9:])
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text=informasi)
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text=message)
             # Write log data
             dat = dataframe()
@@ -218,48 +218,48 @@ async def read_command(update, context):
         elif (update.message.text[:9] == "resetimei" or update.message.text[:9] == "Resetimei" or update.message.text[:9] == "RESETIMEI"):
             id_input = update.message.text[16:]
             kode_unit = update.message.text[10:15]
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Memulai reset imei petugas id : "+kode_unit+"."+id_input)
             [status, message] = Asmente.reset_imei(
                 kode_unit=kode_unit, user_id=id_input)
             if (status == "yes"):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text=message)
                 # Write log data
                 dat = dataframe()
                 dat.log_data(chat_id=chat_id,
                              activity="reset imei", time=str(datetime.datetime.now()))
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text=message)
         elif ((update.message.text[:6] == "montok" or update.message.text[:6] == "Montok" or update.message.text[:6] == "MONTOK") and len(update.message.text) > 18):
             # cek tipe pencarian
             tipe_pencarian = update.message.text[7:8]
             id_pencarian = update.message.text[9:]
             if (tipe_pencarian == "0"):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Memulai monitoring permohonan token Idpel : "+id_pencarian)
                 status, message = Asmente.info_montok(
                     url_montok=pm.link_montok, tipe_pencarian=tipe_pencarian, id_pencarian=id_pencarian)
                 if (status == "yes"):
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Hasil monitoring permohonan token Id pelanggan : "+id_pencarian+"\n"+message)
                 else:
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Gagal monitoring permohonan token Id pelanggan : "+id_pencarian+"\n"+message)
             elif (tipe_pencarian == "1"):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Memulai monitoring permohonan token Nomor Meter : "+id_pencarian)
                 status, message = Asmente.info_montok(
                     url_montok=pm.link_montok, tipe_pencarian=tipe_pencarian, id_pencarian=id_pencarian)
                 if (status == "yes"):
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Hasil monitoring permohonan token Nomor meter : "+id_pencarian+"\n"+message)
                 else:
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Gagal monitoring permohonan token Nomor Meter : "+id_pencarian+"\n"+message)
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Tipe Pencarian tidak diketahui")
         elif ((update.message.text[:8] == "Aktifasi" or update.message.text[:8] == "aktifasi" or update.message.text[:8] == "AKTIFASI" or update.message.text[:8] == "Aktivasi" or update.message.text[:8] == "aktivasi") and len(update.message.text) == 8):
             [status, level_user, message] = Asmente.get_level_user(
@@ -274,7 +274,7 @@ async def read_command(update, context):
                 update.message.reply_text(
                     'SIlahkan pilih :', reply_markup=reply_markup)
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Periksa kembali command dan hak akses user")
         elif (update.message.text[:3] == "add" or update.message.text[:3] == "Add" or update.message.text[:3] == "ADD"):
             # cek level user
@@ -288,36 +288,36 @@ async def read_command(update, context):
                 chat_id_daftar = int(update.message.text[4:separator_1])
                 nama = update.message.text[separator_2+1:separator_3]
                 nomor_telfon = update.message.text[separator_3+1:separator_4]
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=pm.chat_id_admin, text="Memulai add user dengan chat id : "+str(chat_id_daftar)+"\n"+"Kode Unit : "+str(update.message.text[separator_1+1:separator_2]))
                 [status, message] = Asmente.add_new_user(
                     chat_id_daftar=chat_id_daftar, kode_unit=int(update.message.text[separator_1+1:separator_2]), nama=nama, nomor_telfon=nomor_telfon, level=update.message.text[separator_4+1:])
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=pm.chat_id_admin, text=message)
                 # Write log data
                 dat = dataframe()
                 dat.log_data(chat_id=chat_id,
                              activity="Add user", time=str(datetime.datetime.now()))
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=update.message.chat_id, text="User tidak punya hak akses")
         elif (len(update.message.text) == 20 and (update.message.text[:7] == "Infokct" or update.message.text[:7] == "infokct")):
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=update.message.chat_id, text="Memulai cek info KCT KRN Idpel : "+update.message.text[8:])
             [status, message] = Asmente.get_kct_krn(
                 Id_pelanggan=update.message.text[8:])
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=update.message.chat_id, text=message)
             # Write log data
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
                          activity="Infokct krn", time=str(datetime.datetime.now()))
         elif (update.message.text[:10] == "Infoblokir" or update.message.text[:10] == "infoblokir"):
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Memulai pengecekan blocking token idppel : "+update.message.text[11:])
             status, message = Asmente.cek_blocking_token(
                 id_pelanggan=update.message.text[11:])
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text=message)
             # Write log data
             dat = dataframe()
@@ -328,24 +328,24 @@ async def read_command(update, context):
             #cek digit idpel
             id_pelanggan = update.message.text[10:]
             if(len(id_pelanggan) == 12):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Memulai pencarian history pembelian token Idpel "+id_pelanggan+" : ")
                 [status,informasi,message] = Asmente.cek_pembelian_token(id_pelanggan)
                 if(status=="yes"):
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text=informasi)
                 else:
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text=message)
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Periksa idpel dengan benar")
             # Write log data
             dat = dataframe()
             dat.log_data(chat_id=chat_id,
                             activity="Info Pembelian token", time=str(datetime.datetime.now()))
         elif ((update.message.text[:8] == "cetakkct" or update.message.text[:8] == "Cetakkct" or update.message.text[:8] == "CETAKKCT") and len(update.message.text) > 25):
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Memulai cetak KCT Token dengan nomor agenda : "+update.message.text[9:])
             ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver, filepathenkripsi=pm.filepathenkripsi,
                         urlap2t=pm.urlap2t, download_dir=pm.download_dir, filepathct=pm.filepathct, user_options=pm.user_options)
@@ -358,10 +358,10 @@ async def read_command(update, context):
                     resp = requests.post(
                         "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_ct))
                 else:
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Gagal kirim screenshoot token\nError Meesage : "+message)
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Gagal cetak token\nError Meesage : "+message)
         #Fungsi Manajemen User
         elif ((update.message.text[:9] == "broadcast" or update.message.text[:9] == "Broadcast") and update.message.text[9:10] == "|"):
@@ -369,7 +369,7 @@ async def read_command(update, context):
             [status, level_user, message] = Asmente.get_level_user(
                 chat_id=chat_id)
             if (status == "yes" and (level_user == "owner" or level_user == "admin")):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Memulai mengirim pesan broadcast")
                 df = dataframe.get_all_userid(pm.filepathlistuser, "all")
                 pesan = update.message.text[(findnth(
@@ -377,9 +377,9 @@ async def read_command(update, context):
                 for i in df:
                     # print("chat id : ", str(i))
                     try:
-                        context.bot.send_message(
+                        await context.bot.send_message(
                             chat_id=i, text="Pesan Broadcast dari Admin : ")
-                        context.bot.send_message(
+                        await context.bot.send_message(
                             chat_id=i, text=pesan+"\n\n"+update.message.text[findnth(update.message.text, "|", 0)+1:findnth(update.message.text, "|", 1)])
                         # Write log data
                         dat = dataframe()
@@ -388,7 +388,7 @@ async def read_command(update, context):
                     except:
                         pass
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Level user tidak memiliki autentikasi")
         elif((update.message.text[:7] == "update|" or update.message.text[:7] == "Update|" or update.message.text[:7] == "UPDATE|") and len(update.message.text) > 10):
             #cek level autentikasi User
@@ -400,7 +400,7 @@ async def read_command(update, context):
                 update_value = update.message.text[(separator_2+1):]
                 item_update = get_result(update.message.text[separator_2-1])
                 print(update.message.text[separator_2-1])
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Memulai Update "+item_update+" User NIP "+input_value)
                 column_objective = "B"
                 if(item_update == "jabatan"):
@@ -411,12 +411,12 @@ async def read_command(update, context):
                     column_objective = "B"
                 daf = dataframe()
                 [status, message]=daf.update_user_data(filepathlistuser=pm.filepathlistuser,sheetname="Sheet1",column_lookup="NIP",input_value=input_value,updated_value=update_value,column_objective=column_objective)#ubah nilai dari param input_value dengan nilai variabel input_value
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=pm.chat_id_admin, text=message)
                 daf.log_data(chat_id=chat_id,
                              activity="Update "+ item_update + " User dengan NIP "+ input_value, time=str(datetime.datetime.now()))
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Mengupdate user hanya untuk role Owner dan Admin, silahkan kontak Luthfil")
         # fungsi aktivasi meter
         elif ((update.message.text[:9] == "pengaduan" or update.message.text[:9] == "Pengaduan" or update.message.text[:9] == "PENGADUAN") and update.message.text[9:10] == "|"):
@@ -433,41 +433,41 @@ async def read_command(update, context):
                     id_pelanggan = update.message.text[16:28]
                     nomor_meter_lama = update.message.text[29:40]
                     keterangan = update.message.text[41:]
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Memulai Aktivasi kWh Meter\nIdpel : "+id_pelanggan+"\nKode Unit : "+update.message.text[10:15]+"\nNomor Meter Lama : "+nomor_meter_lama+"\nKeterangan : "+keterangan)
                     [status, message, nomoragenda] = Asmente.buatPengaduanHarAPP(
                         id_pelanggan=id_pelanggan, kode_unit=kodeunit, nomor_meter_lama=nomor_meter_lama, keterangan=keterangan)
                     if (status == "yes" and nomoragenda != 0):
-                        context.bot.send_message(
+                        await context.bot.send_message(
                             chat_id=chat_id, text="tindakan|"+kodeunit+"|"+str(nomoragenda))
                     else:
-                        context.bot.send_message(
+                        await context.bot.send_message(
                             chat_id=chat_id, text="Gagal buat pengaduan\nMessage Error : "+message)
                     # Write log data
                     dat = dataframe()
                     dat.log_data(chat_id=chat_id,
                                  activity="Buat pengaduan APP Idpel : "+id_pelanggan, time=str(datetime.datetime.now()))
                 else:
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Kode Unit user tidak sesuai")
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="User tidak punya hak akses")
         elif ((update.message.text[:8] == "tindakan" or update.message.text[:8] == "Tindakan" or update.message.text[:8] == "TINDAKAN") and len(update.message.text) == 33):
             kode_unit = update.message.text[9:14]
             nomoragenda = update.message.text[15:]
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Memulai save tindakan pengaduan\nNomor Agenda : "+nomoragenda+"\nKode Unit : "+kode_unit)
             status, message, nomoragenda = Asmente.tindakanPengaduanHarAPP(
                 nomoragenda=int(nomoragenda), kode_unit=kode_unit)
             if (status == "yes"):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Berhasil save tindakan pengaduan Nomor Agenda " +
                     str(nomoragenda))
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="aktivasiapp|"+kode_unit+"|"+str(nomoragenda)+"|"+"Nomor Meter Baru")
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text=message)
             # Write log data
             dat = dataframe()
@@ -477,84 +477,84 @@ async def read_command(update, context):
             kode_unit = update.message.text[12:17]
             nomoragenda = update.message.text[18:36]
             nomor_meter_baru = update.message.text[37:]
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Memulai aktivasi kWh meter dengan nomor agenda : "+nomoragenda+"\nNomor meter baru : "+nomor_meter_baru+"\nKode Unit : "+kode_unit)
             status, message, nomoragenda = Asmente.aktivasiHarAPP(nomoragenda=int(
                 nomoragenda), kode_unit=kode_unit, nomor_meter_baru=nomor_meter_baru)
             if (status == "yes" and nomoragenda != 0):
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="cetakkct|"+str(nomoragenda))
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text=message)
         elif ((update.message.text[:10] == "tagsusp2tl" or update.message.text[:10] == "Tagsusp2tl" or update.message.text[:10] == "TAGSUSP2TL")):
             #cek level autentikasi User
             [status, level_user, message] = Asmente.get_level_user(
                 chat_id=chat_id)
             if (status == "yes" and (level_user == "owner" or level_user == "admin")):
-                context.bot.send_message(
+                await context.bot.send_message(
                         chat_id=chat_id, text="Memulai Pembuatan Laporan Tagihan Susulan Hari ini")
                 df = dataframe()
                 tahun_bulan = dataframe.get_tahun_bulan_sekarang() #jangan lupa jadikan variabel
                 [status,kode_unit_user,message] = df.get_kode_unit_user_tagsus(chat_id=chat_id)
                 if(status == "yes"):
                     [status,message] = Asmente.create_lap_tsp2tl(kode_unit_user = kode_unit_user,tahun_bulan = tahun_bulan)
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text=message)
                     if(status == "yes"):
                         #kirim file ke chat
                         try:
                             document = open("data//downloads//ReportServlet.xls","rb")
-                            context.bot.send_document(chat_id,document)
+                            await context.bot.send_document(chat_id,document)
                             message = "Berhasil kirim File"
                             print(message)
-                            context.bot.send_message(
+                            await context.bot.send_message(
                                 chat_id=chat_id, text=message)
                         except Exception as e:
                             message = "Gagal kirim file\nMessage Error : \n"+str(e)
-                            context.bot.send_message(
+                            await context.bot.send_message(
                                 chat_id=chat_id, text="Gagal kirim file\n"+message)
                     else:
-                        context.bot.send_message(
+                        await context.bot.send_message(
                             chat_id=chat_id, text="Gagal kirim file\n"+message)
                 else:
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Gagal ambil kode unit\n"+message)
                 # Write log data
                 dat = dataframe()
                 dat.log_data(chat_id=chat_id,
                                 activity="Update Laporan TS Harian", time=str(datetime.datetime.now()))
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Update Laporan Harian hanya untuk level Admin atau Owner")
         elif((update.message.text[:8] == "fotoacmt" or update.message.text[:8] == "Fotoacmt" or update.message.text[:8] == "FOTOACMT") and len(update.message.text) == 21):
             idpel = update.message.text[9:]
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Memulai kirim foto ACMT Idpel "+idpel)
             status1,status2,statusrumah = Asmente.get_foto_rumah(idpelanggan=idpel)
             if(statusrumah == "yes"):
                 resp = requests.post(
                             "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_rumah))
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Foto Rumah Berhasil di kirim")
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Gagal get foto rumah")
             if(status1 == "yes"):
                 resp = requests.post(
                             "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_1))
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Foto 1 Berhasil di kirim")
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Gagal kirim foto 1")
             if(status2 == "yes"):
                 resp = requests.post(
                             "https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(chat_id), files=fm.send_photos(pm.files_foto_2))
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Foto 2 Berhasil di kirim")
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Gagal kirim foto rumah")
             
             # Write log data
@@ -562,27 +562,27 @@ async def read_command(update, context):
             dat.log_data(chat_id=chat_id,
                             activity="Foto ACMT idpel : "+idpel, time=str(datetime.datetime.now()))          
         elif((update.message.text[:10] == "kirimlapts" or update.message.text[:10] == "Kirimlapts" or update.message.text[:10] == "KIRIMLAPTS")):
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Memulai kirim laporan TS Hari ini")
             [status,message] = Asmente.kirim_report_ts()
             if(status == "yes"):
                 print(message)
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Berhasil mengupdate Laporan TS P2TL pada spreadsheet")
                 try:
                     document = open("fotoct//screenshot_ts.png","rb")
-                    context.bot.send_document(chat_id,document)
+                    await context.bot.send_document(chat_id,document)
                     message = "Berhasil kirim Foto"
                     print(message)
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text=message)
                 except Exception as e:
                     message = "Gagal kirim foto\nMessage Error : \n"+str(e)
                     print(message)
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text=message)
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text=message)
             # Write log data
             dat = dataframe()
@@ -608,7 +608,7 @@ async def read_command(update, context):
                 nama_jenislaporan = "LPB"
             else:
                 nama_jenislaporan = "TOTAL"
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text=f"Memulai download Laporan TUL 309 Kode Unit :{kdunit}\nBulan : {bulan} \nTahun : {tahun} \nJenis Laporan : {jenislaporan} {nama_jenislaporan}")
             
             [status,message] = Asmente.kirim_tul309(link_TUL309="any",kdunit=int(kdunit),tahun=tahun,bulan=bulan,jenislaporan=jenislaporan,tipelaporan=tipelaporan)
@@ -632,17 +632,17 @@ async def read_command(update, context):
                             #Try to send the file
                             status,most_recent_files = filemanager.select_last_modified_files(path=path)
                             document = open(path+"//"+most_recent_files,"rb")
-                            context.bot.send_document(chat_id,document)
+                            await context.bot.send_document(chat_id,document)
                             message = "Berhasil kirim File"
                             print(message)
-                            context.bot.send_message(
+                            await context.bot.send_message(
                                 chat_id=chat_id, text=message)
                         except Exception as e:
                             message = "Gagal kirim file\n"+message+"\nMessage Error : \n"+str(e)
-                            context.bot.send_message(
+                            await context.bot.send_message(
                                 chat_id=chat_id, text="Gagal kirim file\n"+message)
                     else:
-                        context.bot.send_message(
+                        await context.bot.send_message(
                                 chat_id=chat_id, text="Gagal Rename file\n"+message)
                 except Exception as e:
                     message = "Gagal rename FIle\nMessage Error : \n"+str(e)
@@ -651,7 +651,7 @@ async def read_command(update, context):
                 dat.log_data(chat_id=chat_id,
                                 activity="Mendowload Laporan TUL 309", time=str(datetime.datetime.now()))
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                         chat_id=chat_id, text="Gagal kirim file\n"+message)
         #KIRIM LAPORAN EXCEL TAMBAH DAYA
         elif((update.message.text[:9] == "laporanpd")):
@@ -676,34 +676,34 @@ async def read_command(update, context):
             message = update.message.text[:]
             bot = AmiconBot()
             bot.get_first_choice(message=message)
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Silahkan Pilih Tipe Aset : ", reply_markup=bot.set_asset_choice())
         elif((update.message.text[:] == "METER")):
             message = update.message.text[:]
             bot = AmiconBot()
             bot.get_selected_asset(selected_aset=message)
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Silahkan Pilih Tipe Merk : ", reply_markup=bot.set_meter_brand())
         elif(update.message.text[:] == "EDMI"):
             message = update.message.text[:]
             bot = AmiconBot()
             bot.get_selected_brand(selected_brand=message)
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Silahkan Pilih Tipe Merk : ", reply_markup=bot.set_brand_type(selected_brand=message))
         elif(update.message.text[:] == "ITRON"):
             message = update.message.text[:]
             bot = AmiconBot()
             bot.get_selected_brand(selected_brand=message)
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Silahkan Pilih Tipe Merk : ", reply_markup=bot.set_brand_type(selected_brand=message))
         #Comissioning
         elif(update.message.text[:] == "COMISSIONING"):
             message = "COMMISSIONING|32XXXXXXXXXX"
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text=message)
         elif(update.message.text[:12] == "COMISSIONING" and len(update.message.text)> 20):
             idpel = update.message.text[13:]
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="Memulai Comissioning Pelanggan ID : "+idpel)
             amicon = Amicon(username=pm.username_amicon,password=pm.password_amicon)
             amicon.first_page()
@@ -711,17 +711,17 @@ async def read_command(update, context):
             result = ""
             if(status_login == "no"):
                 print(message)
-                context.bot.send_message(
+                await context.bot.send_message(
                 chat_id=chat_id, text="Memulai Login")
                 #Login
                 amicon.login()
                 [status,message] = amicon.cek_login()
                 #Cek apakah berhasil login
                 if(status == "no"):
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Gagal Login ke AMICON, periksa username dan password/Captcha")
             #Berhasil login, lanjut buka Menu COmissioning
-            context.bot.send_message(
+            await context.bot.send_message(
                         chat_id=chat_id, text="Berhasil Login")
             status_menu_comiss = True
             counter = 0
@@ -734,14 +734,14 @@ async def read_command(update, context):
                 if(counter > 15):
                     break
             if(status_menu_comiss == False):
-                context.bot.send_message(
+                await context.bot.send_message(
                         chat_id=chat_id, text="Berhasil masuk ke menu comissioning")
                 status = amicon.click_search_idpel_comissioning(idpel=idpel)
                 #Pelanggan di temukan dan dilakukan comissioning
-                context.bot.send_message(
+                await context.bot.send_message(
                     chat_id=chat_id, text="Pelanggan ditemukan dan dilakukan comissioning, silahkan ditunggu hingga proses comissioning berhasil")
                 if(status):
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Berhasil comissioning, semua status OK, lanjut verifiy test")      
                     #try click verify
                     condition = True
@@ -754,7 +754,7 @@ async def read_command(update, context):
                         if(counter > 50):
                             break
                     if(condition == False):
-                        context.bot.send_message(
+                        await context.bot.send_message(
                             chat_id=chat_id, text="Berhasil Verify Test")
                         #klik pop up verify
                         condition = True
@@ -767,7 +767,7 @@ async def read_command(update, context):
                                 break
                         #Jika Berhasil klik pop up verify
                         if(condition == False):
-                            context.bot.send_message(
+                            await context.bot.send_message(
                                 chat_id=chat_id, text="Berhasil klik Pop Up Verify,lanjut Activation")
                             #Confirm activate
                             condition = True
@@ -779,7 +779,7 @@ async def read_command(update, context):
                                 if(counter > 50):
                                     break
                             if(condition == False):
-                                context.bot.send_message(
+                                await context.bot.send_message(
                                     chat_id=chat_id, text="Berhasil klik Confirm Activate")
                                 #Pop Up Confirm activate
                                 condition = True
@@ -791,7 +791,7 @@ async def read_command(update, context):
                                     if(counter > 50):
                                         break
                                 if(condition == False):
-                                    context.bot.send_message(
+                                    await context.bot.send_message(
                                         chat_id=chat_id, text="Berhasil klik Confirm pop Up Activate\nSIlahkan tunggu sampai selesai Activate dan donwload ComissioningResult")
                                     condition = True
                                     loop_value = 0
@@ -804,16 +804,16 @@ async def read_command(update, context):
                                             break
                                     if(condition == False):
                                         #Jika download berhasil, lanjut mengirim FIle ComissioningResult
-                                        context.bot.send_message(
+                                        await context.bot.send_message(
                                             chat_id=chat_id, text="Berhasil download ComissioningResult, Mengirim File\nSIlahkan Tunggu")
                                         path = "data//downloads"
                                         status,most_recent_files = filemanager.select_last_modified_files(path=path)
                                         try:
                                             document = open(path+"//"+most_recent_files,"rb")
-                                            context.bot.send_document(chat_id,document)
+                                            await context.bot.send_document(chat_id,document)
                                             message = "Berhasil kirim File"
                                             print(message)
-                                            context.bot.send_message(
+                                            await context.bot.send_message(
                                                 chat_id=chat_id, text=message)
                                             #Klik Finish jika sudah kirim FIle
                                             condition = True
@@ -826,35 +826,35 @@ async def read_command(update, context):
                                                 if(loop_value > 5):
                                                     break
                                             if(condition == False):
-                                                context.bot.send_message(
+                                                await context.bot.send_message(
                                                     chat_id=chat_id, text="Berhasil Click Finish\nProses Comissioning Selesai")
                                             else:
-                                                context.bot.send_message(
+                                                await context.bot.send_message(
                                                     chat_id=chat_id, text="Gagal klik Finish")
                                         except Exception as e:
                                             message = "Gagal kirim file\nMessage Error : \n"+str(e)
-                                            context.bot.send_message(
+                                            await context.bot.send_message(
                                                 chat_id=chat_id, text="Gagal kirim file\n"+message)
                                     else:
-                                        context.bot.send_message(
+                                        await context.bot.send_message(
                                             chat_id=chat_id, text="Gagal Download Comissioning result")
                                 else:
-                                    context.bot.send_message(
+                                    await context.bot.send_message(
                                         chat_id=chat_id, text="Gagal klik pop up COnfirm Activate")
                             else:
-                                context.bot.send_message(
+                                await context.bot.send_message(
                                     chat_id=chat_id, text="Gagal klik konfirm pop up verify")
                         else:
-                            context.bot.send_message(
+                            await context.bot.send_message(
                                 chat_id=chat_id, text="Gagal pilih pop up verify")
                     else:
-                        context.bot.send_message(
+                        await context.bot.send_message(
                             chat_id=chat_id, text="Gagal comissioning, tidak dapat menyelesaikan semua step")
                 else:
-                    context.bot.send_message(
+                    await context.bot.send_message(
                         chat_id=chat_id, text="Comissioning gagal dimulai, pastikan idpel yang di input benar")
             else:
-                context.bot.send_message(
+                await context.bot.send_message(
                         chat_id=chat_id, text=message)
             
             # #Menunggu proses download
@@ -884,17 +884,17 @@ async def read_command(update, context):
                             activity="Comissioning : "+idpel, time=str(datetime.datetime.now()))
         else:
             print("command tidak dikenal")
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=chat_id, text="command tidak dikenal")
     else:
         print(message)
         # notif ke user
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=chat_id, text=message)
         # notif ke admin
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
-        context.bot.send_message(
+        await context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
 
 
@@ -936,7 +936,7 @@ def update_data(update: Update, context: CallbackContext):
         return
 
 
-def update_data_otomatis(context: CallbackContext):
+async def update_data_otomatis(context: CallbackContext):
     """Fungsi ini membuat Thread untuk update masing2 UP3"""
     try:
         s = time.perf_counter()
@@ -945,10 +945,10 @@ def update_data_otomatis(context: CallbackContext):
         bot.download_data(get_gardu())
         f = time.perf_counter()
         waktu = round((f - s), 2)
-        context.bot.send_message(text=f'Berhasil update data Gardu dari AMICON ({waktu}s)',
+        await context.bot.send_message(text=f'Berhasil update data Gardu dari AMICON ({waktu}s)',
                                  reply_markup='markdown')
     except Exception as e:
-        context.bot.send_message(
+        await context.bot.send_message(
             text='Gagal Update data Gardu dari AMICON',
             parse_mode='markdown')
         return

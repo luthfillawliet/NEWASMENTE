@@ -367,7 +367,12 @@ class dataframe():
         except Exception as e:
             message = "Gagal Write data ke Google Spreadsheet\nMessage Error : \n"+str(e)
             return "no",message
-
+    def read_from_googlesheet_to_df(filepathjson,GSHEET,TAB_NAME,Cell:str):
+        gc = gspread.service_account(filename=filepathjson)
+        sh = gc.open(GSHEET)
+        worksheet = sh.worksheet(TAB_NAME)
+        val = worksheet.acell(Cell).value
+        return val
     def get_nama_sheet_bulan_sekarang():
         # Get the current date and time
         current_date = datetime.datetime.now()

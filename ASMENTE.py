@@ -422,16 +422,16 @@ class Asmente():
             message = message1 + message2
             return message
     
-    def wa_sendMessage(message : str):
-        print(message)
+    def wa_sendMessage(contact_target : str,incoming_message : str):
+        print(incoming_message)
         wa = WA(filepathchromedriver=pm.filepathchromedriver,download_dir=pm.download_dir,user_options=pm.user_options,message="Halo WA",contact="Contact")
         wa.open_wa()
         time.sleep(3)
-        [status,message] = wa.search_contact("Fiesca")
-        time.sleep(2)
+        [status,message] = wa.search_contact(contact_target)
+        time.sleep(1)
         print(message)
-        [status,message] = wa.send_wa_messages("HELLO WORLD")
-        time.sleep(10)
+        [status,message] = wa.send_wa_messages(incoming_message)
+        time.sleep(5)
         return message
     
     def get_foto_rumah(idpelanggan:str):
@@ -646,4 +646,7 @@ class ReplyButton():
             return "Kesalahan pada kode"
 
 #Asmente.update_data_pd()
-#message = Asmente.wa_sendMessage("Hello")
+#message = Asmente.wa_sendMessage("Prioritas P2TL JN Max","Hello World")
+# incoming_messages = dataframe.read_from_googlesheet_to_df(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",Cell="M3")
+# message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",incoming_messages)
+#message = Asmente.wa_sendMessage("Fiesca","Hello World")

@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 import time
+import pyautogui
+from DataFrame import dataframe
 
 class WA:
     # Create class for scraping EIS
@@ -39,13 +41,16 @@ class WA:
             #Masukkan nama yang di cari
             searched_contact.send_keys(contact_name)
             print("berhasil ketik nama")
-            time.sleep(1)
-            #Klik contact yang dicari
-            searched_contact = WebDriverWait(driver=self.driver, timeout=2).until(
-                    EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div/div[2]/div[3]/div/div[3]/div[1]/div/div/div[1]/div/div"))
-            )
-            searched_contact.click()
-            message  = "Berhasil menemukan contact"
+            time.sleep(3)
+            contact_button_image_path = "data\\btn_wa\\"+contact_name+".png"
+            try:
+                contact_button_location = pyautogui.locateCenterOnScreen(contact_button_image_path, confidence=0.8)
+                message  = "Berhasil menemukan contact"
+                if contact_button_location:
+                    pyautogui.click(contact_button_location)
+                    print("Clicked on button using image")
+            except:
+                print("gagal klik foto")
             print(message)
             return "yes",message
         except Exception as e:

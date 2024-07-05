@@ -16,6 +16,9 @@ import requests
 # Import Amicon object
 from scraper import Amicon
 from scraper import AP2T
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from pytz import timezone
 
 
 from post_api import get_gardu
@@ -52,7 +55,9 @@ async def start_amicon(update,context):
     reply_markup = AmiconBot.start()
     await context.bot.send_message(
             chat_id=chat_id, text="Silahkan pilih salah satu", reply_markup=reply_markup)
-
+async def scheduled_task(update,context):
+    await context.bot.send_message(
+            chat_id=1029804860, text="Ini adalah scheduled task")
 async def informasi(update, context):
     chat_id = update.message.chat_id
     [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
@@ -977,7 +982,9 @@ def main():
     application.add_handler(CommandHandler('start_amicon', start_amicon))
     # Run daily basis
     # Membuat scheduler untuk update saldo tunggakan
-    j = application.job_queue
+    scheduler = BackgroundScheduler()
+    LOCAL_TIMEZONE = timezone('Asia/Singapore')
+    scheduler.add_job(scheduled_task,CronTrigger(hour=21, minute=57, timezone=LOCAL_TIMEZONE))
     # Jam 3.30 setiap hari
     # j.run_daily(
     #     update_data_otomatis,

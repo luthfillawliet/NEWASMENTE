@@ -6,7 +6,9 @@ from DataFrame import dataframe
 from FILEMANAGER import filemanager
 import time
 import datetime
+from datetime import time
 import telegram
+from telegram import Bot
 from telegram import ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, filters, JobQueue, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
@@ -18,7 +20,10 @@ from scraper import Amicon
 from scraper import AP2T
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+import pytz
 from pytz import timezone
+import asyncio
+import schedule
 
 
 from post_api import get_gardu
@@ -26,11 +31,15 @@ import logging
 
 pm = Parameter()
 fm = filemanager()
+df = dataframe()
 # enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Create the bot
+bot = Bot(token=pm.tokenbot)
 
 
 async def start(update, context):
@@ -49,15 +58,141 @@ async def start(update, context):
             chat_id=pm.chat_id_admin, text="Chatid tidak dikenal mencoba masuk")
         await context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
+        
+#Scheduled ask predefinition
+
+desired_time = datetime.time(hour=9,minute=26,second=00)  #ATUR WAKTU YANG DI SCHEDULE KAN
+waktulaporanjnmax = datetime.time(hour=10,minute=00,second=00) #Waktu kirim chat laporan JN max
+waktuupdatekemarin = datetime.time(hour=12,minute=00,second=00) #Waktu update realisasi TS kemarin yang dilaporkan
+
+async def your_job_function(context:CallbackContext):
+    current_time = datetime.datetime.now()
+    # Format the time string (optional)
+    formatted_time = current_time.strftime("%H:%M:%S")  # Example: 20:11:13 (hour:minute:second)
+    print(formatted_time)
+    #Mengirim notif bahwa proses update data laporan akan dimulai
+    await context.bot.send_message(
+        chat_id=pm.chat_id_admin, text=f"Memulai mengirim laporan TS dan JN max pada pukul : {formatted_time}")
     
+    # 1. Update data TS P2TL Terlebih dahulu
+    await context.bot.send_message(chat_id=pm.chat_id_admin, text="Memulai Pembuatan Laporan Tagihan Susulan Hari ini")
+    tahun_bulan = dataframe.get_tahun_bulan_sekarang() #jangan lupa jadikan variabel
+    [status,kode_unit_user,message] = df.get_kode_unit_user_tagsus(chat_id=pm.chat_id_admin)
+    if(status == "yes"):
+    #  Ulang sebanyak 3 kali
+        i = 0 #Set jumlah perulangan
+        while i < 3:
+            print ("Percobaan ke -"+str(i))
+            await context.bot.send_message(
+                chat_id=pm.chat_id_admin, text=f"memulai percobaan laporan ke {i+1}")
+            try:
+                [status,message] = Asmente.create_lap_tsp2tl(kode_unit_user = kode_unit_user,tahun_bulan = tahun_bulan)
+                await context.bot.send_message(
+                    chat_id=pm.chat_id_admin, text=message)
+                if(status == "yes"):
+                    #kirim file ke chat
+                    try:
+                        document = open("data//downloads//ReportServlet.xls","rb")
+                        await context.bot.send_document(pm.chat_id_admin,document)
+                        message = "Berhasil kirim File"
+                        print(message)
+                        await context.bot.send_message(
+                            chat_id=pm.chat_id_admin, text=message)
+                        break # Stop ketika sudah berhasil kirm file
+                    except Exception as e:
+                        message = "Gagal kirim file\nMessage Error : \n"+str(e)
+                        await context.bot.send_message(
+                            chat_id=pm.chat_id_admin, text="Gagal kirim file\n"+message)
+                else:
+                    await context.bot.send_message(
+                        chat_id=pm.chat_id_admin, text="Gagal kirim file\n"+message)
+            except:
+                await context.bot.send_message(
+                        chat_id=pm.chat_id_admin, text="Gagal mendownload laporan TS harian"+message)
+                pass
+            i += 1
+    else:
+        await context.bot.send_message(
+            chat_id=pm.chat_id_admin, text="Gagal ambil kode unit\n"+message)
+    # 2. Kirim Screenshoot laporan TS
+    ii = 0
+    while ii <3:
+        await context.bot.send_message(
+                chat_id=pm.chat_id_admin, text=f"Memulai kirim Rekap laporan TS Hari ini percobaan ke {ii+1}")
+        try:
+            [status,message] = Asmente.kirim_report_ts()
+            if(status == "yes"):
+                print(message)
+                await context.bot.send_message(
+                    chat_id=pm.chat_id_admin, text="Berhasil mengupdate Laporan TS P2TL pada spreadsheet")
+                try:
+                    document = open("fotoct//screenshot_ts.png","rb")
+                    await context.bot.send_document(pm.chat_id_admin,document)
+                    message = "Berhasil kirim Foto"
+                    print(message)
+                    await context.bot.send_message(
+                        chat_id=pm.chat_id_admin, text=message)
+                    break
+                except Exception as e:
+                    message = "Gagal kirim foto\nMessage Error : \n"+str(e)
+                    print(message)
+                    await context.bot.send_message(
+                        chat_id=pm.chat_id_admin, text=message)
+            else:
+                await context.bot.send_message(
+                    chat_id=pm.chat_id_admin, text=message)
+        except:
+            pass
+        ii += 1
+    #Proses pengiriman ke WA
+    incoming_messages = dataframe.read_from_googlesheet_to_df(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",Cell="M3")
+    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max","Memulai mengirim laporan otomatis pada pukul : "+formatted_time)
+    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",incoming_messages)
+    await context.bot.send_message(
+            chat_id=pm.chat_id_admin, text=incoming_messages)
+    
+async def kirim_laporan_jnmax(context:CallbackContext):
+    current_time = datetime.datetime.now()
+    # Format the time string (optional)
+    formatted_time = current_time.strftime("%H:%M:%S")  # Example: 20:11:13 (hour:minute:second)
+    print(formatted_time)
+    #Mengirim notif bahwa proses update data laporan akan dimulai
+    await context.bot.send_message(
+        chat_id=pm.chat_id_admin, text=f"Memulai mengirim laporan JN max pada pukul : {formatted_time}")
+    #Proses pengiriman ke WA
+    incoming_messages = dataframe.read_from_googlesheet_to_df(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",Cell="M3")
+    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max","Memulai mengirim laporan otomatis pada pukul : "+formatted_time)
+    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",incoming_messages)
+    await context.bot.send_message(
+        chat_id=pm.chat_id_admin, text=incoming_messages)
+
+async def update_realisasi_kemarin(context:CallbackContext):
+    current_time = datetime.datetime.now()
+    # Format the time string (optional)
+    formatted_time = current_time.strftime("%H:%M:%S")  # Example: 20:11:13 (hour:minute:second)
+    print(formatted_time)
+    #Mengirim notif bahwa proses update data laporan akan dimulai
+    await context.bot.send_message(
+        chat_id=pm.chat_id_admin, text=f"Memulai update realisasi TS Kemarin : {formatted_time}")
+    try:
+        dataframe.update_realisasits_kemarin(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",CellRead="K5",CellWrite="H13")
+        await context.bot.send_message(
+            chat_id=pm.chat_id_admin, text=f"Berhasil Update data")
+    except Exception as e:
+        await context.bot.send_message(
+            chat_id=pm.chat_id_admin, text=f"Gagal Update data\nMessage Error : {str(e)}")
+    
+    
+
 async def start_amicon(update,context):
     chat_id = update.message.chat_id
     reply_markup = AmiconBot.start()
     await context.bot.send_message(
             chat_id=chat_id, text="Silahkan pilih salah satu", reply_markup=reply_markup)
-async def scheduled_task(update,context):
-    await context.bot.send_message(
-            chat_id=1029804860, text="Ini adalah scheduled task")
+# Function to schedule the message
+# Function to send a message
+
+
 async def informasi(update, context):
     chat_id = update.message.chat_id
     [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
@@ -980,23 +1115,17 @@ def main():
     application.add_handler(CommandHandler('update', update_data))
     # Run Aplikasi si Amicon
     application.add_handler(CommandHandler('start_amicon', start_amicon))
-    # Run daily basis
-    # Membuat scheduler untuk update saldo tunggakan
-    scheduler = BackgroundScheduler()
-    LOCAL_TIMEZONE = timezone('Asia/Singapore')
-    scheduler.add_job(scheduled_task,CronTrigger(hour=21, minute=57, timezone=LOCAL_TIMEZONE))
-    # Jam 3.30 setiap hari
-    # j.run_daily(
-    #     update_data_otomatis,
-    #     days=(0, 1, 2, 3, 4, 5, 6), time=datetime.time(hour=10, minute=39, second=00)
-    # )
-    # Message Handler harus d pasang paling terakhir
+    
+
+    #Message Handler harus d pasang paling terakhir
     application.add_handler(MessageHandler(filters.TEXT, read_command))
     application.add_handler(CallbackQueryHandler(button))
+
+    # Run daily basis
+    j = application.job_queue.run_daily(kirim_laporan_jnmax,time=waktulaporanjnmax)
+    k = application.job_queue.run_daily(update_realisasi_kemarin,time=waktuupdatekemarin)
+
     # Start polling
-    # updater.start_polling()
-    # # Stop
-    # updater.idle()
     application.run_polling()
 
 if __name__ == '__main__':

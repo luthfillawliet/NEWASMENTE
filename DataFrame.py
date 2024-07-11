@@ -6,6 +6,7 @@ from parameter import Parameter
 import gspread #untuk akses google spreadsheet
 from gspread_dataframe import set_with_dataframe
 import datetime
+import time
 pm = Parameter()
 
 
@@ -315,14 +316,14 @@ class dataframe():
             print(message)
             return "no", message, "null"
     def read_laporan_pd():
-        namafile =  'data\\downloads\\EIS\\GV.xls'
+        namafile =  'data\\downloads\\GV.xls'
         try:
             df = pd.read_excel(io=namafile,sheet_name="Sheet",skiprows=0)
             message = "Berhasil baca ReportServlet"
             print(message)
             return "yes",message,df
         except Exception as e:
-            message = "Gagal baca ReportServlet\nMessage Error : \n"+str(e)
+            message = "Gagal baca laporan PD\nMessage Error : \n"+str(e)
             print(message)
             return "no", message, "null"
 # print(df.loc[:,'2'])
@@ -371,6 +372,7 @@ class dataframe():
         gc = gspread.service_account(filename=filepathjson)
         sh = gc.open(GSHEET)
         worksheet = sh.worksheet(TAB_NAME)
+        time.sleep(30)
         val = worksheet.acell(Cell).value
         return val
     def get_nama_sheet_bulan_sekarang():
@@ -388,7 +390,15 @@ class dataframe():
         print(selected_month)
         #return yearnow,monthnow,datenow
         return selected_month
-    
+    def update_realisasits_kemarin(filepathjson,GSHEET,TAB_NAME,CellRead:str,CellWrite:str):
+        gc = gspread.service_account(filename=filepathjson)
+        sh = gc.open(GSHEET)
+        worksheet = sh.worksheet(TAB_NAME)
+        val = worksheet.acell(CellRead).value
+        print("Nilai realisasi hari ini : "+val)
+        worksheet.update(CellWrite,val)
+        time.sleep(5)
+
     def get_tahun_bulan_sekarang():
         # Get the current date and time
         current_date = datetime.datetime.now()

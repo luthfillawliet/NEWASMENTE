@@ -304,6 +304,7 @@ class Asmente():
         else:
             message = "Gagal login"
             return "no", message, 0
+    
     def create_lap_tsp2tl(kode_unit_user : str,tahun_bulan :str):
         #Hapus file report Servlet yang lama
         folder_path = pm.download_ts
@@ -401,7 +402,7 @@ class Asmente():
         time.sleep(30)
         eis.download_tambah_daya()
         time.sleep(60)
-        eis.read_tambah_daya()
+        #eis.read_tambah_daya() #Tidak perlu buka filenya
         #read xls GV dan simpan data dalam bentuk dataframe (df)
         [status,messagge,df] = dataframe.read_laporan_pd()
         message1 = message
@@ -409,7 +410,7 @@ class Asmente():
         if(status == "yes"):
             print("Memulai write ke google sheet")
             link = "https://docs.google.com/spreadsheets/d/1RZqRzACG8IVWVvScjNQ0KdMPVlXw0xpLseCUfjvbvpc/edit?usp=sharing"
-            namagsheet = "NEW Monitoring Tindak Lanjut JN Max UP3 MS 2024"
+            namagsheet = "NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024"
             tabname = "EIS"
             [status,messagge] = dataframe.write_df_to_google_sheet(filepathjson=pm.filepathjson,GSHEET=namagsheet,TAB_NAME=tabname,df=df,first_row=1,first_col=1)
             print(messagge)
@@ -428,7 +429,7 @@ class Asmente():
         wa.open_wa()
         time.sleep(3)
         [status,message] = wa.search_contact(contact_target)
-        time.sleep(1)
+        time.sleep(3)
         print(message)
         [status,message] = wa.send_wa_messages(incoming_message)
         time.sleep(5)

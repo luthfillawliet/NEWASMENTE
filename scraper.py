@@ -1757,7 +1757,6 @@ class EIS:
         chrome_options.add_argument("--allow-running-insecure-content")
         chrome_options.add_argument("--disable-web-security")
         chrome_options.add_argument(user_options)
-        chrome_options.add_argument("--profile-directory=Profile 12")
         service = Service(executable_path=filepathchromedriver)
         #Setting parameter service untuk versi yang baru
         self.driver = webdriver.Chrome(

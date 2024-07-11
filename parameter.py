@@ -80,7 +80,7 @@ class Parameter:
         # lokasi download default
         self.files_foto_ct = 'fotoct\\fotoct.png'
         self.files_foto_kct = 'fotoct\\foto_kct.png'
-        self.download_dir = 'data\\downloads\\EIS'
+        self.download_dir = 'data\\downloads'
         #lokasi download tagsus
         self.download_ts = 'data\\downloads'
         self.namafiletagsus = "ReportServlet.xls"

@@ -391,7 +391,7 @@ class Asmente():
         password_eis = "Panjang@1025"
         pm = Parameter()
         #Hapus file yang sebelumnya
-        [status,message] = filemanager.delete_file("data\\downloads\\EIS","GV.xls")
+        [status,message] = filemanager.delete_file("data\\downloads","GV.xls")
         print(status)
         print(message)
         eis = EIS(filepathchromedriver=pm.filepathchromedriver,download_dir=pm.download_dir,user_options=pm.user_options,username_eis=username_eis,password_eis=password_eis)

@@ -319,7 +319,7 @@ class dataframe():
         namafile =  'data\\downloads\\GV.xls'
         try:
             df = pd.read_excel(io=namafile,sheet_name="Sheet",skiprows=0)
-            message = "Berhasil baca ReportServlet"
+            message = "Berhasil baca GV"
             print(message)
             return "yes",message,df
         except Exception as e:
@@ -390,6 +390,7 @@ class dataframe():
         print(selected_month)
         #return yearnow,monthnow,datenow
         return selected_month
+    #Write nilai kumulatif terakhir pada saat melaporkan laporan pada H-1
     def update_realisasits_kemarin(filepathjson,GSHEET,TAB_NAME,CellRead:str,CellWrite:str):
         gc = gspread.service_account(filename=filepathjson)
         sh = gc.open(GSHEET)
@@ -398,6 +399,7 @@ class dataframe():
         print("Nilai realisasi hari ini : "+val)
         worksheet.update(CellWrite,val)
         time.sleep(5)
+
 
     def get_tahun_bulan_sekarang():
         # Get the current date and time

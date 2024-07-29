@@ -166,6 +166,22 @@ async def kirim_laporan_jnmax(context:CallbackContext):
     await context.bot.send_message(
         chat_id=pm.chat_id_admin, text=incoming_messages)
 
+async def kirim_laporan_jnmax_manual(update,context:CallbackContext):
+    chat_id = update.message.chat_id
+    current_time = datetime.datetime.now()
+    # Format the time string (optional)
+    formatted_time = current_time.strftime("%H:%M:%S")  # Example: 20:11:13 (hour:minute:second)
+    print(formatted_time)
+    #Mengirim notif bahwa proses update data laporan akan dimulai
+    await context.bot.send_message(
+        chat_id=chat_id, text=f"Memulai mengirim laporan JN max pada pukul : {formatted_time}")
+    #Proses pengiriman ke WA
+    incoming_messages = dataframe.read_from_googlesheet_to_df(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",Cell="M3")
+    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max","Memulai mengirim laporan otomatis pada pukul : "+formatted_time)
+    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",incoming_messages)
+    await context.bot.send_message(
+        chat_id=chat_id, text=incoming_messages)
+
 async def update_realisasi_kemarin(context:CallbackContext):
     current_time = datetime.datetime.now()
     # Format the time string (optional)
@@ -174,14 +190,22 @@ async def update_realisasi_kemarin(context:CallbackContext):
     #Mengirim notif bahwa proses update data laporan akan dimulai
     await context.bot.send_message(
         chat_id=pm.chat_id_admin, text=f"Memulai update realisasi TS Kemarin : {formatted_time}")
+    #Update realisasi penetapan P1 kemarin (H-1)
     try:
         dataframe.update_realisasits_kemarin(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",CellRead="K5",CellWrite="H13")
         await context.bot.send_message(
-            chat_id=pm.chat_id_admin, text=f"Berhasil Update data")
+            chat_id=pm.chat_id_admin, text=f"Berhasil Update data penetapan P1 H-1")
     except Exception as e:
         await context.bot.send_message(
-            chat_id=pm.chat_id_admin, text=f"Gagal Update data\nMessage Error : {str(e)}")
-    
+            chat_id=pm.chat_id_admin, text=f"Gagal Update data P1\nMessage Error : {str(e)}")
+    #Update realisasi PD Kemarin (H-1)
+    try:
+        dataframe.update_realisasits_kemarin(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",CellRead="K9",CellWrite="H20")
+        await context.bot.send_message(
+            chat_id=pm.chat_id_admin, text=f"Berhasil Update data Perubahan Daya H-1")
+    except Exception as e:
+        await context.bot.send_message(
+            chat_id=pm.chat_id_admin, text=f"Gagal Update data P1\nMessage Error : {str(e)}")
     
 
 async def start_amicon(update,context):
@@ -1110,6 +1134,7 @@ def main():
     # Mengecek kesiapan bot
     application.add_handler(CommandHandler(
         'updateuser', updateuser))
+    application.add_handler(CommandHandler('kirim_laporan_jnmax',kirim_laporan_jnmax_manual))
     # Run Aplikasi si gadis
     application.add_handler(CommandHandler('start_sigadis', start_sigadis))
     application.add_handler(CommandHandler('update', update_data))

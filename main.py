@@ -24,6 +24,7 @@ import pytz
 from pytz import timezone
 import asyncio
 import schedule
+import locale
 
 
 from post_api import get_gardu
@@ -62,7 +63,8 @@ async def start(update, context):
 #Scheduled ask predefinition
 
 desired_time = datetime.time(hour=9,minute=26,second=00)  #ATUR WAKTU YANG DI SCHEDULE KAN
-waktulaporanjnmax = datetime.time(hour=10,minute=00,second=00) #Waktu kirim chat laporan JN max
+waktuupdatep2tl = datetime.time(hour=10,minute=00,second=00) #Waktu update realisasi P2TL
+waktulaporanjnmax = datetime.time(hour=11,minute=00,second=00) #Waktu kirim chat laporan JN max
 waktuupdatekemarin = datetime.time(hour=12,minute=00,second=00) #Waktu update realisasi TS kemarin yang dilaporkan
 
 async def your_job_function(context:CallbackContext):
@@ -151,36 +153,111 @@ async def your_job_function(context:CallbackContext):
     await context.bot.send_message(
             chat_id=pm.chat_id_admin, text=incoming_messages)
     
+async def update_realisasi_P2TL(context:CallbackContext):
+    current_time = datetime.datetime.now()
+    # Format the time string (optional)
+    formatted_time = current_time.strftime("%H:%M:%S")  # Example: 20:11:13 (hour:minute:second)
+    print(formatted_time)
+    #Get current number of date
+    # Set the locale to Indonesian for the month name
+    locale.setlocale(locale.LC_TIME, 'id_ID.UTF-8')
+    # Get the current date
+    current_date = datetime.datetime.now()
+    # Format the date as "30 Juli 2024"
+    formatted_date = current_date.strftime('%d %B %Y')
+    #Mengirim notif bahwa proses update data laporan P2TL akan dimulai
+    await context.bot.send_message(
+        chat_id=pm.chat_id_laporandalsut, text=f"Memulai mengirim laporan TS P2TL pada pukul : {formatted_time}")
+    df = dataframe()
+    tahun_bulan = dataframe.get_tahun_bulan_sekarang() #jangan lupa jadikan variabel
+    [status,kode_unit_user,message] = df.get_kode_unit_user_tagsus(chat_id=pm.chat_id_admin)
+    if(status == "yes"):
+        [status,message] = Asmente.create_lap_tsp2tl(kode_unit_user = kode_unit_user,tahun_bulan = tahun_bulan)
+        await context.bot.send_message(
+            chat_id=pm.chat_id_laporandalsut, text=message)
+        if(status == "yes"):
+            #kirim file ke chat
+            try:
+                document = open("data//downloads//ReportServlet.xls","rb")
+                await context.bot.send_document(pm.chat_id_laporandalsut,document)
+                message = "Berhasil kirim File"
+                print(message)
+                await context.bot.send_message(
+                    chat_id=pm.chat_id_laporandalsut, text=message)
+            except Exception as e:
+                message = "Gagal kirim file\nMessage Error : \n"+str(e)
+                await context.bot.send_message(
+                    chat_id=pm.chat_id_laporandalsut, text="Gagal kirim file\n"+message)
+        else:
+            await context.bot.send_message(
+                chat_id=pm.chat_id_laporandalsut, text="Gagal kirim file\n"+message)
+    else:
+        await context.bot.send_message(
+            chat_id=pm.chat_id_laporandalsut, text="Gagal ambil kode unit\n"+message)
+
 async def kirim_laporan_jnmax(context:CallbackContext):
     current_time = datetime.datetime.now()
     # Format the time string (optional)
     formatted_time = current_time.strftime("%H:%M:%S")  # Example: 20:11:13 (hour:minute:second)
     print(formatted_time)
+    #Get current number of date
+    # Set the locale to Indonesian for the month name
+    locale.setlocale(locale.LC_TIME, 'id_ID.UTF-8')
+
+    # Get the current date
+    current_date = datetime.datetime.now()
+
+    # Format the date as "30 Juli 2024"
+    formatted_date = current_date.strftime('%d %B %Y')
+
     #Mengirim notif bahwa proses update data laporan akan dimulai
     await context.bot.send_message(
-        chat_id=pm.chat_id_admin, text=f"Memulai mengirim laporan JN max pada pukul : {formatted_time}")
+        chat_id=pm.chat_id_laporandalsut, text=f"Memulai mengirim laporan JN max pada pukul : {formatted_time}")
     #Proses pengiriman ke WA
     incoming_messages = dataframe.read_from_googlesheet_to_df(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",Cell="M3")
-    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max","Memulai mengirim laporan otomatis pada pukul : "+formatted_time)
-    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",incoming_messages)
+    #message = Asmente.wa_sendMessage("Prioritas P2TL JN Max","Memulai mengirim laporan otomatis pada pukul : "+formatted_time)
+    concatenate_report  = "Realisasi Tindak Lanjut Pelanggan 720 JN "+formatted_date+"\n"+"UP3...../Jumlah Tim / Jml P2TL (P1)/ Jml Tambah Daya / Kumulatif P1 / Kumulatif Tambah Daya\n"+incoming_messages
+    #kirim WA ke Grup Prioritas P2TL 720 UP3 Makassar Selatan
+    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",concatenate_report)
+    #Kirim WA ke Grup TIndak Lanjut 720 JN UID
+    message = Asmente.wa_sendMessage("Tindaklanjut pelanggan",concatenate_report)
+    #Kirim laporan ke Bot Telegram
     await context.bot.send_message(
-        chat_id=pm.chat_id_admin, text=incoming_messages)
-
+        chat_id=pm.chat_id_laporandalsut, text=incoming_messages)
+    # Write log data
+    dat = dataframe()
+    dat.log_data(chat_id=pm.chat_id_laporandalsut,
+                    activity="Mengirim Laporan Realisasi Tindak Lanjut JN Max Otomatis", time=str(datetime.datetime.now()))
+    
 async def kirim_laporan_jnmax_manual(update,context:CallbackContext):
     chat_id = update.message.chat_id
     current_time = datetime.datetime.now()
     # Format the time string (optional)
     formatted_time = current_time.strftime("%H:%M:%S")  # Example: 20:11:13 (hour:minute:second)
     print(formatted_time)
+    #Get current number of date
+    # Set the locale to Indonesian for the month name
+    locale.setlocale(locale.LC_TIME, 'id_ID.UTF-8')
+
+    # Get the current date
+    current_date = datetime.datetime.now()
+
+    # Format the date as "30 Juli 2024"
+    formatted_date = current_date.strftime('%d %B %Y')
     #Mengirim notif bahwa proses update data laporan akan dimulai
     await context.bot.send_message(
-        chat_id=chat_id, text=f"Memulai mengirim laporan JN max pada pukul : {formatted_time}")
+        chat_id=pm.chat_id_laporandalsut, text=f"Memulai mengirim laporan JN max pada pukul : {formatted_time}")
     #Proses pengiriman ke WA
     incoming_messages = dataframe.read_from_googlesheet_to_df(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",Cell="M3")
     message = Asmente.wa_sendMessage("Prioritas P2TL JN Max","Memulai mengirim laporan otomatis pada pukul : "+formatted_time)
-    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",incoming_messages)
+    concatenate_report  = f"Realisasi Tindak Lanjut Pelanggan 720 JN\n{formatted_date}\nUP3...../Jumlah Tim / Jml P2TL (P1)/ Jml Tambah Daya / Kumulatif P1 / Kumulatif Tambah Daya\n{incoming_messages}"
+    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",concatenate_report)
     await context.bot.send_message(
-        chat_id=chat_id, text=incoming_messages)
+        chat_id=pm.chat_id_laporandalsut, text=incoming_messages)
+    # Write log data
+    dat = dataframe()
+    dat.log_data(chat_id=pm.chat_id_laporandalsut,
+                    activity="Mengirim Laporan Realisasi Tindak Lanjut JN Max Manual", time=str(datetime.datetime.now()))
 
 async def update_realisasi_kemarin(context:CallbackContext):
     current_time = datetime.datetime.now()
@@ -1149,6 +1226,7 @@ def main():
     # Run daily basis
     j = application.job_queue.run_daily(kirim_laporan_jnmax,time=waktulaporanjnmax)
     k = application.job_queue.run_daily(update_realisasi_kemarin,time=waktuupdatekemarin)
+    l=  application.job_queue.run_daily(update_realisasi_P2TL,time=waktuupdatep2tl)
 
     # Start polling
     application.run_polling()

@@ -71,6 +71,7 @@ class WA:
                     EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[2]/button"))
             )
             sendMessage.click()
+            time.sleep(10)
             message = "Berhasil mengirim chat"
             print(message)
             return "yes",message

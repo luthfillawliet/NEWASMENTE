@@ -52,6 +52,7 @@ class Parameter:
         # chat id luthfil, bisa di ganti disesuaikan dengan admin server
         self.chat_id_admin = 1029804860
         # self.chat_id_admin = 1150570046
+        self.chat_id_laporandalsut = -4146843555
 
         # Setting jika ada perubahan alamat, link atau domain dari aplikasi korporat
         # Link By Pass AP2T (Tidak usah di ubah jika tidak ada perubahan domain ap2t dari pusat)

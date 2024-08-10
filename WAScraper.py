@@ -76,7 +76,7 @@ class WA:
             print(message)
             return "yes",message
         except Exception as e:
-            message = "Gagal mengirim chat\nMessage error : \n"+str(e)
+            message = "Gagal mengirim chat\nMessage error : \n"+str(e) 
             print(message)
             return "no",message
         

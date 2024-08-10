@@ -1298,7 +1298,33 @@ class AP2T:
         print(tahun_bulan)
         try:
             link = "https://ap2t.pln.co.id/BillingTerpusatAP2TNew1-dr/ReportServlet?jenislaporan=getlaporantsgab&report=report/NONREK/rpt_ts_daftar_realisasi_pendapatan_penetapan_ts.xls&unitup=SEMUA&unitap="+\
-                    str(kode_unit_user)+\
+                    str(kode_u
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+    0
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        nit_user)+\
                         "&unitupi=32&jenislap=DAFTAR%20REALISASI%20PENDAPATAN%20PENETAPAN%20TAGIHAN%20SUSULAN%20(TUNAI%20DAN%20ANGSURAN)&thbl="+\
                             str(tahun_bulan)
             print("Membuka halaman AP2T")

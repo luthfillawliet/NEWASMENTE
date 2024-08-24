@@ -15,6 +15,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import Update # type: ignore
 from telegram.ext import CallbackContext, Application # type: ignore
 import requests
+import updatelaporan
 # Import Amicon object
 from scraper import Amicon
 from scraper import AP2T
@@ -65,7 +66,8 @@ async def start(update, context):
 desired_time = datetime.time(hour=9,minute=26,second=00)  #ATUR WAKTU YANG DI SCHEDULE KAN
 waktuupdatep2tl = datetime.time(hour=10,minute=00,second=00) #Waktu update realisasi P2TL
 waktulaporanjnmax = datetime.time(hour=11,minute=00,second=00) #Waktu kirim chat laporan JN max
-waktuupdatekemarin = datetime.time(hour=12,minute=00,second=00) #Waktu update realisasi TS kemarin yang dilaporkan
+waktuupdatespreadsheetuid = datetime.time(hour=12,minute=00,second=00)
+waktuupdatekemarin = datetime.time(hour=12,minute=30,second=00) #Waktu update realisasi TS kemarin yang dilaporkan
 
 async def your_job_function(context:CallbackContext):
     current_time = datetime.datetime.now()
@@ -188,6 +190,27 @@ async def update_realisasi_P2TL(context:CallbackContext):
                 message = "Gagal kirim file\nMessage Error : \n"+str(e)
                 await context.bot.send_message(
                     chat_id=pm.chat_id_laporandalsut, text="Gagal kirim file\n"+message)
+            
+            #kirim laporan
+            [status,message] = Asmente.kirim_report_ts()
+            await context.bot.send_message(
+                    chat_id = pm.chat_id_laporandalsut , text="Berhasil mengupdate Laporan TS P2TL pada spreadsheet")
+            try:
+                document = open("fotoct//screenshot_ts.png","rb")
+                await context.bot.send_document(pm.chat_id_laporandalsut,document)
+                message = "Berhasil kirim Foto"
+                print(message)
+                await context.bot.send_message(
+                    chat_id=pm.chat_id_laporandalsut, text=message)
+                # Write log data
+                dat = dataframe()
+                dat.log_data(chat_id=pm.chat_id_laporandalsut,
+                                activity="Mengupdate laporan TS P2TL Sesuai Jadwal", time=str(datetime.datetime.now()))
+            except Exception as e:
+                message = "Gagal kirim foto\nMessage Error : \n"+str(e)
+                print(message)
+                await context.bot.send_message(
+                    chat_id=pm.chat_id_laporandalsut, text=message)
         else:
             await context.bot.send_message(
                 chat_id=pm.chat_id_laporandalsut, text="Gagal kirim file\n"+message)
@@ -217,8 +240,6 @@ async def kirim_laporan_jnmax(context:CallbackContext):
     incoming_messages = dataframe.read_from_googlesheet_to_df(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",Cell="M3")
     #message = Asmente.wa_sendMessage("Prioritas P2TL JN Max","Memulai mengirim laporan otomatis pada pukul : "+formatted_time)
     concatenate_report  = "Realisasi Tindak Lanjut Pelanggan 720 JN "+formatted_date+"\n"+"UP3...../Jumlah Tim / Jml P2TL (P1)/ Jml Tambah Daya / Kumulatif P1 / Kumulatif Tambah Daya\n"+incoming_messages
-    #kirim WA ke Grup Prioritas P2TL 720 UP3 Makassar Selatan
-    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",concatenate_report)
     #Kirim WA ke Grup TIndak Lanjut 720 JN UID
     message = Asmente.wa_sendMessage("Tindaklanjut pelanggan",concatenate_report)
     #Kirim laporan ke Bot Telegram
@@ -259,6 +280,47 @@ async def kirim_laporan_jnmax_manual(update,context:CallbackContext):
     dat.log_data(chat_id=pm.chat_id_laporandalsut,
                     activity="Mengirim Laporan Realisasi Tindak Lanjut JN Max Manual", time=str(datetime.datetime.now()))
 
+async def update_spreadsheet_jnmax_uid(context:CallbackContext):
+    current_time = datetime.datetime.now()
+    # Format the time string (optional)
+    formatted_time = current_time.strftime("%H:%M:%S")  # Example: 20:11:13 (hour:minute:second)
+    print(formatted_time)
+    #Mengirim notif bahwa proses update data laporan akan dimulai
+    await context.bot.send_message(
+        chat_id=pm.chat_id_laporandalsut, text=f"Memulai update Spreadsheet JN max UID : {formatted_time}")
+    
+    #Eksekusi update dengan menjalankan Appscript
+    status = updatelaporan.run_spreadsheet_task()
+    if(status):
+        #kirim foto screenshoot
+        updatelaporan.open_dashboard_uid()
+        try:
+            resp = requests.post("https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(pm.chat_id_laporandalsut), files=fm.send_photos("fotoct\\update_uid.png"))
+        except:
+            await context.bot.send_message(
+                chat_id=pm.chat_id_laporandalsut, text=f"Gagal mengirim foto rekap")
+    else:
+        await context.bot.send_message(
+                chat_id=pm.chat_id_laporandalsut, text=f"Gagal mengupdate data JN Max")
+
+    # Write log data
+    dat = dataframe()
+    dat.log_data(chat_id=pm.chat_id_laporandalsut,
+                    activity="mengupdate laporan spreadsheet monitoring JN Max UID Otomatis", time=str(datetime.datetime.now()))
+
+async def update_spreadsheet_jnmax_uid_manual(update,context:CallbackContext):
+    current_time = datetime.datetime.now()
+    # Format the time string (optional)
+    formatted_time = current_time.strftime("%H:%M:%S")  # Example: 20:11:13 (hour:minute:second)
+    print(formatted_time)
+    #Mengirim notif bahwa proses update data laporan akan dimulai
+    await context.bot.send_message(
+        chat_id=pm.chat_id_laporandalsut, text=f"Memulai update Spreadsheet JN max UID : {formatted_time}")
+    updatelaporan.run_spreadsheet_task()
+    # Write log data
+    dat = dataframe()
+    dat.log_data(chat_id=pm.chat_id_laporandalsut,
+                    activity="mengupdate laporan spreadsheet monitoring JN Max UID Manual", time=str(datetime.datetime.now()))
 async def update_realisasi_kemarin(context:CallbackContext):
     current_time = datetime.datetime.now()
     # Format the time string (optional)
@@ -266,23 +328,27 @@ async def update_realisasi_kemarin(context:CallbackContext):
     print(formatted_time)
     #Mengirim notif bahwa proses update data laporan akan dimulai
     await context.bot.send_message(
-        chat_id=pm.chat_id_admin, text=f"Memulai update realisasi TS Kemarin : {formatted_time}")
+        chat_id=pm.chat_id_laporandalsut, text=f"Memulai update realisasi TS Kemarin : {formatted_time}")
     #Update realisasi penetapan P1 kemarin (H-1)
     try:
         dataframe.update_realisasits_kemarin(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",CellRead="K5",CellWrite="H13")
         await context.bot.send_message(
-            chat_id=pm.chat_id_admin, text=f"Berhasil Update data penetapan P1 H-1")
+            chat_id=pm.chat_id_laporandalsut, text=f"Berhasil Update data penetapan P1 H-1")
     except Exception as e:
         await context.bot.send_message(
-            chat_id=pm.chat_id_admin, text=f"Gagal Update data P1\nMessage Error : {str(e)}")
+            chat_id=pm.chat_id_laporandalsut, text=f"Gagal Update data P1\nMessage Error : {str(e)}")
     #Update realisasi PD Kemarin (H-1)
     try:
-        dataframe.update_realisasits_kemarin(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",CellRead="K9",CellWrite="H20")
+        dataframe.update_realisasits_kemarin(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",CellRead="K9",CellWrite="H18")
         await context.bot.send_message(
-            chat_id=pm.chat_id_admin, text=f"Berhasil Update data Perubahan Daya H-1")
+            chat_id=pm.chat_id_laporandalsut, text=f"Berhasil Update data Perubahan Daya H-1")
     except Exception as e:
         await context.bot.send_message(
-            chat_id=pm.chat_id_admin, text=f"Gagal Update data P1\nMessage Error : {str(e)}")
+            chat_id=pm.chat_id_laporandalsut, text=f"Gagal Update data P1\nMessage Error : {str(e)}")
+    # Write log data
+    dat = dataframe()
+    dat.log_data(chat_id=pm.chat_id_laporandalsut,
+                    activity="mengupdate Realisasi H-1 P1 dan PD", time=str(datetime.datetime.now()))
     
 
 async def start_amicon(update,context):
@@ -329,7 +395,7 @@ async def informasi(update, context):
         await context.bot.send_message(
             chat_id=pm.chat_id_admin, text=str(chat_id))
 
-async def updateuser(update,context):
+async def updateuser(update,context):         
     chat_id = update.message.chat_id
     [status, message] = Asmente.is_user_authenticated(chat_id=chat_id)
     if (status == "yes"):
@@ -895,7 +961,7 @@ async def read_command(update, context):
                 await context.bot.send_message(
                         chat_id=chat_id, text="Gagal kirim file\n"+message)
         #KIRIM LAPORAN EXCEL TAMBAH DAYA
-        elif((update.message.text[:9] == "laporanpd")):
+        elif((update.message.text[:9] == "laporanpd") or (update.message.text[:9] == "Laporanpd")):
             await context.bot.send_message(chat_id=chat_id,text="Memulai mengupdate laporan PD dari EIS")
             message_update = Asmente.update_data_pd()
             await context.bot.send_message(chat_id=chat_id,text=message_update)
@@ -1212,6 +1278,8 @@ def main():
     application.add_handler(CommandHandler(
         'updateuser', updateuser))
     application.add_handler(CommandHandler('kirim_laporan_jnmax',kirim_laporan_jnmax_manual))
+    #Run update Spreadsheet Monitoring JN max UID
+    application.add_handler(CommandHandler('update_spreadsheet_jnmax_uid',update_spreadsheet_jnmax_uid_manual))
     # Run Aplikasi si gadis
     application.add_handler(CommandHandler('start_sigadis', start_sigadis))
     application.add_handler(CommandHandler('update', update_data))
@@ -1226,7 +1294,9 @@ def main():
     # Run daily basis
     j = application.job_queue.run_daily(kirim_laporan_jnmax,time=waktulaporanjnmax)
     k = application.job_queue.run_daily(update_realisasi_kemarin,time=waktuupdatekemarin)
-    l=  application.job_queue.run_daily(update_realisasi_P2TL,time=waktuupdatep2tl)
+    l = application.job_queue.run_daily(update_spreadsheet_jnmax_uid,time=waktuupdatespreadsheetuid)
+    m = application.job_queue.run_daily(update_realisasi_P2TL,time=waktuupdatep2tl)
+    
 
     # Start polling
     application.run_polling()

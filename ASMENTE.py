@@ -388,7 +388,7 @@ class Asmente():
 
     def update_data_pd():
         username_eis = "94171287ZY"
-        password_eis = "Panjang@1026"
+        password_eis = "Panjang@1027"
         pm = Parameter()
         #Hapus file yang sebelumnya
         [status,message] = filemanager.delete_file("data\\downloads","GV.xls")

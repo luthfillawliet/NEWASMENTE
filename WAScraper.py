@@ -44,7 +44,7 @@ class WA:
             time.sleep(3)
             contact_button_image_path = "data\\btn_wa\\"+contact_name+".png"
             try:
-                contact_button_location = pyautogui.locateCenterOnScreen(contact_button_image_path, confidence=0.8)
+                contact_button_location = pyautogui.locateCenterOnScreen(contact_button_image_path, confidence=0.7)
                 message  = "Berhasil menemukan contact"
                 if contact_button_location:
                     pyautogui.click(contact_button_location)

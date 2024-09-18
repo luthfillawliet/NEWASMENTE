@@ -63,10 +63,6 @@ def run_spreadsheet_task():
         # Menggunakan pyautogui untuk klik sub-sub-menu yang memiliki aria-activedescendant="f1bjz5:1yz" atau aria-own="f1bjz5:1yz"
         sub_sub_menu_image = "data\\btn_wa\\fungsiscrap.png"  # Ganti dengan path ke file gambar screenshot Anda
         sub_sub_menu_location = pyautogui.locateCenterOnScreen(image=sub_sub_menu_image,confidence=0.7)
-
-        #Take Screenshoot
-        driver.save_screenshot(pm.filepathct+"update_uid.png")
-        time.sleep(5)
         
         if sub_sub_menu_location:
             pyautogui.click(sub_sub_menu_location)
@@ -105,6 +101,10 @@ def open_dashboard_uid():
         driver.get(SPREADSHEET_URL)
 
         # Tunggu halaman sepenuhnya dimuat
-        driver.implicitly_wait(5)  # Tunggu hingga 60 detik untuk elemen dimuat
+        driver.implicitly_wait(10)  # Tunggu hingga 60 detik untuk elemen dimuat
+        pyautogui.scroll(1)
+        #Take Screenshoot
+        driver.save_screenshot(pm.filepathct+"update_uid.png")
+        time.sleep(5)
     except Exception as e:
         print(f"Terjadi kesalahan: {e}")

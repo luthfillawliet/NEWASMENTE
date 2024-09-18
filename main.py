@@ -316,7 +316,18 @@ async def update_spreadsheet_jnmax_uid_manual(update,context:CallbackContext):
     #Mengirim notif bahwa proses update data laporan akan dimulai
     await context.bot.send_message(
         chat_id=pm.chat_id_laporandalsut, text=f"Memulai update Spreadsheet JN max UID : {formatted_time}")
-    updatelaporan.run_spreadsheet_task()
+    status = updatelaporan.run_spreadsheet_task()
+    if(status):
+        #kirim foto screenshoot
+        updatelaporan.open_dashboard_uid()
+        try:
+            resp = requests.post("https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(pm.chat_id_laporandalsut), files=fm.send_photos("fotoct\\update_uid.png"))
+        except:
+            await context.bot.send_message(
+                chat_id=pm.chat_id_laporandalsut, text=f"Gagal mengirim foto rekap")
+    else:
+        await context.bot.send_message(
+                chat_id=pm.chat_id_laporandalsut, text=f"Gagal mengupdate data JN Max")
     # Write log data
     dat = dataframe()
     dat.log_data(chat_id=pm.chat_id_laporandalsut,
@@ -1292,9 +1303,9 @@ def main():
     application.add_handler(CallbackQueryHandler(button))
 
     # Run daily basis
-    j = application.job_queue.run_daily(kirim_laporan_jnmax,time=waktulaporanjnmax)
+    #j = application.job_queue.run_daily(kirim_laporan_jnmax,time=waktulaporanjnmax)
     k = application.job_queue.run_daily(update_realisasi_kemarin,time=waktuupdatekemarin)
-    l = application.job_queue.run_daily(update_spreadsheet_jnmax_uid,time=waktuupdatespreadsheetuid)
+    #l = application.job_queue.run_daily(update_spreadsheet_jnmax_uid,time=waktuupdatespreadsheetuid)
     m = application.job_queue.run_daily(update_realisasi_P2TL,time=waktuupdatep2tl)
     
 

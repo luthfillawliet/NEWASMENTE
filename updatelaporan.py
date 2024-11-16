@@ -10,7 +10,7 @@ from parameter import Parameter
 from FILEMANAGER import filemanager
 pm = Parameter()
 
-def run_spreadsheet_task():
+def run_spreadsheet_task(spredsheet_url:str):
     user_data = "user-data-dir=C:\\Users\\Core i7\\AppData\\Local\\Google\\Chrome\\User Data"
     options = webdriver.ChromeOptions()
     options.add_experimental_option("prefs", {
@@ -21,7 +21,7 @@ def run_spreadsheet_task():
   
 
     # URL Spreadsheet Google Anda
-    SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1YLahMzMHne2g_dB7t_Vc5jMY1Zn7ZBoEUfdDWKzl-iw/edit?gid=1666680073#gid=1666680073"
+    SPREADSHEET_URL = spredsheet_url
 
     # Inisialisasi WebDriver dengan opsi
     service = Service(executable_path=pm.filepathchromedriver)
@@ -66,6 +66,8 @@ def run_spreadsheet_task():
         
         if sub_sub_menu_location:
             pyautogui.click(sub_sub_menu_location)
+            print("berhasil click google script")
+            time.sleep(5)
         else:
             print("Gambar sub-sub-menu 'fungsi' tidak ditemukan di layar.")
         #Tutup driver
@@ -80,7 +82,7 @@ def run_spreadsheet_task():
 
     
 
-def open_dashboard_uid():
+def open_dashboard_uid(spreadsheet_url :str):
     user_data = "user-data-dir=C:\\Users\\Core i7\\AppData\\Local\\Google\\Chrome\\User Data"
     options = webdriver.ChromeOptions()
     options.add_experimental_option("prefs", {
@@ -89,7 +91,7 @@ def open_dashboard_uid():
     options.add_argument(user_data)
 
     # URL Spreadsheet Google Anda
-    SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1YLahMzMHne2g_dB7t_Vc5jMY1Zn7ZBoEUfdDWKzl-iw/edit?gid=519149646#gid=519149646"
+    SPREADSHEET_URL = spreadsheet_url
     # Inisialisasi WebDriver dengan opsi
     service = Service(executable_path=pm.filepathchromedriver)
     #Setting parameter service untuk versi yang baru

@@ -52,7 +52,7 @@ def kirim_pesan(nomor_wa, nama, pesan):
         time.sleep(1)
 
         #Menyalin path lokasi gambar/image
-        file_path = r"C:\Users\CORE i7\Documents\GitHub\NEWASMENTE\data\downloads\WA_Blast-main\sebaran.png" # Ubah sesuai path yang diinginkan
+        file_path = r"C:\Users\CORE i7\Documents\GitHub\NEWASMENTE\fotoct\screenshot_ts.png" # Ubah sesuai path yang diinginkan
         pyperclip.copy(file_path)
         pyautogui.sleep(2)
         pyautogui.hotkey("ctrl", "v")

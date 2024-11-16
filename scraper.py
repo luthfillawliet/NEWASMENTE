@@ -1523,6 +1523,12 @@ class AP2T:
             message = "Gagal download FIle TUL 309 ke directory"
             return "no", message+"Error Message : "+str(e)
         
+    def open_infoagenda(self,index:int = 0,nomortabdefault: int = 1,nomor_id_pencarian:str = 0):
+        infoagendapage = "https://ap2t.pln.co.id/ap2t/frm_infoAgenda.aspx"
+        # Buka Tab baru
+        self.driver.execute_script("window.open('"+infoagendapage+"');")
+        time.sleep(5)  # Bisa di ubah sesuai kebutuhan
+        print("Berhasil buka tab permohonan pengaduan")
 class ACMT:
     def __init__(self, filepatchromedriver, download_dir, user_options, url_acmt):
         pm = Parameter()

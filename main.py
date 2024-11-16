@@ -201,11 +201,20 @@ async def update_realisasi_P2TL(context:CallbackContext):
                 message = "Berhasil kirim Foto"
                 print(message)
                 await context.bot.send_message(
-                    chat_id=pm.chat_id_laporandalsut, text=message)
+                    chat_id=pm.chat_id_laporandalsut, text=message) 
                 # Write log data
                 dat = dataframe()
                 dat.log_data(chat_id=pm.chat_id_laporandalsut,
                                 activity="Mengupdate laporan TS P2TL Sesuai Jadwal", time=str(datetime.datetime.now()))
+                try:
+                    print("Memulai mengirim ke WA")
+                    # Get the current date
+                    current_date = datetime.datetime.now()
+                    formatted_date = current_date.strftime('%d %B %Y')
+                    concatenate_report = "Laporan Realisasi P2TL "+formatted_date
+                    Asmente.kirimwa_lapp2tl(contact_target="Pejuang Susut",image_location_path="C:\\Users\\CORE i7\\Documents\\GitHub\\NEWASMENTE\\fotoct\\screenshot_ts.png",concatenate_report = concatenate_report)
+                except Exception as e:
+                    message = "Gagal kirim Gambar pada WA"
             except Exception as e:
                 message = "Gagal kirim foto\nMessage Error : \n"+str(e)
                 print(message)
@@ -270,7 +279,7 @@ async def kirim_laporan_jnmax_manual(update,context:CallbackContext):
         chat_id=pm.chat_id_laporandalsut, text=f"Memulai mengirim laporan JN max pada pukul : {formatted_time}")
     #Proses pengiriman ke WA
     incoming_messages = dataframe.read_from_googlesheet_to_df(filepathjson=pm.filepathjson,GSHEET="NEW Monitoring Tindak Lanjut Harian JN Max UP3 MS 2024",TAB_NAME="DB",Cell="M3")
-    message = Asmente.wa_sendMessage("Prioritas P2TL JN Max","Memulai mengirim laporan otomatis pada pukul : "+formatted_time)
+    message = Asmente.wa_sendMessage("Pejuang Susut","Memulai mengirim laporan otomatis pada pukul : "+formatted_time)
     concatenate_report  = f"Realisasi Tindak Lanjut Pelanggan 720 JN\n{formatted_date}\nUP3...../Jumlah Tim / Jml P2TL (P1)/ Jml Tambah Daya / Kumulatif P1 / Kumulatif Tambah Daya\n{incoming_messages}"
     message = Asmente.wa_sendMessage("Prioritas P2TL JN Max",concatenate_report)
     await context.bot.send_message(
@@ -290,10 +299,10 @@ async def update_spreadsheet_jnmax_uid(context:CallbackContext):
         chat_id=pm.chat_id_laporandalsut, text=f"Memulai update Spreadsheet JN max UID : {formatted_time}")
     
     #Eksekusi update dengan menjalankan Appscript
-    status = updatelaporan.run_spreadsheet_task()
+    status = updatelaporan.run_spreadsheet_task("https://docs.google.com/spreadsheets/d/1th2MtPxD7Fze2wYcEow9xWygPXfkxUqtOQ6BQNAmhQk/edit?gid=1886787570#gid=1886787570")
     if(status):
         #kirim foto screenshoot
-        updatelaporan.open_dashboard_uid()
+        updatelaporan.open_dashboard_uid("https://docs.google.com/spreadsheets/d/1th2MtPxD7Fze2wYcEow9xWygPXfkxUqtOQ6BQNAmhQk/edit?gid=1125177309#gid=1125177309")
         try:
             resp = requests.post("https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(pm.chat_id_laporandalsut), files=fm.send_photos("fotoct\\update_uid.png"))
         except:
@@ -316,10 +325,10 @@ async def update_spreadsheet_jnmax_uid_manual(update,context:CallbackContext):
     #Mengirim notif bahwa proses update data laporan akan dimulai
     await context.bot.send_message(
         chat_id=pm.chat_id_laporandalsut, text=f"Memulai update Spreadsheet JN max UID : {formatted_time}")
-    status = updatelaporan.run_spreadsheet_task()
+    status = updatelaporan.run_spreadsheet_task("https://docs.google.com/spreadsheets/d/1th2MtPxD7Fze2wYcEow9xWygPXfkxUqtOQ6BQNAmhQk/edit?gid=1886787570#gid=1886787570")
     if(status):
         #kirim foto screenshoot
-        updatelaporan.open_dashboard_uid()
+        updatelaporan.open_dashboard_uid("https://docs.google.com/spreadsheets/d/1th2MtPxD7Fze2wYcEow9xWygPXfkxUqtOQ6BQNAmhQk/edit?gid=1125177309#gid=1125177309")
         try:
             resp = requests.post("https://api.telegram.org/bot"+pm.tokenbot+"/sendPhoto?chat_id="+str(pm.chat_id_laporandalsut), files=fm.send_photos("fotoct\\update_uid.png"))
         except:
@@ -520,6 +529,8 @@ async def read_command(update, context):
             else:
                 await context.bot.send_message(
                     chat_id=chat_id, text="Tipe Pencarian tidak ditemukan")
+        # elif ((update.message.text[:10] == "infoagenda" and update.message.text[:10] == "Infoagenda")):
+        #     Asmente.cek_info_agenda(tipe_pencarian="0",nomor_i)
         elif (update.message.text[:8] == "infoacmt" and update.message.text[8:9] == "|" or update.message.text[:8] == "Infoacmt" and update.message.text[8:9] == "|" or update.message.text[:8] == "INFOACMT" and update.message.text[8:9] == "|"):
             await context.bot.send_message(
                 chat_id=chat_id, text="Memulai pengecekan Info pelanggan ACMT idpel : "+update.message.text[9:])
@@ -1303,9 +1314,9 @@ def main():
     application.add_handler(CallbackQueryHandler(button))
 
     # Run daily basis
-    #j = application.job_queue.run_daily(kirim_laporan_jnmax,time=waktulaporanjnmax)
+    j = application.job_queue.run_daily(kirim_laporan_jnmax,time=waktulaporanjnmax)
     k = application.job_queue.run_daily(update_realisasi_kemarin,time=waktuupdatekemarin)
-    #l = application.job_queue.run_daily(update_spreadsheet_jnmax_uid,time=waktuupdatespreadsheetuid)
+    l = application.job_queue.run_daily(update_spreadsheet_jnmax_uid,time=waktuupdatespreadsheetuid)
     m = application.job_queue.run_daily(update_realisasi_P2TL,time=waktuupdatep2tl)
     
 

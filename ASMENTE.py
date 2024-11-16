@@ -85,6 +85,12 @@ class Asmente():
         [status, informasi, message] = ap2t.buka_info_pelanggan(
             tipe_pencarian=tipe_pencarian, nomor_id=nomor_id, link_infopelanggan=link_infopelanggan)
         return status, informasi, message
+    
+    def cek_info_agenda(tipe_pencarian :str,nomor_id_pencarian:str):
+        pm = Parameter()
+        ap2t = AP2T(filepathchromedriver=pm.filepathchromedriver,
+                    filepathenkripsi=pm.filepathenkripsi, download_dir=pm.download_dir, filepathct=pm.filepathct, urlap2t=pm.urlap2t, user_options=pm.user_options)
+        ap2t.open_infoagenda(nomor_id_pencarian=nomor_id_pencarian)
 
     def cek_pembelian_token(id_pelanggan : str):
         pm = Parameter()
@@ -387,8 +393,8 @@ class Asmente():
             return "no",message
 
     def update_data_pd():
-        username_eis = "94171287ZY"
-        password_eis = "Panjang@1027"
+        username_eis = "7293018f"
+        password_eis = "Syukron*05"
         pm = Parameter()
         #Hapus file yang sebelumnya
         [status,message] = filemanager.delete_file("data\\downloads","GV.xls")
@@ -442,6 +448,17 @@ class Asmente():
         status2,message = acmt.scraping_foto_2(idpelanggan=idpelanggan)
         statusrumah,message = acmt.scraping_foto_rumah(idpelanggan=idpelanggan)
         return status1,status2,statusrumah
+
+    def kirimwa_lapp2tl(contact_target:str,image_location_path:str,concatenate_report:str):
+        wa = WA(filepathchromedriver=pm.filepathchromedriver,download_dir=pm.download_dir,user_options=pm.user_options,message="Halo WA",contact="Contact")
+        wa.open_wa()
+        time.sleep(3)
+        [status,message] = wa.search_contact(contact_target)
+        print(status)
+        print(message)
+        time.sleep(3)
+        wa.image_wa_message(image_location_path=image_location_path,message=concatenate_report)
+        time.sleep(5)
 
     #AMICON
     def execute_amicon_not_login_state(idpel:str,amicon):

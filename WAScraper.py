@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 import time
 import pyautogui
+import pyperclip
 from DataFrame import dataframe
 
 class WA:
@@ -28,18 +29,17 @@ class WA:
     def open_wa(self):
         driver = self.driver
         driver.get(self.urlwa)
-        time.sleep(2)
+        time.sleep(5)
 
     def search_contact(self,contact_name:str):
         try:
             #Klik serch contact
-            searched_contact = WebDriverWait(driver=self.driver, timeout=2).until(
-                    EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div/div[2]/div[3]/div/div[1]/div/div[2]/div[2]/div/div[1]/p"))
-            )
-            searched_contact.click()
-            time.sleep(1)
+            cari_image_button = "C:\\Users\\CORE i7\\Documents\\GitHub\\NEWASMENTE\\data\\btn_wa\\Cari.png"
+            cari_image_button = pyautogui.locateCenterOnScreen(cari_image_button, confidence=0.9)
+            pyautogui.click(cari_image_button)
+            time.sleep(3)
             #Masukkan nama yang di cari
-            searched_contact.send_keys(contact_name)
+            pyautogui.write(contact_name)
             print("berhasil ketik nama")
             time.sleep(3)
             contact_button_image_path = "data\\btn_wa\\"+contact_name+".png"
@@ -60,7 +60,7 @@ class WA:
         try:
             #Klik messge box chat
             sendMessage = WebDriverWait(driver=self.driver, timeout=2).until(
-                    EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p"))
+                    EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div/div[2]/div[4]/div/footer/div[1]/div/span/div/div[2]/div[1]/div/div[1]"))
             )
             sendMessage.click()
             #Masukkan chat
@@ -68,7 +68,7 @@ class WA:
             time.sleep(1)
             #Klik tombol kirim chat
             sendMessage = WebDriverWait(driver=self.driver, timeout=2).until(
-                    EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div/div[2]/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[2]/button"))
+                    EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div/div[2]/div[4]/div/footer/div[1]/div/span/div/div[2]/div[2]/button"))
             )
             sendMessage.click()
             time.sleep(10)
@@ -80,3 +80,58 @@ class WA:
             print(message)
             return "no",message
         
+    def image_wa_message(self,image_location_path:str,message : str):
+        try:
+            driver = self.driver
+            WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.XPATH, '//div[@class="x1hx0egp x6ikm8r x1odjw0f x1k6rcq7 x6prxxf"][@data-tab="10"]'))
+            )
+            time.sleep(2)
+
+            # Tekan tombol Enter untuk mengirim pesan
+            message_box = driver.find_element(By.XPATH, '//div[@class="x1hx0egp x6ikm8r x1odjw0f x1k6rcq7 x6prxxf"][@data-tab="10"]')
+
+            #Klik logo attach
+            x, y = pyautogui.locateCenterOnScreen("img/lampir.png", confidence= 0.9)
+            pyautogui.moveTo(x, y, duration = 1)
+            pyautogui.leftClick()
+            time.sleep(2)
+
+            #Klik tambah foto atau video
+            x, y = pyautogui.locateCenterOnScreen("img/fto.png", confidence= 0.9)
+            pyautogui.moveTo(x, y, duration = 2)
+            pyautogui.leftClick()
+            time.sleep(1)
+
+            #Menyalin path lokasi gambar/image
+            file_path = image_location_path # Ubah sesuai path yang diinginkan
+            pyperclip.copy(file_path)
+            pyautogui.sleep(2)
+            pyautogui.hotkey("ctrl", "v")
+            
+            #Klik open foto utu
+            pyautogui.sleep(1)
+            x, y = pyautogui.locateCenterOnScreen("img/open.png", confidence= 0.9)
+            pyautogui.moveTo(x, y, duration = 1)
+            pyautogui.leftClick()
+            pyautogui.sleep(1)
+            
+            #Klik logo kirim
+            x, y = pyautogui.locateCenterOnScreen("img/send.png", confidence= 0.9)
+            pyautogui.moveTo(x, y, duration = 1)
+            pyautogui.leftClick()
+
+            time.sleep(3)
+
+            #Send Message
+            pyautogui.write(message=message)
+            time.sleep(3)
+            #Klik logo kirim
+            cari_image_send = "img/send.png"
+            cari_image_send = pyautogui.locateCenterOnScreen(cari_image_send, confidence=0.9)
+
+            print(f"Pesan berhasil dikirim")
+            time.sleep(6) 
+            
+        except Exception as e:
+            print(f"Gagal mengirim pesan")
